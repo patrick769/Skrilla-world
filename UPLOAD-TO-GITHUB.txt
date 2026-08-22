@@ -1,0 +1,5 @@
+UPLOAD THESE FIVE HTML FILES DIRECTLY TO THE ROOT OF THE GITHUB REPOSITORY:
+index.html, music.html, videos.html, tour.html, merch.html
+
+Replace the older files with these versions. Do not upload only this ZIP.
+Then enable GitHub Pages: Settings > Pages > Deploy from a branch > main > / (root).
