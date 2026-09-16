@@ -5,7 +5,5 @@ BIG SKRILLA OFFLINE WEBSITE — ANDROID
 3. Open the extracted index.html using Chrome, Firefox, or another browser.
 4. The navigation buttons open the other local HTML pages.
 
-Everything is embedded for offline use: images, CSS, JavaScript, the animated
-portrait smoke and the rotating 3D sphere. The elegant serif/sans typography
-(Cormorant Garamond + Jost) loads from Google Fonts, so the first load needs
-internet; without it the pages fall back to similar system fonts.
+Everything is embedded for offline use, including racing fonts, loading sequence,
+animated portrait smoke, images, CSS, JavaScript and rotating sphere.
