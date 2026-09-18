@@ -149,25 +149,28 @@
     .stage:not(.stage-3d) .tstrip{display:inline}
 
     /* gallery: default = swipeable strip (no-JS / reduced motion), JS upgrades it to a 3D ring */
-    .gallery{position:relative;z-index:2;width:100%;padding:6px 0 2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .gallery{position:relative;z-index:2;width:100%;padding:6px 0 2px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}
     .gallery::-webkit-scrollbar{display:none}
     .gallery:focus-visible{outline:3px solid rgba(255,255,255,.5);outline-offset:6px;border-radius:18px}
     .ring{display:flex;align-items:flex-start;gap:22px;width:max-content;margin:0 auto}
     .card{
-      --k:1;--shade:calc((1 - var(--k)) * .56);
+      --k:1;--flow:0;--shade:calc((1 - var(--k)) * .56);
+      scroll-snap-align:center;
       display:block;width:min(52vw,208px);flex:0 0 auto;position:relative;
       text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent;
       transition:opacity .35s var(--ease),transform .35s var(--ease);
     }
     .card-media{
       display:block;position:relative;aspect-ratio:3/4;border-radius:14px;overflow:hidden;background:#101014;
-      box-shadow:0 22px 44px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08);
-      transition:box-shadow .45s var(--ease);
+      contain:paint;box-shadow:0 22px 44px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08);
+      transition:box-shadow .45s var(--ease),transform .5s var(--ease);
     }
+    .card:hover .card-media{transform:translate3d(0,-4px,0)}
     .card-media::before{
       content:"";position:absolute;inset:0;background-image:var(--portrait);background-size:cover;
       background-position:var(--ox,50%) var(--oy,42%);
-      transform:scale(var(--z,1.35)) skewY(var(--warp,0deg));transform-origin:var(--ox,50%) var(--oy,42%);
+      transform:translate3d(calc(var(--flow,0) * -9px),calc(var(--flow,0) * 2px),0) scale(var(--z,1.35)) skewY(var(--warp,0deg));
+      transform-origin:var(--ox,50%) var(--oy,42%);
       filter:brightness(1.2) contrast(1.06);
     }
     .card-media::after{
@@ -191,6 +194,10 @@
     .stage-readout{display:flex;align-items:center;gap:13px;font-size:9px;font-weight:600;letter-spacing:.22em;color:#7b7b81}
     .stage-readout b{font-size:10.5px;color:#fff;letter-spacing:.14em}
     .stage-readout .g-name{font-size:11px;font-weight:500;letter-spacing:.12em;color:#a1a1a6}
+    .stage-readout b,.stage-readout .g-name{display:inline-block;min-width:1.6em}
+    .stage-readout .g-name{min-width:0}
+    .stage-readout .flip{animation:name-in .5s var(--ease)}
+    @keyframes name-in{from{opacity:0;transform:translateY(7px);filter:blur(4px)}to{opacity:1;transform:none;filter:blur(0)}}
     .stage-progress{display:block;width:min(200px,32vw);height:2px;border-radius:2px;background:rgba(255,255,255,.14);overflow:hidden}
     .stage-progress i{display:block;height:100%;background:linear-gradient(90deg,var(--red),#fff);transform:scaleX(0);transform-origin:0 50%}
     .cta-row{margin-top:0;display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
@@ -219,14 +226,14 @@
     .stage-3d .stage-head,.stage-3d .stage-foot{width:100%;padding-left:22px;padding-right:22px}
     .stage-3d .gallery{
       position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-      padding:clamp(128px,21vh,240px) 0 clamp(96px,16vh,170px);overflow:visible;
+      padding:clamp(128px,21vh,240px) 0 clamp(96px,16vh,170px);overflow:visible;scroll-snap-type:none;
       perspective:1900px;perspective-origin:50% 50%;touch-action:pan-y;cursor:grab;
     }
     .stage-3d .gallery.grabbing{cursor:grabbing}
     .stage-3d .ring{
       display:block;position:relative;width:var(--card-w);height:0;margin:0;will-change:transform;
       transform-style:preserve-3d;-webkit-transform-style:preserve-3d;
-      transform:translateZ(calc(var(--radius) * -1)) rotateX(var(--tilt)) rotateY(var(--rot));
+      transform:translateZ(calc(var(--radius) * -1)) rotateX(calc(var(--tilt) + var(--ringX,0deg))) rotateY(var(--rot));
     }
     .stage-3d .card{
       position:absolute;left:50%;top:50%;width:var(--card-w);flex:none;transition:none;
@@ -234,8 +241,11 @@
       transform:translate(-50%,calc(-50% - 33px)) rotateY(calc(var(--i,0) * var(--step))) translateZ(var(--radius));
       -webkit-backface-visibility:hidden;backface-visibility:hidden;
     }
-    @media (min-width:900px){.stage-3d .card-media::before{filter:brightness(1.2) contrast(1.06) saturate(calc(.22 + .78 * var(--k)))}}
+    @media (min-width:900px){.stage-3d:not(.lite) .card-media::before{filter:brightness(1.2) contrast(1.06) saturate(calc(.22 + .78 * var(--k)))}}
     @media (min-height:880px){.stage-3d .badge-wrap{display:block}}
+    .stage.lite .card-media::before{transform:scale(var(--z,1.35));filter:brightness(1.2) contrast(1.06)}
+    .stage.lite .stage-grain{display:none}
+    .stage.lite .stage-glow{filter:blur(16px)}
 
     /* stage entrance */
     .stage-head .stagger,.stage-foot .stagger{opacity:0;transform:translateY(20px);animation:stage-in .9s var(--ease) forwards}
@@ -728,176 +738,308 @@
         });
       }
 
-      /* circular gallery — scroll (or drag) rotates the ring */
+      /* ============================================================
+         Circular gallery — refined motion layer
+         Frame-rate independent springs, flick inertia, snap-assist,
+         pointer parallax and adaptive quality. All optional: without
+         JS (or with reduced motion) the gallery stays a swipeable strip.
+         ============================================================ */
       var stage = document.querySelector('.stage');
-      if (stage){
-        var bg = stage.querySelector('.stage-bg');
-        var gallery = stage.querySelector('.gallery');
+      var gallery = stage && stage.querySelector('.gallery');
+      var cards = stage ? [].slice.call(stage.querySelectorAll('.card')) : [];
+      if (stage && gallery && cards.length){
+
         var ring = stage.querySelector('.ring');
-        var cards = [].slice.call(stage.querySelectorAll('.card'));
+        var inner = stage.querySelector('.stage-inner');
+        var bg = stage.querySelector('.stage-bg');
+        var glow = stage.querySelector('.stage-glow');
         var prog = document.getElementById('g-prog');
         var readIdx = document.getElementById('g-index');
         var readName = document.getElementById('g-name');
         var N = cards.length;
         var STEP = 360 / N;
-        var SPINS = 1;            /* one full turn across the sticky region -> each card gets 1/10th of the scroll */
-        /* the ring needs sticky + single-axis clipping; without them we keep the swipeable strip */
-        var stickyOK = !!(window.CSS && CSS.supports && CSS.supports('position','sticky') && CSS.supports('overflow-x','clip'));
-        var reduceOK = !reduce && stickyOK;
+        var SPINS = 1;              /* one turn across the sticky region -> one card per 1/Nth of the scroll */
+        var TAU = Math.PI / 180;
+        var stickyOK = !!(window.CSS && CSS.supports && CSS.supports('position', 'sticky') && CSS.supports('overflow-x', 'clip'));
+        var fine = window.matchMedia ? window.matchMedia('(pointer:fine)').matches : true;
+        var live = !reduce && stickyOK;
 
         cards.forEach(function(c, i){ c.style.setProperty('--i', i); });
 
-        if (reduceOK){
-          stage.classList.add('stage-3d');
-          stage.style.setProperty('--step', STEP + 'deg');
-
-          var rot = 0, drag = 0, dragT = 0, dragging = false, startX = 0, startDrag = 0;
-          var curP = 0, lastY = window.scrollY, front = -1, running = false, dragMoved = false;
-          var lastK = []; for (var q = 0; q < N; q++) lastK.push(-1);
-          var warp = 0, warpShown = 0, prevA = 0;
-
-          function layout(){
-            var cw = cards[0].offsetWidth || 200;
-            var cs = getComputedStyle(stage);
-            var gap = parseFloat(cs.getPropertyValue('--gap')) || 26;
-            var r = (cw + gap) / (2 * Math.sin(Math.PI / N));
-            stage.style.setProperty('--radius', r.toFixed(1) + 'px');
-          }
-
-          function metrics(){
-            var rect = stage.getBoundingClientRect();
-            var span = Math.max(stage.offsetHeight - window.innerHeight, 1);
-            return { top: rect.top + window.scrollY, span: span };
-          }
-
-          function progress(){
-            var m = metrics();
-            return Math.min(Math.max((window.scrollY - m.top) / m.span, 0), 1);
-          }
-
-          /* scroll to the position where card i faces the camera */
-          function focusCard(i){
-            var m = metrics(), total = 360 * SPINS;
-            var best = null, bestD = 1e9;
-            for (var k = 0; k * 360 <= total + STEP; k++){
-              var p = (i * STEP + k * 360) / total;
-              if (p < 0 || p > 1) continue;
-              var d = Math.abs(p - curP);
-              if (d < bestD){ bestD = d; best = p; }
-            }
-            if (best === null) return;
-            window.scrollTo({ top: m.top + best * m.span, behavior: reduce ? 'auto' : 'smooth' });
-          }
-
-          function step(){
-            curP = progress();
-            if (Math.abs(window.scrollY - lastY) > 1){ dragT *= .8; drag *= .8; }
-            lastY = window.scrollY;
-            if (!dragging){
-              drag += (dragT - drag) * .14;
-              if (Math.abs(dragT - drag) < .004) drag = dragT;
-            }
-            var base = -curP * 360 * SPINS;
-            rot += (base - rot) * .12;
-            var a0 = rot + drag + Math.sin(Date.now() * .00035) * .55;
-            ring.style.setProperty('--rot', a0.toFixed(2) + 'deg');
-            /* the reference component warps the planes while the ring is moving */
-            warp += (Math.max(-1, Math.min(1, (a0 - prevA) * .5)) - warp) * .18;
-            prevA = a0;
-            if (Math.abs(warp - warpShown) > .01){
-              stage.style.setProperty('--warp', (warp * 1.6).toFixed(2) + 'deg');
-              warpShown = warp;
-            }
-            if (bg) bg.style.transform = 'translate3d(0,' + (curP * 7).toFixed(2) + 'vh,0)';
-            if (prog) prog.style.transform = 'scaleX(' + curP.toFixed(3) + ')';
-            stage.classList.toggle('moved', curP > .012);
-
-            var bestI = 0, bestA = 1e9, frontA = 1e9;
-            for (var i = 0; i < N; i++){
-              var a = (((i * STEP + a0) % 360) + 540) % 360 - 180;
-              var k = Math.max(0, Math.cos(a * Math.PI / 180));
-              if (Math.abs(k - lastK[i]) > .004){
-                cards[i].style.setProperty('--k', k.toFixed(3));
-                lastK[i] = k;
-              }
-              if (Math.abs(a) < bestA){ bestA = Math.abs(a); bestI = i; }
-              if (i === front) frontA = Math.abs(a);
-            }
-            if (front < 0 || bestA < frontA - 1.5){
-              front = bestI;
-              cards.forEach(function(c, i){ c.classList.toggle('is-front', i === front); });
-              if (readIdx) readIdx.textContent = ('0' + (front + 1)).slice(-2);
-              if (readName) readName.textContent = cards[front].getAttribute('data-name') || '';
-            }
-          }
-
-          function inView(){
-            var r = stage.getBoundingClientRect();
-            return r.bottom > -80 && r.top < window.innerHeight + 80;
-          }
-          function loop(){
-            step();
-            if (inView()) requestAnimationFrame(loop); else running = false;
-          }
-          function wake(){ if (!running && inView()){ running = true; requestAnimationFrame(loop); } }
-
-          layout(); step(); wake();
-
-          window.addEventListener('scroll', wake, {passive:true});
-          window.addEventListener('resize', function(){ layout(); wake(); });
-          window.addEventListener('orientationchange', function(){ setTimeout(function(){ layout(); wake(); }, 250); });
-
-          /* drag / swipe to spin the ring */
-          function down(x){ dragging = true; dragMoved = false; startX = x; startDrag = drag; dragT = drag; gallery.classList.add('grabbing'); }
-          function move(x){
-            if (!dragging) return;
-            var dx = x - startX;
-            if (Math.abs(dx) > 6) dragMoved = true;
-            drag = startDrag + dx * (180 / Math.max(window.innerWidth, 320));
-            dragT = drag;
-          }
-          function up(){
-            if (!dragging) return;
-            dragging = false; gallery.classList.remove('grabbing');
-            dragT = Math.round(drag / STEP) * STEP;
-          }
-          if (window.PointerEvent){
-            gallery.addEventListener('pointerdown', function(e){ if (e.button === 0 || e.pointerType !== 'mouse') { down(e.clientX); } });
-            window.addEventListener('pointermove', function(e){ move(e.clientX); }, {passive:true});
-            window.addEventListener('pointerup', up);
-            window.addEventListener('pointercancel', up);
-          } else {
-            gallery.addEventListener('mousedown', function(e){ down(e.clientX); });
-            window.addEventListener('mousemove', function(e){ move(e.clientX); });
-            window.addEventListener('mouseup', up);
-            gallery.addEventListener('touchstart', function(e){ down(e.touches[0].clientX); }, {passive:true});
-            gallery.addEventListener('touchmove', function(e){ move(e.touches[0].clientX); }, {passive:true});
-            gallery.addEventListener('touchend', up);
-          }
-
-          /* a side card spins to the front instead of navigating */
-          stage.addEventListener('click', function(e){
-            var el = e.target.closest ? e.target.closest('.card') : null;
-            if (!el || e.detail === 0) return;           /* keyboard activation still follows the link */
-            if (dragMoved){ e.preventDefault(); dragMoved = false; return; }
-            var idx = cards.indexOf(el);
-            if (idx !== front){ e.preventDefault(); focusCard(idx); }
-          });
-          stage.addEventListener('focusin', function(e){
-            var el = e.target.closest ? e.target.closest('.card') : null;
-            if (!el) return;
-            var idx = cards.indexOf(el);
-            if (idx > -1 && idx !== front) focusCard(idx);
-          });
-          gallery.addEventListener('keydown', function(e){
-            if (e.key === 'ArrowRight'){ e.preventDefault(); focusCard((front + 1) % N); }
-            else if (e.key === 'ArrowLeft'){ e.preventDefault(); focusCard((front - 1 + N) % N); }
-            else if (e.key === 'Home'){ e.preventDefault(); window.scrollTo({top: metrics().top, behavior: reduce ? 'auto' : 'smooth'}); }
-          });
-        } else {
-          /* reduced motion (or no sticky support): plain swipeable strip */
+        if (!live){
+          /* reduced motion, or no sticky/clip support: keep the plain swipeable strip */
           cards.forEach(function(c, i){ c.classList.toggle('is-front', i === 0); });
           if (bg) bg.style.transform = 'none';
+        } else {
+
+        /* ---------- state ---------- */
+        stage.classList.add('stage-3d');
+        stage.style.setProperty('--step', STEP + 'deg');
+
+        var rot = -STEP * .62;                       /* intro: the ring eases into place */
+        var drag = 0, dragV = 0, dragT = 0, dragging = false, dragMoved = false;
+        var startX = 0, startDrag = 0, lastX = 0, lastXMs = 0, vel = 0;
+        var settle = 0, settleT = 0;                 /* snap-assist: recentre the front card */
+        var lookX = 0, lookTX = 0, lookY = 0, lookTY = 0;
+        var pRaw = 0, pSm = 0;
+        var front = -1, running = false, lite = false;
+        var lastK = [], lastF = [], glowX = 9e9, glowY = 9e9;
+        for (var q = 0; q < N; q++){ lastK.push(-1); lastF.push(0); }
+        var cache = { top: 0, span: 1 };
+        var now = clock(), ms = now, frameAvg = 16.7, dt = 1, lastScrollY = window.scrollY || 0, lastScrollMs = 0;
+        var warp = 0, warpShown = 0, prevA = rot, inst = 0, frames = 0, fast = 0, lastA0 = 9e9, lastBg = 9e9;
+
+        function clock(){ return (window.performance && performance.now) ? performance.now() : Date.now(); }
+        function ease(k){ return 1 - Math.pow(1 - k, dt); }   /* same feel at 60, 90 or 120 Hz */
+        function decay(k){ return Math.pow(1 - k, dt); }       /* ...and the same decay rate */
+
+        /* ---------- measuring (never inside the frame loop) ---------- */
+        function measure(){
+          var r = stage.getBoundingClientRect();
+          cache.top = r.top + (window.scrollY || window.pageYOffset || 0);
+          /* the sticky box is 100svh, so this survives mobile URL-bar resize */
+          var h = (inner && inner.offsetHeight) || window.innerHeight;
+          cache.span = Math.max(stage.offsetHeight - h, 1);
+        }
+        function layout(){
+          var cw = cards[0].offsetWidth || 200;
+          var gap = parseFloat(getComputedStyle(stage).getPropertyValue('--gap')) || 26;
+          stage.style.setProperty('--radius', ((cw + gap) / (2 * Math.sin(Math.PI / N))).toFixed(1) + 'px');
+          measure();
+        }
+
+        function progress(){
+          return Math.min(Math.max(((window.scrollY || 0) - cache.top) / cache.span, 0), 1);
+        }
+
+        /* ---------- scroll to the angle that puts card i in front ---------- */
+        function focusCard(i, instant){
+          var total = 360 * SPINS, best = null, bestD = 1e9, k, p;
+          for (k = 0; k * 360 <= total + STEP; k++){
+            p = (i * STEP + k * 360) / total;
+            if (p < 0 || p > 1) continue;
+            if (Math.abs(p - pRaw) < bestD){ bestD = Math.abs(p - pRaw); best = p; }
+          }
+          if (best === null) return;
+          var top = Math.round(cache.top + best * cache.span);
+          var beh = (instant || reduce) ? 'auto' : 'smooth';
+          try { window.scrollTo({ top: top, behavior: beh }); }
+          catch (err) { window.scrollTo(0, top); }
+        }
+
+        /* ---------- text swaps fade instead of popping ---------- */
+        function swap(el, txt){
+          if (!el || el.textContent === txt) return;
+          el.classList.remove('flip');
+          void el.offsetWidth;                        /* restart the animation */
+          el.textContent = txt;
+          el.classList.add('flip');
+        }
+
+        /* ---------- per frame ---------- */
+        function step(){
+          now = clock();
+          var real = now - ms; ms = now;
+          dt = Math.min(Math.max(real / 16.667, .25), 4);
+          frameAvg += (real - frameAvg) * .08;
+          frames++;
+          if (!lite && frames > 70 && frameAvg > 21.5){ lite = true; stage.classList.add('lite'); }
+          else if (lite && frameAvg < 11.5 && ++fast > 90){ lite = false; fast = 0; stage.classList.remove('lite'); }
+
+          var y = window.scrollY || 0;
+          var scrolling = Math.abs(y - lastScrollY) > 1;
+          if (scrolling){
+            lastScrollY = y; lastScrollMs = now;
+            if (!dragging){ drag *= decay(.22); dragT = drag; dragV *= decay(.3); }
+            settle *= decay(.22); settleT = 0;
+          }
+          var idle = !dragging && (now - lastScrollMs) > 130;
+
+          /* scroll -> angle, double smoothed so wheel steps turn into one continuous glide */
+          pRaw = progress();
+          pSm += (pRaw - pSm) * ease(.17);
+          rot += (-pSm * 360 * SPINS - rot) * ease(.15);
+
+          /* drag: spring towards the snapped target, carrying the flick velocity */
+          if (!dragging){
+            dragV += (((dragT - drag) * .09) - dragV * .58) * dt;
+            drag += dragV * dt;
+            if (Math.abs(dragT - drag) < .002 && Math.abs(dragV) < .002){ drag = dragT; dragV = 0; }
+          }
+
+          /* snap-assist: once the scroll settles, glide the nearest card face dead centre
+             (the reference component does the same on wheel/touch release, `onCheck`) */
+          if (idle && Math.abs(inst) < .02){
+            var s = rot + drag;
+            var res = ((s % STEP) + STEP * 1.5) % STEP - STEP * .5;
+            settleT = Math.abs(res) < STEP * .48 ? -res : 0;     /* skip the ambiguous mid-point */
+          }
+          settle += (settleT - settle) * ease(.1);
+
+          /* pointer parallax — a subtle "look around" while hovering */
+          if (fine && !lite){
+            lookX += (lookTX - lookX) * ease(.06);
+            lookY += (lookTY - lookY) * ease(.06);
+          }
+
+          var drift = Math.sin(now * .00031) * .32;   /* barely-there idle breathing; small enough to keep the front card centred */
+          var a0 = rot + drag + settle + drift + lookX;
+          if (Math.abs(a0 - lastA0) > .003){          /* an idle ring writes nothing */
+            ring.style.setProperty('--rot', a0.toFixed(2) + 'deg');
+            if (fine && !lite) ring.style.setProperty('--ringX', (lookY * .55).toFixed(2) + 'deg');
+            lastA0 = a0;
+          }
+
+          /* the reference component bends its planes with speed */
+          inst = a0 - prevA; prevA = a0;
+          warp += (Math.max(-1, Math.min(1, inst * .5)) - warp) * ease(.2);
+          if (Math.abs(warp - warpShown) > .012){
+            stage.style.setProperty('--warp', (warp * (lite ? .8 : 1.6)).toFixed(2) + 'deg');
+            warpShown = warp;
+          }
+
+          if (bg && Math.abs(pSm * 7 - lastBg) > .04){
+            bg.style.transform = 'translate3d(0,' + (pSm * 7).toFixed(2) + 'vh,0)';
+            lastBg = pSm * 7;
+          }
+          if (glow && fine && !lite){
+            var gx = lookX * 7, gy = lookY * 5;
+            if (Math.abs(gx - glowX) > .5 || Math.abs(gy - glowY) > .5){
+              glow.style.transform = 'translate(calc(-50% + ' + gx.toFixed(1) + 'px), calc(-50% + ' + gy.toFixed(1) + 'px))';
+              glowX = gx; glowY = gy;
+            }
+          }
+          if (prog) prog.style.transform = 'scaleX(' + pSm.toFixed(4) + ')';
+          stage.classList.toggle('moved', pSm > .012);
+
+          var bestI = 0, bestA = 1e9, frontA = 1e9, f;
+          for (var i = 0; i < N; i++){
+            var a = (((i * STEP + a0) % 360) + 540) % 360 - 180;
+            var k = Math.max(0, Math.cos(a * TAU));
+            if (Math.abs(k - lastK[i]) > .004){
+              cards[i].style.setProperty('--k', k.toFixed(3));
+              lastK[i] = k;
+            }
+            if (!lite){                              /* photo drifts inside its frame as the card sweeps by */
+              f = Math.max(-1, Math.min(1, a / 68));
+              if (Math.abs(f - lastF[i]) > .012){ cards[i].style.setProperty('--flow', f.toFixed(3)); lastF[i] = f; }
+            }
+            if (Math.abs(a) < bestA){ bestA = Math.abs(a); bestI = i; }
+            if (i === front) frontA = Math.abs(a);
+          }
+          if (front < 0 || bestA < frontA - 1.5){    /* hysteresis: no flicker on a half-step */
+            front = bestI;
+            for (var j = 0; j < N; j++) cards[j].classList.toggle('is-front', j === front);
+            swap(readIdx, ('0' + (front + 1)).slice(-2));
+            swap(readName, cards[front].getAttribute('data-name') || '');
+          }
+        }
+
+        /* ---------- loop control: only runs while the stage owns the screen ---------- */
+        function inView(){
+          var r = stage.getBoundingClientRect();
+          return r.bottom > -120 && r.top < window.innerHeight + 120;
+        }
+        function loop(){ step(); if (inView()) requestAnimationFrame(loop); else running = false; }
+        function wake(){ if (!running && inView()){ running = true; ms = clock(); requestAnimationFrame(loop); } }
+
+        layout(); step(); wake();
+
+        var rz = false;
+        function onResize(){
+          if (rz) return; rz = true;
+          requestAnimationFrame(function(){ rz = false; layout(); step(); wake(); });
+        }
+        window.addEventListener('scroll', wake, {passive:true});
+        window.addEventListener('resize', onResize, {passive:true});
+        window.addEventListener('orientationchange', function(){ setTimeout(onResize, 260); });
+        window.addEventListener('load', function(){ layout(); wake(); });
+        if (window.ResizeObserver) new ResizeObserver(function(){ layout(); wake(); }).observe(stage);
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ layout(); wake(); });
+        document.addEventListener('visibilitychange', function(){
+          if (document.hidden) return;
+          measure();                                  /* resync without a long catch-up glide */
+          rot = -progress() * 360 * SPINS; pSm = pRaw = progress();
+          drag = dragT = dragV = settle = settleT = 0; prevA = rot;
+          step(); wake();
+        });
+
+        /* ---------- drag / swipe ---------- */
+        function down(x){
+          dragging = true; dragMoved = false; vel = 0;
+          startX = lastX = x; lastXMs = clock();
+          startDrag = drag; dragT = drag; dragV = 0;
+          gallery.classList.add('grabbing'); wake();
+        }
+        function move(x){
+          if (!dragging) return;
+          var s = 180 / Math.max(window.innerWidth, 320);
+          var dx = x - startX;
+          if (Math.abs(dx) > 5) dragMoved = true;
+          var n = clock(), d = Math.max(n - lastXMs, 1);
+          vel = vel * .55 + (((x - lastX) * s) / d * 16.667) * .45;   /* deg per frame, smoothed */
+          lastX = x; lastXMs = n;
+          drag = startDrag + dx * s;
+          dragT = drag;
+        }
+        function up(){
+          if (!dragging) return;
+          dragging = false; gallery.classList.remove('grabbing');
+          var projected = drag + vel * 11;             /* flick carries the ring... */
+          dragT = Math.round(projected / STEP) * STEP; /* ...then settles on a card face */
+          dragV = vel * .3;
+          wake();
+        }
+        if (window.PointerEvent){
+          gallery.addEventListener('pointerdown', function(e){ if (e.pointerType !== 'mouse' || e.button === 0) down(e.clientX); });
+          window.addEventListener('pointermove', function(e){ move(e.clientX); }, {passive:true});
+          window.addEventListener('pointerup', up);
+          window.addEventListener('pointercancel', up);
+          window.addEventListener('blur', up);
+        } else {
+          gallery.addEventListener('mousedown', function(e){ down(e.clientX); });
+          window.addEventListener('mousemove', function(e){ move(e.clientX); });
+          window.addEventListener('mouseup', up);
+          window.addEventListener('blur', up);
+          gallery.addEventListener('touchstart', function(e){ down(e.touches[0].clientX); }, {passive:true});
+          gallery.addEventListener('touchmove', function(e){ move(e.touches[0].clientX); }, {passive:true});
+          gallery.addEventListener('touchend', up);
+        }
+        if (fine && !reduce){
+          window.addEventListener('pointermove', function(e){
+            if (dragging || e.pointerType === 'touch') return;
+            lookTX = ((e.clientX / Math.max(window.innerWidth, 1)) - .5) * 5.2;
+            lookTY = ((e.clientY / Math.max(window.innerHeight, 1)) - .5) * -3.4;
+          }, {passive:true});
+          document.addEventListener('mouseleave', function(){ lookTX = 0; lookTY = 0; });
+        }
+
+        /* ---------- cards: side cards spin forward, the front card navigates ---------- */
+        stage.addEventListener('click', function(e){
+          var el = e.target.closest ? e.target.closest('.card') : null;
+          if (!el || e.detail === 0) return;             /* keyboard activation still follows the link */
+          if (dragMoved){ e.preventDefault(); dragMoved = false; return; }
+          var idx = cards.indexOf(el);
+          if (idx !== front){ e.preventDefault(); focusCard(idx); }
+        });
+        stage.addEventListener('focusin', function(e){
+          var el = e.target.closest ? e.target.closest('.card') : null;
+          if (!el) return;
+          var idx = cards.indexOf(el);
+          if (idx > -1 && idx !== front) focusCard(idx, true);
+        });
+        gallery.addEventListener('keydown', function(e){
+          var n = {
+            ArrowRight: (front + 1) % N,
+            ArrowLeft: (front - 1 + N) % N,
+            PageDown: Math.min(front + 3, N - 1),
+            PageUp: Math.max(front - 3, 0),
+            Home: 0,
+            End: N - 1
+          }[e.key];
+          if (n === undefined) return;
+          e.preventDefault(); focusCard(n);
+        });
         }
       }
     })();
