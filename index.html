@@ -22,6 +22,18 @@
   #loader .lbl{font-size:11px;letter-spacing:.5em;opacity:.6;margin-bottom:16px}
   #bar{width:min(280px,60vw);height:1px;background:#222;overflow:hidden}
   #bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#7a5cff,#37b6ff);transition:width .25s}
+  #nav{position:fixed;top:0;left:0;right:0;z-index:4;display:flex;align-items:center;
+    justify-content:space-between;padding:22px clamp(18px,4vw,48px);
+    mix-blend-mode:screen;transition:opacity .4s ease}
+  #nav .brand{font-size:11px;letter-spacing:.42em;opacity:.75;font-weight:300}
+  #nav ul{list-style:none;display:flex;gap:clamp(14px,2.6vw,34px)}
+  #nav a{color:#fff;text-decoration:none;font-size:10px;letter-spacing:.34em;opacity:.55;
+    position:relative;padding-bottom:5px;transition:opacity .25s,text-shadow .25s}
+  #nav a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;
+    background:linear-gradient(90deg,#7a5cff,#37b6ff);transition:width .3s ease}
+  #nav a:hover{opacity:1;text-shadow:0 0 14px rgba(150,120,255,.9)}
+  #nav a:hover::after{width:100%}
+  @media(max-width:520px){#nav{flex-direction:column;gap:12px}#nav ul{gap:14px}}
   #vig{position:fixed;inset:0;z-index:2;pointer-events:none;
     background:radial-gradient(ellipse at center,rgba(0,0,0,0) 45%,rgba(0,0,0,.85) 100%)}
 </style>
@@ -29,6 +41,15 @@
 <body>
 <canvas id="c"></canvas>
 <div id="vig"></div>
+<nav id="nav">
+  <div class="brand">SKRILLA</div>
+  <ul>
+    <li><a href="music.html">MUSIC</a></li>
+    <li><a href="videos.html">VIDEOS</a></li>
+    <li><a href="tour.html">TOUR</a></li>
+    <li><a href="merch.html">MERCH</a></li>
+  </ul>
+</nav>
 <div id="overlay"><h1>SKRILLA HQ</h1><p>ENTER</p></div>
 <div id="scrollhint">SCROLL TO WALK IN</div>
 <div id="loader"><div class="lbl">LOADING SKRILLA HQ</div><div id="bar"><i></i></div></div>
@@ -253,6 +274,7 @@ addEventListener('pointermove', e=>{
 gsap.registerPlugin(ScrollTrigger);
 const overlay=document.getElementById('overlay');
 const hint=document.getElementById('scrollhint');
+const nav=document.getElementById('nav');
 
 ScrollTrigger.create({
   trigger:document.body, start:'top top', end:'bottom bottom', scrub:1.1,
@@ -263,6 +285,7 @@ ScrollTrigger.create({
     overlay.style.opacity=o;
     overlay.style.transform=`translateY(${-p*60}px) scale(${1+p*.12})`;
     hint.style.opacity = o*0.4;
+    nav.style.opacity = 0.55 + p*0.45;   // nav gets clearer as you walk in
   }
 });
 
@@ -314,6 +337,7 @@ const fake=setInterval(()=>{
     requestAnimationFrame(tick);
     setTimeout(()=>{ loader.classList.add('hide'); ScrollTrigger.refresh(); }, 350);
     gsap.from(overlay,{opacity:0,y:30,duration:1.6,delay:.5,ease:'power3.out'});
+    gsap.from('#nav a',{opacity:0,y:-10,duration:.7,delay:1.25,stagger:.08,ease:'power2.out'});
   }
 },120);
 </script>
