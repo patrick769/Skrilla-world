@@ -4,170 +4,124 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#070708" />
-  <meta name="description" content="SKRILLA HQ — music, videos, tour dates and official merchandise." />
   <title>SKRILLA HQ // Gallery</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M8 14 L92 38 L30 92 Z' fill='none' stroke='%23d9435c' stroke-width='7'/%3E%3C/svg%3E" />
   <style>
     :root{
-      --bg:#070708; --ink:#f5f5f7; --muted:#86868b;
-      --red:#d9435c; --gold:#e8c4a4; --blue:#0071e3; --blue-h:#0077ed;
-      --nav-h:48px; --ease:cubic-bezier(.22,.61,.36,1);
-      --card-w:240px; --card-h:320px;
+      --bg:#070708; --ink:#f5f5f7; --muted:#8e8e93;
+      --red:#d9435c; --gold:#e8c4a4; --blue:#0071e3;
+      --nav-h:48px; --card-w:260px; --card-h:348px;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html,body{background:var(--bg);color:var(--ink)}
     body{
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Helvetica,Arial,sans-serif;
       -webkit-font-smoothing:antialiased;overflow-x:hidden;
     }
-    a{color:inherit}
-    img{display:block}
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:none}
 
     .site-nav{
-      position:fixed;inset:0 0 auto 0;z-index:1000;
-      background:rgba(7,7,8,.55);
-      -webkit-backdrop-filter:saturate(160%) blur(18px);backdrop-filter:saturate(160%) blur(18px);
+      position:fixed;inset:0 0 auto 0;z-index:20;
+      height:var(--nav-h);
+      background:rgba(7,7,8,.6);
+      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
       border-bottom:1px solid rgba(255,255,255,.08);
     }
-    .nav-inner{max-width:1100px;margin:0 auto;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 22px}
-    .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-    .brand svg{width:24px;height:24px;transition:color .3s ease}
-    .brand:hover svg{color:var(--red)}
+    .nav-inner{max-width:1100px;margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:16px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand svg{width:24px;height:24px}
     .brand-text{display:flex;flex-direction:column;line-height:1.15}
-    .brand-text b{font-size:12.5px;font-weight:700;letter-spacing:.06em}
-    .brand-text span{font-size:8.5px;font-weight:500;letter-spacing:.24em;color:var(--muted)}
-    .nav-links{display:flex;align-items:center;gap:28px;list-style:none}
-    .nav-links a{font-size:12px;color:rgba(245,245,247,.72);text-decoration:none;letter-spacing:.04em}
-    .nav-links a:hover,.nav-links a[aria-current="page"]{color:#fff}
-    .nav-cta{
-      display:inline-flex;align-items:center;background:var(--blue);color:#fff;
-      font-size:12px;font-weight:500;padding:5px 13px;border-radius:980px;text-decoration:none;
-    }
-    .nav-cta:hover{background:var(--blue-h)}
-    .hamburger{display:none;background:none;border:0;cursor:pointer;padding:8px 6px;flex-direction:column;gap:5px}
-    .hamburger span{width:18px;height:1.5px;background:#fff;border-radius:2px}
-    .hamburger[aria-expanded="true"] span:first-child{transform:translateY(3.25px) rotate(45deg)}
-    .hamburger[aria-expanded="true"] span:last-child{transform:translateY(-3.25px) rotate(-45deg)}
-    .mobile-menu{
-      position:fixed;top:var(--nav-h);left:0;right:0;z-index:999;display:none;
-      background:rgba(7,7,8,.96);padding:6px 22px 20px;border-bottom:1px solid rgba(255,255,255,.08);
-    }
+    .brand-text b{font-size:12.5px;letter-spacing:.06em}
+    .brand-text span{font-size:8.5px;letter-spacing:.24em;color:var(--muted)}
+    .nav-links{display:flex;gap:26px;list-style:none}
+    .nav-links a{font-size:12px;letter-spacing:.04em;color:rgba(245,245,247,.7)}
+    .nav-links a[aria-current="page"],.nav-links a:hover{color:#fff}
+    .nav-cta{background:var(--blue);color:#fff;font-size:12px;padding:5px 13px;border-radius:999px}
+    .hamburger{display:none;background:0;border:0;cursor:pointer;flex-direction:column;gap:5px;padding:8px}
+    .hamburger span{width:18px;height:1.5px;background:#fff}
+    .mobile-menu{display:none;position:fixed;top:var(--nav-h);left:0;right:0;z-index:19;background:#0b0b0d;padding:8px 22px 18px}
     .mobile-menu.open{display:block}
-    .mobile-menu a.mlink{display:block;padding:15px 0;font-size:17px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08)}
-    .mobile-menu .nav-cta{margin-top:16px;padding:10px 22px;font-size:14px}
-    @media (max-width:833px){
-      .nav-links,.nav-inner > .nav-cta{display:none}
-      .hamburger{display:inline-flex}
-    }
+    .mobile-menu a{display:block;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+    @media(max-width:833px){.nav-links,.nav-inner>.nav-cta{display:none}.hamburger{display:flex}}
 
     .gallery{
-      position:relative;height:100vh;height:100svh;
+      height:100vh;height:100dvh;
       overflow:hidden;
-      background:radial-gradient(900px 520px at 50% 45%, #1c1416 0%, var(--bg) 62%);
+      background:radial-gradient(1000px 560px at 50% 42%, #201416 0%, #070708 60%);
     }
     .gallery-title{
-      position:absolute;top:calc(var(--nav-h) + 18px);left:0;right:0;z-index:5;
-      text-align:center;pointer-events:none;
+      position:absolute;top:calc(var(--nav-h) + 16px);left:0;right:0;z-index:4;text-align:center;pointer-events:none
     }
-    .gallery-title h1{font-size:clamp(28px,4.4vw,44px);font-weight:700;letter-spacing:-.03em}
-    .gallery-title p{margin-top:8px;font-size:15px;color:var(--muted)}
-    .gallery-title p span{color:var(--gold)}
+    .gallery-title h1{font-size:clamp(26px,4vw,42px);letter-spacing:-.03em}
+    .gallery-title p{margin-top:6px;color:var(--muted);font-size:14px}
+    .gallery-title span{color:var(--gold)}
 
     .stage{
       position:absolute;inset:0;
-      perspective:1100px;perspective-origin:50% 48%;
       cursor:grab;touch-action:none;user-select:none;
     }
-    .stage.is-dragging{cursor:grabbing}
-    .ring{
-      position:absolute;left:50%;top:54%;
-      width:0;height:0;
-      transform-style:preserve-3d;
-      will-change:transform;
-    }
+    .stage.dragging{cursor:grabbing}
+    .ring{position:absolute;inset:0;pointer-events:none}
     .card{
-      position:absolute;left:0;top:0;
+      position:absolute;left:50%;top:52%;
       width:var(--card-w);height:var(--card-h);
-      margin-left:calc(var(--card-w) / -2);
-      margin-top:calc(var(--card-h) / -2);
-      transform-style:preserve-3d;
-      -webkit-backface-visibility:hidden;backface-visibility:hidden;
-      text-decoration:none;color:inherit;
+      margin-left:calc(var(--card-w)/-2);margin-top:calc(var(--card-h)/-2);
+      pointer-events:auto;
+      will-change:transform,opacity;
     }
     .card-face{
-      width:100%;height:100%;border-radius:18px;overflow:hidden;
-      background:#161616;
-      border:1px solid rgba(255,255,255,.12);
-      box-shadow:0 16px 40px rgba(0,0,0,.45);
+      width:100%;height:100%;border-radius:20px;overflow:hidden;
+      background:#121212;
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 18px 40px rgba(0,0,0,.5);
     }
-    .card.is-active .card-face{
-      border-color:rgba(232,196,164,.55);
-      box-shadow:0 22px 50px rgba(0,0,0,.55), 0 0 28px rgba(217,67,92,.2);
+    .card.active .card-face{
+      border-color:rgba(232,196,164,.7);
+      box-shadow:0 24px 55px rgba(0,0,0,.55),0 0 30px rgba(217,67,92,.22);
     }
     .card img{
       width:100%;height:100%;object-fit:cover;
-      background:#1a1a1a;
     }
     .card-meta{
-      position:absolute;left:0;right:0;bottom:0;
-      padding:42px 14px 14px;
-      background:linear-gradient(180deg,transparent,rgba(0,0,0,.9) 72%);
+      position:absolute;left:0;right:0;bottom:0;padding:48px 16px 16px;
+      background:linear-gradient(180deg,transparent,rgba(0,0,0,.92) 70%);
     }
-    .card-meta h2{font-size:16px;font-weight:700;letter-spacing:-.02em}
-    .card-meta em{display:block;margin-top:4px;font-size:12px;font-style:italic;color:var(--gold)}
+    .card-meta h2{font-size:17px;font-weight:700}
+    .card-meta em{display:block;margin-top:4px;color:var(--gold);font-size:12px}
 
     .hud{
-      position:absolute;bottom:22px;left:0;right:0;z-index:6;
-      display:flex;flex-direction:column;align-items:center;gap:12px;
-      pointer-events:none;
+      position:absolute;left:0;right:0;bottom:20px;z-index:5;
+      display:flex;flex-direction:column;align-items:center;gap:10px;
     }
-    .hud-row{display:flex;align-items:center;gap:14px;pointer-events:auto}
+    .hud-row{display:flex;align-items:center;gap:12px}
     .nav-arrow{
-      width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.2);
-      background:rgba(255,255,255,.06);color:#fff;cursor:pointer;
-      display:inline-flex;align-items:center;justify-content:center;
+      width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.2);
+      background:rgba(255,255,255,.07);color:#fff;cursor:pointer;
     }
-    .nav-arrow:hover{background:rgba(255,255,255,.14)}
-    .nav-arrow svg{width:16px;height:16px}
-    .hud-index{font-size:11px;font-weight:600;letter-spacing:.28em;color:var(--muted);min-width:72px;text-align:center}
+    .hud-index{min-width:70px;text-align:center;letter-spacing:.28em;font-size:11px;color:var(--muted)}
     .hud-cta{
-      pointer-events:auto;
-      display:inline-flex;align-items:center;gap:8px;
-      padding:11px 20px;border-radius:980px;
-      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
-      color:#fff;text-decoration:none;font-size:14px;
+      color:#fff;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);
+      border-radius:999px;padding:10px 18px;font-size:14px
     }
-    .hud-cta:hover{background:rgba(255,255,255,.16)}
-    .hint{font-size:10px;letter-spacing:.22em;color:rgba(255,255,255,.38)}
+    .hint{font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.38)}
 
-    footer.site-footer{background:#0b0b0d;border-top:1px solid rgba(255,255,255,.08)}
-    .foot-inner{max-width:1100px;margin:0 auto;padding:40px 22px 48px}
-    .foot-brand{display:flex;align-items:center;gap:10px}
-    .foot-brand svg{width:26px;height:26px}
-    .foot-brand b{font-size:17px;font-weight:600}
-    .foot-links{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px 26px}
-    .foot-links a{font-size:12px;color:#a1a1a6;text-decoration:none}
-    .foot-links a:hover{color:#fff;text-decoration:underline}
-    .foot-legal{margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:#6e6e73}
+    footer{background:#0b0b0d;border-top:1px solid rgba(255,255,255,.08);padding:40px 22px}
+    .foot-inner{max-width:1100px;margin:0 auto}
+    .foot-links{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:18px}
+    .foot-links a{font-size:12px;color:#a1a1a6}
+    .foot-legal{margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:#6e6e73}
 
-    @media (max-width:734px){
-      :root{--card-w:176px;--card-h:236px}
-      .gallery-title{top:calc(var(--nav-h) + 12px)}
-      .hud{bottom:14px}
+    @media(max-width:734px){
+      :root{--card-w:188px;--card-h:252px}
+      .gallery-title{top:calc(var(--nav-h) + 10px)}
     }
   </style>
 </head>
 <body>
   <header class="site-nav">
-    <nav class="nav-inner" aria-label="Main navigation">
+    <nav class="nav-inner">
       <a class="brand" href="./index.html">
-        <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" aria-hidden="true">
-          <path d="M8 14 L92 38 L30 92 Z"/>
-          <path d="M50 26 L61 62 L19 53 Z"/>
-          <path d="M29 20 L34 38 L13 33 Z"/>
-          <path d="M71 32 L76 50 L55 44 Z"/>
-          <path d="M40 58 L45 76 L24 71 Z"/>
-        </svg>
+        <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4"><path d="M8 14 L92 38 L30 92 Z"/><path d="M50 26 L61 62 L19 53 Z"/><path d="M29 20 L34 38 L13 33 Z"/><path d="M71 32 L76 50 L55 44 Z"/><path d="M40 58 L45 76 L24 71 Z"/></svg>
         <span class="brand-text"><b>SKRILLA HQ</b><span>EST. 2099</span></span>
       </a>
       <ul class="nav-links">
@@ -177,97 +131,68 @@
         <li><a href="./tour.html">TOUR</a></li>
         <li><a href="./merch.html">MERCH</a></li>
       </ul>
-      <a class="nav-cta" href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener noreferrer">LISTEN NOW</a>
-      <button class="hamburger" id="menu-btn" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mobile-menu">
-        <span></span><span></span>
-      </button>
+      <a class="nav-cta" href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener">LISTEN NOW</a>
+      <button class="hamburger" id="menu-btn" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
     </nav>
   </header>
   <div class="mobile-menu" id="mobile-menu">
-    <a class="mlink" href="./index.html" aria-current="page">HOME</a>
-    <a class="mlink" href="./music.html">MUSIC</a>
-    <a class="mlink" href="./videos.html">VIDEOS</a>
-    <a class="mlink" href="./tour.html">TOUR</a>
-    <a class="mlink" href="./merch.html">MERCH</a>
-    <a class="nav-cta" href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener noreferrer">LISTEN NOW</a>
+    <a href="./index.html">HOME</a><a href="./music.html">MUSIC</a><a href="./videos.html">VIDEOS</a><a href="./tour.html">TOUR</a><a href="./merch.html">MERCH</a>
   </div>
 
-  <main>
-    <section class="gallery" id="gallery" aria-label="SKRILLA circular gallery">
-      <div class="gallery-title">
-        <h1>SKRILLA HQ</h1>
-        <p>Drag or scroll to rotate <span>· EST. 2099</span></p>
+  <section class="gallery" id="gallery">
+    <div class="gallery-title">
+      <h1>SKRILLA HQ</h1>
+      <p>Drag to rotate the gallery <span>· EST. 2099</span></p>
+    </div>
+    <div class="stage" id="stage"><div class="ring" id="ring"></div></div>
+    <div class="hud">
+      <div class="hud-row">
+        <button class="nav-arrow" id="prev" type="button" aria-label="Previous">‹</button>
+        <div class="hud-index" id="hud-index">01 / 10</div>
+        <button class="nav-arrow" id="next" type="button" aria-label="Next">›</button>
       </div>
-      <div class="stage" id="stage">
-        <div class="ring" id="ring"></div>
-      </div>
-      <div class="hud">
-        <div class="hud-row">
-          <button class="nav-arrow" id="prev" type="button" aria-label="Previous">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg>
-          </button>
-          <div class="hud-index" id="hud-index">01 / 10</div>
-          <button class="nav-arrow" id="next" type="button" aria-label="Next">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
-          </button>
-        </div>
-        <a class="hud-cta" id="hud-cta" href="./music.html">Enter</a>
-        <div class="hint">DRAG · WHEEL · ARROWS</div>
-      </div>
-    </section>
-  </main>
+      <a class="hud-cta" id="hud-cta" href="./music.html">Enter</a>
+      <div class="hint">DRAG · WHEEL · ARROWS</div>
+    </div>
+  </section>
 
-  <footer class="site-footer">
+  <footer>
     <div class="foot-inner">
-      <div class="foot-brand">
-        <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" aria-hidden="true">
-          <path d="M8 14 L92 38 L30 92 Z"/>
-          <path d="M50 26 L61 62 L19 53 Z"/>
-          <path d="M29 20 L34 38 L13 33 Z"/>
-          <path d="M71 32 L76 50 L55 44 Z"/>
-          <path d="M40 58 L45 76 L24 71 Z"/>
-        </svg>
-        <b>SKRILLA HQ</b>
-      </div>
-      <nav class="foot-links" aria-label="Footer">
+      <b>SKRILLA HQ</b>
+      <nav class="foot-links">
         <a href="./music.html">MUSIC</a>
         <a href="./videos.html">VIDEOS</a>
         <a href="./tour.html">TOUR</a>
-        <a href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener noreferrer">SPOTIFY</a>
-        <a href="https://music.apple.com/ke/artist/skrilla/1448490073" target="_blank" rel="noopener noreferrer">APPLE MUSIC</a>
-        <a href="https://www.youtube.com/@jeshiyadago7380" target="_blank" rel="noopener noreferrer">YOUTUBE</a>
-        <a href="https://www.instagram.com/_skrillagram/" target="_blank" rel="noopener noreferrer">INSTAGRAM</a>
-        <a href="https://www.facebook.com/prince.j.sinclair" target="_blank" rel="noopener noreferrer">FACEBOOK</a>
-        <a href="https://wa.me/254703200940" target="_blank" rel="noopener noreferrer">WHATSAPP</a>
-        <a href="https://www.tiktok.com/@sinclairkahara?_r=1&amp;_t=ZS-9965ZLGKel5" target="_blank" rel="noopener noreferrer">TIKTOK</a>
+        <a href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener">SPOTIFY</a>
+        <a href="https://www.youtube.com/@jeshiyadago7380" target="_blank" rel="noopener">YOUTUBE</a>
       </nav>
       <p class="foot-legal">&copy; 2026 SKRILLA HQ</p>
     </div>
   </footer>
 
   <script>
-    (function(){
+    (function () {
       var ITEMS = [
-        { common:'SKRILLA', binomial:'Est. 2099 · Street Quantum Sound', href:'./music.html', cta:'Stream SKRILLA',
-          photo:{ url:'./IMG_0548.PNG', pos:'78% 18%' } },
+        { common:'SKRILLA', binomial:'Est. 2099', href:'./music.html', cta:'Stream SKRILLA',
+          srcs:['./IMG_0548.PNG','./portrait.jpg','./assets/portrait.jpg','./assets/portrait.png'] },
         { common:'#itriedcallingyou', binomial:'Studio album · 14 tracks', href:'./music.html', cta:'Play the album',
-          photo:{ url:'./album.jpg', pos:'50% 40%' } },
+          srcs:['./album.jpg','./assets/album.jpg'] },
         { common:'Kata Kichwa', binomial:'Official video · ft. Nuclear KE', href:'./videos.html', cta:'Watch the video',
-          photo:{ url:'./kata-kichwa.jpg', pos:'50% 45%' } },
+          srcs:['./kata-kichwa.jpg','./assets/kata-kichwa.jpg','https://i.ytimg.com/vi/Yi8hiVukJ8w/hqdefault.jpg'] },
         { common:'Siku Hizi', binomial:'Official music video', href:'./videos.html', cta:'Watch the video',
-          photo:{ url:'./siku-hizi.jpg', pos:'50% 45%' } },
+          srcs:['./siku-hizi.jpg','./assets/siku-hizi.jpg','https://i.ytimg.com/vi/H4ukHUZkJ_4/hqdefault.jpg'] },
         { common:'Lawama', binomial:'Official music video', href:'./videos.html', cta:'Watch the video',
-          photo:{ url:'./lawama.jpg', pos:'50% 40%' } },
+          srcs:['./lawama.jpg','./assets/lawama.jpg','https://i.ytimg.com/vi/zzKs1ozkZag/hqdefault.jpg'] },
         { common:'World Tour 2026', binomial:'Five cities · one signal', href:'./tour.html', cta:'Get tickets',
-          photo:{ url:'./tour.jpg', pos:'50% 35%' } },
+          srcs:['./tour.jpg','./assets/tour.jpg'] },
         { common:'London', binomial:'May 09 · The O2', href:'./tour.html', cta:'View dates',
-          photo:{ url:'./london.jpg', pos:'50% 40%' } },
+          srcs:['./london.jpg','./assets/london.jpg'] },
         { common:'Official Merch', binomial:'Tour jacket · hoodie · tee', href:'./merch.html', cta:'Shop the drop',
-          photo:{ url:'./merch.jpg', pos:'50% 35%' } },
+          srcs:['./merch.jpg','./assets/merch.jpg'] },
         { common:'The Booth', binomial:'Spotify & Apple Music', href:'./music.html', cta:'Open players',
-          photo:{ url:'./studio.jpg', pos:'50% 40%' } },
+          srcs:['./studio.jpg','./assets/studio.jpg'] },
         { common:'Jeshi ya Dago', binomial:'The visual archive', href:'https://www.youtube.com/@jeshiyadago7380', cta:'YouTube channel',
-          photo:{ url:'./dago.jpg', pos:'50% 40%' } }
+          srcs:['./dago.jpg','./assets/dago.jpg'] }
       ];
 
       var n = ITEMS.length;
@@ -276,150 +201,141 @@
       var hudIndex = document.getElementById('hud-index');
       var hudCta = document.getElementById('hud-cta');
       var cards = [];
-      var rot = 0, vel = 0, active = 0;
-      var dragging = false, lastX = 0, lastDx = 0, moved = 0, radiusPx = 420;
-      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var angle = 0, vel = 0, active = -1;
+      var dragging = false, lastX = 0, lastDx = 0, moved = 0;
 
-      ITEMS.forEach(function(item, i){
+      function bindImg(img, srcs) {
+        var i = 0;
+        img.decoding = 'async';
+        img.loading = 'eager';
+        img.onerror = function () {
+          i += 1;
+          if (i < srcs.length) img.src = srcs[i];
+        };
+        img.src = srcs[0];
+      }
+
+      ITEMS.forEach(function (item, i) {
         var a = document.createElement('a');
         a.className = 'card';
         a.href = item.href;
-        if (item.href.indexOf('http') === 0){ a.target = '_blank'; a.rel = 'noopener noreferrer'; }
-        a.setAttribute('data-index', String(i));
-        a.innerHTML =
-          '<div class="card-face">' +
-            '<img src="'+item.photo.url+'" alt="'+item.common+'" style="object-position:'+(item.photo.pos||'50% 40%')+'">' +
-            '<div class="card-meta"><h2>'+item.common+'</h2><em>'+item.binomial+'</em></div>' +
-          '</div>';
-        var img = a.querySelector('img');
-        img.addEventListener('error', function(){
-          if (this.dataset.fallback) return;
-          this.dataset.fallback = '1';
-          this.src = './portrait.jpg';
-        });
+        if (item.href.indexOf('http') === 0) { a.target = '_blank'; a.rel = 'noopener'; }
+        a.innerHTML = '<div class="card-face"><img alt="'+item.common+'"><div class="card-meta"><h2>'+item.common+'</h2><em>'+item.binomial+'</em></div></div>';
+        bindImg(a.querySelector('img'), item.srcs);
         ring.appendChild(a);
         cards.push(a);
-        a.addEventListener('click', function(e){
-          if (moved > 8){ e.preventDefault(); return; }
-          var idx = parseInt(a.getAttribute('data-index'), 10);
-          if (idx !== active){ e.preventDefault(); goTo(idx); }
+        a.addEventListener('click', function (e) {
+          if (moved > 6) { e.preventDefault(); return; }
+          if (i !== active) { e.preventDefault(); goTo(i); }
         });
       });
 
-      function radius(){
+      function radius() {
         var w = window.innerWidth, h = window.innerHeight;
-        var cardW = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-w')) || 240;
-        var fit = (cardW * 0.72) / Math.tan(Math.PI / n);
-        return Math.max(260, Math.min(fit, Math.min(w * 0.42, h * 0.46)));
+        return Math.max(160, Math.min(w * 0.34, h * 0.32, 380));
       }
 
-      function place(){
-        radiusPx = radius();
-        var step = 360 / n;
-        for (var i = 0; i < n; i++){
-          cards[i].style.transform = 'rotateY('+(i * step)+'deg) translateZ('+radiusPx.toFixed(1)+'px)';
-        }
+      function wrapIndex(v) {
+        return ((Math.round(v) % n) + n) % n;
       }
 
-      function setHud(i){
-        if (i === active && hudCta.dataset.ready) return;
-        if (cards[active]) cards[active].classList.remove('is-active');
+      function setHud(i) {
+        if (i === active) return;
+        if (active >= 0) cards[active].classList.remove('active');
         active = i;
-        cards[active].classList.add('is-active');
-        var item = ITEMS[active];
-        hudIndex.textContent = String(active + 1).padStart(2,'0') + ' / ' + String(n).padStart(2,'0');
+        cards[i].classList.add('active');
+        var item = ITEMS[i];
+        hudIndex.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
         hudCta.href = item.href;
         hudCta.textContent = item.cta;
-        hudCta.dataset.ready = '1';
-        if (item.href.indexOf('http') === 0){ hudCta.target = '_blank'; hudCta.rel = 'noopener noreferrer'; }
-        else { hudCta.removeAttribute('target'); hudCta.removeAttribute('rel'); }
+        if (item.href.indexOf('http') === 0) { hudCta.target = '_blank'; hudCta.rel = 'noopener'; }
+        else { hudCta.removeAttribute('target'); }
       }
 
-      function currentIndex(){
-        var step = 360 / n;
-        var x = ((-rot / step) % n + n) % n;
-        return Math.round(x) % n;
+      function render() {
+        var r = radius();
+        var step = (Math.PI * 2) / n;
+        for (var i = 0; i < n; i++) {
+          var a = step * i - angle;
+          var x = Math.sin(a) * r;
+          var depth = (Math.cos(a) + 1) / 2;
+          var scale = 0.52 + depth * 0.48;
+          var y = (1 - depth) * 18;
+          var card = cards[i];
+          card.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) scale(' + scale.toFixed(3) + ')';
+          card.style.opacity = (0.4 + depth * 0.6).toFixed(3);
+          card.style.zIndex = String(Math.round(depth * 100));
+        }
+        setHud(wrapIndex(angle / step));
       }
 
-      function goTo(i){
-        var step = 360 / n;
-        var cur = -rot / step;
-        var diff = ((i - cur) % n + n) % n;
-        if (diff > n / 2) diff -= n;
-        var dest = -(cur + diff) * step;
+      function goTo(i) {
+        var step = (Math.PI * 2) / n;
+        var cur = angle / step;
+        var diff = i - cur;
+        diff = diff - n * Math.round(diff / n);
         vel = 0;
-        rot = dest;
+        angle += diff * step;
       }
 
-      function tick(){
-        if (!dragging && !reduce){
-          vel *= 0.935;
-          if (Math.abs(vel) < 0.04){
+      function tick() {
+        if (!dragging) {
+          vel *= 0.94;
+          if (Math.abs(vel) < 0.0015) {
             vel = 0;
-            var step = 360 / n;
-            var snapped = Math.round(rot / step) * step;
-            rot += (snapped - rot) * 0.14;
+            var step = (Math.PI * 2) / n;
+            var snapped = Math.round(angle / step) * step;
+            angle += (snapped - angle) * 0.16;
           } else {
-            rot += vel;
+            angle += vel;
           }
         }
-        ring.style.transform = 'rotateX(-8deg) rotateY('+rot+'deg)';
-        setHud(currentIndex());
+        render();
         requestAnimationFrame(tick);
       }
 
-      stage.addEventListener('wheel', function(e){
-        e.preventDefault();
-        vel += e.deltaY * 0.045 + e.deltaX * 0.045;
-      }, {passive:false});
-
-      stage.addEventListener('pointerdown', function(e){
-        dragging = true; moved = 0; lastX = e.clientX; vel = 0;
-        stage.classList.add('is-dragging');
-        try{ stage.setPointerCapture(e.pointerId); }catch(err){}
+      stage.addEventListener('pointerdown', function (e) {
+        dragging = true; moved = 0; lastX = e.clientX; lastDx = 0; vel = 0;
+        stage.classList.add('dragging');
+        try { stage.setPointerCapture(e.pointerId); } catch (err) {}
       });
-      stage.addEventListener('pointermove', function(e){
+      stage.addEventListener('pointermove', function (e) {
         if (!dragging) return;
         var dx = e.clientX - lastX;
         lastX = e.clientX;
+        lastDx = dx;
         moved += Math.abs(dx);
-        rot += dx * 0.35;
+        angle += dx / Math.max(220, radius());
       });
-      function endDrag(e){
+      function endDrag() {
         if (!dragging) return;
         dragging = false;
-        stage.classList.remove('is-dragging');
-        if (e && e.clientX != null){
-          /* leftover motion from last delta is already in rot */
-        }
+        stage.classList.remove('dragging');
+        vel = lastDx / Math.max(220, radius());
+        lastDx = 0;
       }
       stage.addEventListener('pointerup', endDrag);
       stage.addEventListener('pointercancel', endDrag);
+      stage.addEventListener('wheel', function (e) {
+        e.preventDefault();
+        vel += (e.deltaY + e.deltaX) * 0.0016;
+      }, { passive: false });
 
-      document.getElementById('prev').addEventListener('click', function(){ goTo(active - 1); });
-      document.getElementById('next').addEventListener('click', function(){ goTo(active + 1); });
-      window.addEventListener('keydown', function(e){
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown'){ e.preventDefault(); goTo(active + 1); }
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp'){ e.preventDefault(); goTo(active - 1); }
+      document.getElementById('prev').onclick = function () { goTo(active - 1); };
+      document.getElementById('next').onclick = function () { goTo(active + 1); };
+      window.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goTo(active + 1); }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(active - 1); }
       });
-      window.addEventListener('resize', place);
 
       var btn = document.getElementById('menu-btn');
       var menu = document.getElementById('mobile-menu');
-      btn.addEventListener('click', function(){
+      btn.onclick = function () {
         var open = menu.classList.toggle('open');
         btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      });
-      menu.querySelectorAll('a').forEach(function(a){
-        a.addEventListener('click', function(){
-          menu.classList.remove('open');
-          btn.setAttribute('aria-expanded','false');
-        });
-      });
+      };
 
-      place();
-      setHud(0);
-      cards[0].classList.add('is-active');
+      render();
       requestAnimationFrame(tick);
     })();
   </script>
