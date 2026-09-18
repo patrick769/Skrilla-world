@@ -4,30 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#070708" />
-  <meta name="description" content="SKRILLA HQ — scroll the circular gallery for music, videos, tour dates and official merchandise." />
+  <meta name="description" content="SKRILLA HQ — music, videos, tour dates and official merchandise." />
   <title>SKRILLA HQ // Gallery</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M8 14 L92 38 L30 92 Z' fill='none' stroke='%23d9435c' stroke-width='7'/%3E%3C/svg%3E" />
   <style>
     :root{
-      --bg:#070708; --bg-2:#101012; --ink:#f5f5f7; --muted:#86868b;
+      --bg:#070708; --ink:#f5f5f7; --muted:#86868b;
       --red:#d9435c; --gold:#e8c4a4; --blue:#0071e3; --blue-h:#0077ed;
       --nav-h:48px; --ease:cubic-bezier(.22,.61,.36,1);
-      --card-w:260px; --card-h:360px;
+      --card-w:240px; --card-h:320px;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:auto}
     html,body{background:var(--bg);color:var(--ink)}
     body{
       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
-      -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
-      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;overflow-x:hidden;
     }
     a{color:inherit}
-    ::selection{background:rgba(217,67,92,.35)}
-    a:focus-visible,button:focus-visible{outline:3px solid rgba(0,113,227,.55);outline-offset:3px;border-radius:12px}
-    img{display:block;max-width:100%}
+    img{display:block}
 
-    /* ===== Nav ===== */
     .site-nav{
       position:fixed;inset:0 0 auto 0;z-index:1000;
       background:rgba(7,7,8,.55);
@@ -35,216 +30,135 @@
       border-bottom:1px solid rgba(255,255,255,.08);
     }
     .nav-inner{max-width:1100px;margin:0 auto;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 22px}
-    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
-    .brand svg{width:24px;height:24px;color:var(--ink);transition:color .3s ease}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .brand svg{width:24px;height:24px;transition:color .3s ease}
     .brand:hover svg{color:var(--red)}
     .brand-text{display:flex;flex-direction:column;line-height:1.15}
     .brand-text b{font-size:12.5px;font-weight:700;letter-spacing:.06em}
     .brand-text span{font-size:8.5px;font-weight:500;letter-spacing:.24em;color:var(--muted)}
     .nav-links{display:flex;align-items:center;gap:28px;list-style:none}
-    .nav-links a{font-size:12px;color:rgba(245,245,247,.72);text-decoration:none;letter-spacing:.04em;transition:color .3s ease}
-    .nav-links a:hover{color:#fff}
-    .nav-links a[aria-current="page"]{color:#fff;font-weight:600}
+    .nav-links a{font-size:12px;color:rgba(245,245,247,.72);text-decoration:none;letter-spacing:.04em}
+    .nav-links a:hover,.nav-links a[aria-current="page"]{color:#fff}
     .nav-cta{
       display:inline-flex;align-items:center;background:var(--blue);color:#fff;
       font-size:12px;font-weight:500;padding:5px 13px;border-radius:980px;text-decoration:none;
-      transition:background .3s ease;white-space:nowrap;
     }
     .nav-cta:hover{background:var(--blue-h)}
     .hamburger{display:none;background:none;border:0;cursor:pointer;padding:8px 6px;flex-direction:column;gap:5px}
-    .hamburger span{width:18px;height:1.5px;background:#fff;border-radius:2px;transition:transform .3s ease}
+    .hamburger span{width:18px;height:1.5px;background:#fff;border-radius:2px}
     .hamburger[aria-expanded="true"] span:first-child{transform:translateY(3.25px) rotate(45deg)}
     .hamburger[aria-expanded="true"] span:last-child{transform:translateY(-3.25px) rotate(-45deg)}
     .mobile-menu{
-      position:fixed;top:var(--nav-h);left:0;right:0;z-index:999;
-      background:rgba(7,7,8,.96);
-      -webkit-backdrop-filter:saturate(160%) blur(18px);backdrop-filter:saturate(160%) blur(18px);
-      border-bottom:1px solid rgba(255,255,255,.08);padding:6px 22px 20px;display:none;
+      position:fixed;top:var(--nav-h);left:0;right:0;z-index:999;display:none;
+      background:rgba(7,7,8,.96);padding:6px 22px 20px;border-bottom:1px solid rgba(255,255,255,.08);
     }
     .mobile-menu.open{display:block}
-    .mobile-menu a.mlink{display:block;padding:15px 0;font-size:17px;color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08)}
+    .mobile-menu a.mlink{display:block;padding:15px 0;font-size:17px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08)}
     .mobile-menu .nav-cta{margin-top:16px;padding:10px 22px;font-size:14px}
     @media (max-width:833px){
       .nav-links,.nav-inner > .nav-cta{display:none}
       .hamburger{display:inline-flex}
     }
 
-    /* ===== Circular gallery (21st.dev pattern) ===== */
-    .gallery-scroll{
-      height:500vh;
-      background:radial-gradient(1200px 700px at 50% 42%, #1a1214 0%, var(--bg) 58%);
-    }
-    .gallery-sticky{
-      position:sticky;top:0;
-      height:100vh;height:100svh;
+    .gallery{
+      position:relative;height:100vh;height:100svh;
       overflow:hidden;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:radial-gradient(900px 520px at 50% 45%, #1c1416 0%, var(--bg) 62%);
     }
-    .gallery-sticky::before,
-    .gallery-sticky::after{
-      content:"";position:absolute;pointer-events:none;z-index:4;
-    }
-    .gallery-sticky::before{
-      inset:0 auto auto 0;width:100%;height:28%;
-      background:linear-gradient(180deg,rgba(7,7,8,.92),transparent);
-    }
-    .gallery-sticky::after{
-      inset:auto 0 0 0;height:26%;
-      background:linear-gradient(0deg,rgba(7,7,8,.92),transparent);
-    }
-
     .gallery-title{
-      position:absolute;top:calc(var(--nav-h) + 22px);left:0;right:0;z-index:8;
+      position:absolute;top:calc(var(--nav-h) + 18px);left:0;right:0;z-index:5;
       text-align:center;pointer-events:none;
     }
-    .gallery-title h1{
-      font-size:clamp(28px,4.4vw,44px);font-weight:700;letter-spacing:-.03em;line-height:1.05;
-    }
-    .gallery-title p{
-      margin-top:8px;font-size:15px;color:var(--muted);letter-spacing:.02em;
-    }
+    .gallery-title h1{font-size:clamp(28px,4.4vw,44px);font-weight:700;letter-spacing:-.03em}
+    .gallery-title p{margin-top:8px;font-size:15px;color:var(--muted)}
     .gallery-title p span{color:var(--gold)}
 
     .stage{
-      position:relative;width:100%;height:100%;
-      perspective:1600px;perspective-origin:50% 46%;
-      cursor:grab;touch-action:none;
+      position:absolute;inset:0;
+      perspective:1100px;perspective-origin:50% 48%;
+      cursor:grab;touch-action:none;user-select:none;
     }
     .stage.is-dragging{cursor:grabbing}
-    .world{
-      position:absolute;inset:0;
+    .ring{
+      position:absolute;left:50%;top:54%;
+      width:0;height:0;
       transform-style:preserve-3d;
-      transform:rotateX(16deg);
+      will-change:transform;
     }
-    .orbit{
-      position:absolute;left:50%;top:52%;
-      width:min(78vw,820px);height:min(28vw,300px);
-      transform:translate(-50%,-50%) rotateX(78deg);
-      border:1px solid rgba(232,196,164,.12);
-      border-radius:50%;
-      box-shadow:0 0 80px rgba(217,67,92,.12), inset 0 0 60px rgba(0,0,0,.45);
-      pointer-events:none;
-    }
-    .ring{position:absolute;inset:0;transform-style:preserve-3d}
-
     .card{
-      position:absolute;left:50%;top:50%;
+      position:absolute;left:0;top:0;
       width:var(--card-w);height:var(--card-h);
       margin-left:calc(var(--card-w) / -2);
-      margin-top:calc(var(--card-h) / -2 - 8px);
+      margin-top:calc(var(--card-h) / -2);
       transform-style:preserve-3d;
-      transform-origin:center center;
-      will-change:transform,opacity,filter;
-      border:0;background:transparent;padding:0;color:inherit;
-      text-align:left;text-decoration:none;display:block;
-      -webkit-tap-highlight-color:transparent;
+      -webkit-backface-visibility:hidden;backface-visibility:hidden;
+      text-decoration:none;color:inherit;
     }
     .card-face{
-      position:relative;width:100%;height:100%;
-      border-radius:22px;overflow:hidden;
-      background:#111;
-      box-shadow:0 18px 40px rgba(0,0,0,.45);
-      border:1px solid rgba(255,255,255,.1);
-      transition:box-shadow .4s var(--ease), border-color .4s ease;
+      width:100%;height:100%;border-radius:18px;overflow:hidden;
+      background:#161616;
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 16px 40px rgba(0,0,0,.45);
     }
     .card.is-active .card-face{
       border-color:rgba(232,196,164,.55);
-      box-shadow:0 28px 70px rgba(0,0,0,.6), 0 0 0 1px rgba(217,67,92,.35), 0 0 42px rgba(217,67,92,.18);
+      box-shadow:0 22px 50px rgba(0,0,0,.55), 0 0 28px rgba(217,67,92,.2);
     }
     .card img{
       width:100%;height:100%;object-fit:cover;
-      filter:saturate(.92);
+      background:#1a1a1a;
     }
     .card-meta{
       position:absolute;left:0;right:0;bottom:0;
-      padding:48px 16px 16px;
-      background:linear-gradient(180deg,transparent,rgba(0,0,0,.88) 70%);
-      color:#fff;
+      padding:42px 14px 14px;
+      background:linear-gradient(180deg,transparent,rgba(0,0,0,.9) 72%);
     }
-    .card-meta h2{
-      font-size:18px;font-weight:700;letter-spacing:-.02em;line-height:1.15;
-    }
-    .card-meta em{
-      display:block;margin-top:4px;font-size:12px;font-style:italic;color:rgba(232,196,164,.9);
-    }
-    .card-meta small{
-      display:block;margin-top:8px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55);
-    }
+    .card-meta h2{font-size:16px;font-weight:700;letter-spacing:-.02em}
+    .card-meta em{display:block;margin-top:4px;font-size:12px;font-style:italic;color:var(--gold)}
 
     .hud{
-      position:absolute;bottom:28px;left:0;right:0;z-index:9;
+      position:absolute;bottom:22px;left:0;right:0;z-index:6;
       display:flex;flex-direction:column;align-items:center;gap:12px;
       pointer-events:none;
     }
-    .hud-index{
-      font-size:11px;font-weight:600;letter-spacing:.28em;color:var(--muted);
+    .hud-row{display:flex;align-items:center;gap:14px;pointer-events:auto}
+    .nav-arrow{
+      width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.2);
+      background:rgba(255,255,255,.06);color:#fff;cursor:pointer;
+      display:inline-flex;align-items:center;justify-content:center;
     }
+    .nav-arrow:hover{background:rgba(255,255,255,.14)}
+    .nav-arrow svg{width:16px;height:16px}
+    .hud-index{font-size:11px;font-weight:600;letter-spacing:.28em;color:var(--muted);min-width:72px;text-align:center}
     .hud-cta{
       pointer-events:auto;
       display:inline-flex;align-items:center;gap:8px;
       padding:11px 20px;border-radius:980px;
       background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
-      color:#fff;text-decoration:none;font-size:14px;font-weight:500;
-      -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
-      transition:background .3s ease,border-color .3s ease,transform .2s ease;
+      color:#fff;text-decoration:none;font-size:14px;
     }
-    .hud-cta:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4)}
-    .hud-cta:active{transform:scale(.97)}
-    .hud-cta svg{width:12px;height:12px}
-    .scroll-hint{
-      display:flex;align-items:center;gap:8px;
-      font-size:10px;letter-spacing:.22em;color:rgba(255,255,255,.4);
-    }
-    .mouse{
-      width:16px;height:24px;border:1px solid rgba(255,255,255,.35);border-radius:10px;position:relative;
-    }
-    .mouse::after{
-      content:"";position:absolute;left:50%;top:5px;width:2px;height:6px;margin-left:-1px;border-radius:2px;
-      background:var(--gold);animation:wheel 1.4s var(--ease) infinite;
-    }
-    @keyframes wheel{
-      0%{opacity:1;transform:translateY(0)}
-      100%{opacity:0;transform:translateY(7px)}
-    }
+    .hud-cta:hover{background:rgba(255,255,255,.16)}
+    .hint{font-size:10px;letter-spacing:.22em;color:rgba(255,255,255,.38)}
 
-    .dots{
-      position:absolute;right:22px;top:50%;z-index:8;transform:translateY(-50%);
-      display:flex;flex-direction:column;gap:8px;
-    }
-    .dots button{
-      width:7px;height:7px;border-radius:50%;border:0;padding:0;cursor:pointer;
-      background:rgba(255,255,255,.22);transition:transform .3s ease, background .3s ease;
-    }
-    .dots button.is-on{background:var(--gold);transform:scale(1.45)}
-
-    footer.site-footer{
-      background:#0b0b0d;border-top:1px solid rgba(255,255,255,.08);
-    }
+    footer.site-footer{background:#0b0b0d;border-top:1px solid rgba(255,255,255,.08)}
     .foot-inner{max-width:1100px;margin:0 auto;padding:40px 22px 48px}
     .foot-brand{display:flex;align-items:center;gap:10px}
     .foot-brand svg{width:26px;height:26px}
-    .foot-brand b{font-size:17px;font-weight:600;letter-spacing:.03em}
+    .foot-brand b{font-size:17px;font-weight:600}
     .foot-links{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px 26px}
     .foot-links a{font-size:12px;color:#a1a1a6;text-decoration:none}
     .foot-links a:hover{color:#fff;text-decoration:underline}
     .foot-legal{margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:#6e6e73}
 
     @media (max-width:734px){
-      :root{--card-w:188px;--card-h:262px}
-      .gallery-title{top:calc(var(--nav-h) + 14px)}
-      .hud{bottom:18px}
-      .dots{display:none}
-      .card-meta h2{font-size:15px}
-    }
-    @media (prefers-reduced-motion:reduce){
-      .mouse::after{animation:none}
-      .card,.card-face{transition:none}
+      :root{--card-w:176px;--card-h:236px}
+      .gallery-title{top:calc(var(--nav-h) + 12px)}
+      .hud{bottom:14px}
     }
   </style>
 </head>
-<body data-page="home">
-
-  <header class="site-nav" id="site-nav">
+<body>
+  <header class="site-nav">
     <nav class="nav-inner" aria-label="Main navigation">
       <a class="brand" href="./index.html">
         <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" aria-hidden="true">
@@ -254,10 +168,7 @@
           <path d="M71 32 L76 50 L55 44 Z"/>
           <path d="M40 58 L45 76 L24 71 Z"/>
         </svg>
-        <span class="brand-text">
-          <b>SKRILLA HQ</b>
-          <span>EST. 2099</span>
-        </span>
+        <span class="brand-text"><b>SKRILLA HQ</b><span>EST. 2099</span></span>
       </a>
       <ul class="nav-links">
         <li><a href="./index.html" aria-current="page">HOME</a></li>
@@ -272,7 +183,6 @@
       </button>
     </nav>
   </header>
-
   <div class="mobile-menu" id="mobile-menu">
     <a class="mlink" href="./index.html" aria-current="page">HOME</a>
     <a class="mlink" href="./music.html">MUSIC</a>
@@ -283,27 +193,26 @@
   </div>
 
   <main>
-    <section class="gallery-scroll" id="circular-gallery" aria-label="SKRILLA circular gallery">
-      <div class="gallery-sticky">
-        <div class="gallery-title">
-          <h1>SKRILLA HQ</h1>
-          <p>Scroll to rotate the gallery <span>· EST. 2099</span></p>
+    <section class="gallery" id="gallery" aria-label="SKRILLA circular gallery">
+      <div class="gallery-title">
+        <h1>SKRILLA HQ</h1>
+        <p>Drag or scroll to rotate <span>· EST. 2099</span></p>
+      </div>
+      <div class="stage" id="stage">
+        <div class="ring" id="ring"></div>
+      </div>
+      <div class="hud">
+        <div class="hud-row">
+          <button class="nav-arrow" id="prev" type="button" aria-label="Previous">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3 5 8l5 5"/></svg>
+          </button>
+          <div class="hud-index" id="hud-index">01 / 10</div>
+          <button class="nav-arrow" id="next" type="button" aria-label="Next">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
+          </button>
         </div>
-
-        <div class="stage" id="stage">
-          <div class="world">
-            <div class="orbit" aria-hidden="true"></div>
-            <div class="ring" id="ring"></div>
-          </div>
-        </div>
-
-        <div class="dots" id="dots" aria-hidden="true"></div>
-
-        <div class="hud">
-          <div class="hud-index" id="hud-index">01 / 04</div>
-          <a class="hud-cta" id="hud-cta" href="./music.html">Enter <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"/></svg></a>
-          <div class="scroll-hint"><span class="mouse" aria-hidden="true"></span> SCROLL</div>
-        </div>
+        <a class="hud-cta" id="hud-cta" href="./music.html">Enter</a>
+        <div class="hint">DRAG · WHEEL · ARROWS</div>
       </div>
     </section>
   </main>
@@ -338,180 +247,162 @@
 
   <script>
     (function(){
-      /* Site art only. YouTube thumbs are the official video templates.
-         Drop more files in ./assets and copy an entry below to add cards. */
       var ITEMS = [
         { common:'SKRILLA', binomial:'Est. 2099 · Street Quantum Sound', href:'./music.html', cta:'Stream SKRILLA',
-          photo:{ url:'./IMG_0548.PNG', text:'SKRILLA', pos:'78% 18%', by:'SKRILLA HQ' } },
+          photo:{ url:'./IMG_0548.PNG', pos:'78% 18%' } },
+        { common:'#itriedcallingyou', binomial:'Studio album · 14 tracks', href:'./music.html', cta:'Play the album',
+          photo:{ url:'./album.jpg', pos:'50% 40%' } },
         { common:'Kata Kichwa', binomial:'Official video · ft. Nuclear KE', href:'./videos.html', cta:'Watch the video',
-          photo:{ url:'https://i.ytimg.com/vi/Yi8hiVukJ8w/maxresdefault.jpg', text:'Kata Kichwa — SKRILLA ft. Nuclear KE', pos:'50% 50%', by:'Jeshi ya Dago' } },
+          photo:{ url:'./kata-kichwa.jpg', pos:'50% 45%' } },
         { common:'Siku Hizi', binomial:'Official music video', href:'./videos.html', cta:'Watch the video',
-          photo:{ url:'https://i.ytimg.com/vi/H4ukHUZkJ_4/maxresdefault.jpg', text:'Siku Hizi — SKRILLA', pos:'50% 50%', by:'Jeshi ya Dago' } },
+          photo:{ url:'./siku-hizi.jpg', pos:'50% 45%' } },
         { common:'Lawama', binomial:'Official music video', href:'./videos.html', cta:'Watch the video',
-          photo:{ url:'https://i.ytimg.com/vi/zzKs1ozkZag/maxresdefault.jpg', text:'Lawama — SKRILLA', pos:'50% 50%', by:'Jeshi ya Dago' } }
-        // { common:'#itriedcallingyou', binomial:'Studio album · 14 tracks', href:'./music.html', cta:'Play the album',
-        //   photo:{ url:'./assets/album.jpg', text:'#itriedcallingyou', pos:'50% 40%', by:'SKRILLA HQ' } },
-        // { common:'World Tour 2026', binomial:'Five cities · one signal', href:'./tour.html', cta:'Get tickets',
-        //   photo:{ url:'./assets/tour.jpg', text:'World Tour 2026', pos:'50% 40%', by:'SKRILLA HQ' } },
-        // { common:'Official Merch', binomial:'Tour jacket · hoodie · tee', href:'./merch.html', cta:'Shop the drop',
-        //   photo:{ url:'./assets/merch.jpg', text:'Official merch', pos:'50% 40%', by:'SKRILLA HQ' } }
+          photo:{ url:'./lawama.jpg', pos:'50% 40%' } },
+        { common:'World Tour 2026', binomial:'Five cities · one signal', href:'./tour.html', cta:'Get tickets',
+          photo:{ url:'./tour.jpg', pos:'50% 35%' } },
+        { common:'London', binomial:'May 09 · The O2', href:'./tour.html', cta:'View dates',
+          photo:{ url:'./london.jpg', pos:'50% 40%' } },
+        { common:'Official Merch', binomial:'Tour jacket · hoodie · tee', href:'./merch.html', cta:'Shop the drop',
+          photo:{ url:'./merch.jpg', pos:'50% 35%' } },
+        { common:'The Booth', binomial:'Spotify & Apple Music', href:'./music.html', cta:'Open players',
+          photo:{ url:'./studio.jpg', pos:'50% 40%' } },
+        { common:'Jeshi ya Dago', binomial:'The visual archive', href:'https://www.youtube.com/@jeshiyadago7380', cta:'YouTube channel',
+          photo:{ url:'./dago.jpg', pos:'50% 40%' } }
       ];
 
       var n = ITEMS.length;
       var ring = document.getElementById('ring');
       var stage = document.getElementById('stage');
-      var dotsWrap = document.getElementById('dots');
       var hudIndex = document.getElementById('hud-index');
       var hudCta = document.getElementById('hud-cta');
+      var cards = [];
+      var rot = 0, vel = 0, active = 0;
+      var dragging = false, lastX = 0, lastDx = 0, moved = 0, radiusPx = 420;
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      var cards = [];
-      var dotBtns = [];
       ITEMS.forEach(function(item, i){
         var a = document.createElement('a');
         a.className = 'card';
         a.href = item.href;
         if (item.href.indexOf('http') === 0){ a.target = '_blank'; a.rel = 'noopener noreferrer'; }
         a.setAttribute('data-index', String(i));
-        a.setAttribute('aria-label', item.common + ' — ' + item.binomial);
         a.innerHTML =
           '<div class="card-face">' +
-            '<img src="'+item.photo.url+'" alt="'+item.photo.text+'" style="object-position:'+(item.photo.pos||'50% 40%')+'" />' +
-            '<div class="card-meta">' +
-              '<h2>'+item.common+'</h2>' +
-              '<em>'+item.binomial+'</em>' +
-              '<small>Photo by: '+item.photo.by+'</small>' +
-            '</div>' +
+            '<img src="'+item.photo.url+'" alt="'+item.common+'" style="object-position:'+(item.photo.pos||'50% 40%')+'">' +
+            '<div class="card-meta"><h2>'+item.common+'</h2><em>'+item.binomial+'</em></div>' +
           '</div>';
+        var img = a.querySelector('img');
+        img.addEventListener('error', function(){
+          if (this.dataset.fallback) return;
+          this.dataset.fallback = '1';
+          this.src = './portrait.jpg';
+        });
         ring.appendChild(a);
         cards.push(a);
-
-        var d = document.createElement('button');
-        d.type = 'button';
-        d.setAttribute('aria-label', 'Show ' + item.common);
-        d.addEventListener('click', function(){ goTo(i); });
-        dotsWrap.appendChild(d);
-        dotBtns.push(d);
-      });
-
-      var rot = 0, target = 0, active = 0;
-      var dragging = false, lastX = 0, lastY = 0, moved = 0;
-
-      function sectionMax(){
-        var el = document.getElementById('circular-gallery');
-        return Math.max(1, el.offsetHeight - window.innerHeight);
-      }
-      function scrollProgress(){
-        var el = document.getElementById('circular-gallery');
-        var top = el.getBoundingClientRect().top + window.scrollY;
-        var p = (window.scrollY - top) / sectionMax();
-        return Math.min(1, Math.max(0, p));
-      }
-      function radius(){
-        var w = window.innerWidth, h = window.innerHeight;
-        var cardW = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-w')) || 260;
-        var tight = (cardW * 0.58) / Math.tan(Math.PI / n);
-        return Math.min(Math.max(tight, 300), Math.min(w, h) * 0.42);
-      }
-      function shortest(deg){
-        var x = ((deg % 360) + 360) % 360;
-        if (x > 180) x -= 360;
-        return x;
-      }
-      function layout(immediate){
-        target = scrollProgress() * 360;
-        if (immediate || reduce) rot = target;
-        else rot += (target - rot) * 0.12;
-
-        var r = radius();
-        var step = 360 / n;
-        var best = 0, bestAbs = 999;
-        for (var i = 0; i < n; i++){
-          var rel = shortest(i * step - rot);
-          var rad = rel * Math.PI / 180;
-          var x = Math.sin(rad) * r;
-          var z = Math.cos(rad) * r;
-          var depth = (Math.cos(rad) + 1) / 2;
-          var scale = 0.58 + depth * 0.42;
-          var y = (1 - depth) * 16;
-          var opacity = 0.22 + Math.pow(depth, 1.15) * 0.78;
-          var bright = 0.45 + depth * 0.55;
-          var yaw = -rel * 0.22;
-          cards[i].style.transform = 'translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px) rotateX(-16deg) rotateY('+yaw.toFixed(2)+'deg) scale('+scale.toFixed(3)+')';
-          cards[i].style.opacity = opacity.toFixed(3);
-          cards[i].style.filter = 'brightness('+bright.toFixed(3)+')';
-          cards[i].style.zIndex = String(Math.round(depth * 100));
-          var abs = Math.abs(rel);
-          if (abs < bestAbs){ bestAbs = abs; best = i; }
-        }
-        if (best !== active){
-          if (cards[active]) cards[active].classList.remove('is-active');
-          if (dotBtns[active]) dotBtns[active].classList.remove('is-on');
-          active = best;
-          cards[active].classList.add('is-active');
-          dotBtns[active].classList.add('is-on');
-          var item = ITEMS[active];
-          hudIndex.textContent = String(active + 1).padStart(2,'0') + ' / ' + String(n).padStart(2,'0');
-          hudCta.href = item.href;
-          hudCta.innerHTML = item.cta + ' <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"/></svg>';
-          if (item.href.indexOf('http') === 0){ hudCta.target = '_blank'; hudCta.rel = 'noopener noreferrer'; }
-          else { hudCta.removeAttribute('target'); hudCta.removeAttribute('rel'); }
-        }
-      }
-
-      function goTo(i){
-        var el = document.getElementById('circular-gallery');
-        var top = el.getBoundingClientRect().top + window.scrollY;
-        var p = ((i % n) + n) % n / n;
-        window.scrollTo({ top: top + p * sectionMax(), behavior: reduce ? 'auto' : 'smooth' });
-      }
-
-      var ticking = false;
-      function onScroll(){
-        if (!ticking){
-          ticking = true;
-          requestAnimationFrame(function(){ layout(false); ticking = false; });
-        }
-      }
-      window.addEventListener('scroll', onScroll, {passive:true});
-      window.addEventListener('resize', function(){ layout(true); });
-
-      (function loop(){
-        if (!reduce){
-          if (Math.abs(target - rot) > 0.02) layout(false);
-        }
-        requestAnimationFrame(loop);
-      })();
-
-      cards.forEach(function(card){
-        card.addEventListener('click', function(e){
-          var i = parseInt(card.getAttribute('data-index'), 10);
+        a.addEventListener('click', function(e){
           if (moved > 8){ e.preventDefault(); return; }
-          if (i !== active){ e.preventDefault(); goTo(i); }
+          var idx = parseInt(a.getAttribute('data-index'), 10);
+          if (idx !== active){ e.preventDefault(); goTo(idx); }
         });
       });
 
+      function radius(){
+        var w = window.innerWidth, h = window.innerHeight;
+        var cardW = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-w')) || 240;
+        var fit = (cardW * 0.72) / Math.tan(Math.PI / n);
+        return Math.max(260, Math.min(fit, Math.min(w * 0.42, h * 0.46)));
+      }
+
+      function place(){
+        radiusPx = radius();
+        var step = 360 / n;
+        for (var i = 0; i < n; i++){
+          cards[i].style.transform = 'rotateY('+(i * step)+'deg) translateZ('+radiusPx.toFixed(1)+'px)';
+        }
+      }
+
+      function setHud(i){
+        if (i === active && hudCta.dataset.ready) return;
+        if (cards[active]) cards[active].classList.remove('is-active');
+        active = i;
+        cards[active].classList.add('is-active');
+        var item = ITEMS[active];
+        hudIndex.textContent = String(active + 1).padStart(2,'0') + ' / ' + String(n).padStart(2,'0');
+        hudCta.href = item.href;
+        hudCta.textContent = item.cta;
+        hudCta.dataset.ready = '1';
+        if (item.href.indexOf('http') === 0){ hudCta.target = '_blank'; hudCta.rel = 'noopener noreferrer'; }
+        else { hudCta.removeAttribute('target'); hudCta.removeAttribute('rel'); }
+      }
+
+      function currentIndex(){
+        var step = 360 / n;
+        var x = ((-rot / step) % n + n) % n;
+        return Math.round(x) % n;
+      }
+
+      function goTo(i){
+        var step = 360 / n;
+        var cur = -rot / step;
+        var diff = ((i - cur) % n + n) % n;
+        if (diff > n / 2) diff -= n;
+        var dest = -(cur + diff) * step;
+        vel = 0;
+        rot = dest;
+      }
+
+      function tick(){
+        if (!dragging && !reduce){
+          vel *= 0.935;
+          if (Math.abs(vel) < 0.04){
+            vel = 0;
+            var step = 360 / n;
+            var snapped = Math.round(rot / step) * step;
+            rot += (snapped - rot) * 0.14;
+          } else {
+            rot += vel;
+          }
+        }
+        ring.style.transform = 'rotateX(-8deg) rotateY('+rot+'deg)';
+        setHud(currentIndex());
+        requestAnimationFrame(tick);
+      }
+
+      stage.addEventListener('wheel', function(e){
+        e.preventDefault();
+        vel += e.deltaY * 0.045 + e.deltaX * 0.045;
+      }, {passive:false});
+
       stage.addEventListener('pointerdown', function(e){
-        dragging = true; moved = 0; lastX = e.clientX; lastY = e.clientY;
+        dragging = true; moved = 0; lastX = e.clientX; vel = 0;
         stage.classList.add('is-dragging');
         try{ stage.setPointerCapture(e.pointerId); }catch(err){}
       });
       stage.addEventListener('pointermove', function(e){
         if (!dragging) return;
         var dx = e.clientX - lastX;
-        var dy = e.clientY - lastY;
-        lastX = e.clientX; lastY = e.clientY;
-        moved += Math.abs(dx) + Math.abs(dy);
-        window.scrollBy(0, dy - dx * 0.85);
+        lastX = e.clientX;
+        moved += Math.abs(dx);
+        rot += dx * 0.35;
       });
-      function endDrag(){ dragging = false; stage.classList.remove('is-dragging'); }
+      function endDrag(e){
+        if (!dragging) return;
+        dragging = false;
+        stage.classList.remove('is-dragging');
+        if (e && e.clientX != null){
+          /* leftover motion from last delta is already in rot */
+        }
+      }
       stage.addEventListener('pointerup', endDrag);
       stage.addEventListener('pointercancel', endDrag);
 
+      document.getElementById('prev').addEventListener('click', function(){ goTo(active - 1); });
+      document.getElementById('next').addEventListener('click', function(){ goTo(active + 1); });
       window.addEventListener('keydown', function(e){
         if (e.key === 'ArrowRight' || e.key === 'ArrowDown'){ e.preventDefault(); goTo(active + 1); }
         if (e.key === 'ArrowLeft' || e.key === 'ArrowUp'){ e.preventDefault(); goTo(active - 1); }
       });
+      window.addEventListener('resize', place);
 
       var btn = document.getElementById('menu-btn');
       var menu = document.getElementById('mobile-menu');
@@ -526,9 +417,10 @@
         });
       });
 
+      place();
+      setHud(0);
       cards[0].classList.add('is-active');
-      dotBtns[0].classList.add('is-on');
-      layout(true);
+      requestAnimationFrame(tick);
     })();
   </script>
 </body>
