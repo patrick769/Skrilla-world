@@ -1,345 +1,890 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<title>SKRILLA HQ</title>
-<style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{width:100%;background:#000;color:#fff;font-family:"Helvetica Neue",Arial,sans-serif;overflow-x:hidden}
-  body{height:500vh} /* scroll runway */
-  #c{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
-  #overlay{position:fixed;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;
-    flex-direction:column;pointer-events:none;will-change:opacity,transform}
-  #overlay h1{font-size:clamp(28px,7vw,86px);letter-spacing:.32em;font-weight:200;
-    text-shadow:0 0 22px rgba(160,120,255,.85),0 0 60px rgba(80,120,255,.45)}
-  #overlay p{margin-top:18px;font-size:clamp(9px,1.4vw,13px);letter-spacing:.55em;opacity:.55}
-  #scrollhint{position:fixed;bottom:26px;left:0;right:0;text-align:center;z-index:3;font-size:10px;
-    letter-spacing:.45em;opacity:.4;pointer-events:none}
-  #loader{position:fixed;inset:0;z-index:10;background:#000;display:flex;align-items:center;
-    justify-content:center;flex-direction:column;transition:opacity .9s ease}
-  #loader.hide{opacity:0;pointer-events:none}
-  #loader .lbl{font-size:11px;letter-spacing:.5em;opacity:.6;margin-bottom:16px}
-  #bar{width:min(280px,60vw);height:1px;background:#222;overflow:hidden}
-  #bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#7a5cff,#37b6ff);transition:width .25s}
-  #nav{position:fixed;top:0;left:0;right:0;z-index:4;display:flex;align-items:center;
-    justify-content:space-between;padding:22px clamp(18px,4vw,48px);
-    mix-blend-mode:screen;transition:opacity .4s ease}
-  #nav .brand{font-size:11px;letter-spacing:.42em;opacity:.75;font-weight:300}
-  #nav ul{list-style:none;display:flex;gap:clamp(14px,2.6vw,34px)}
-  #nav a{color:#fff;text-decoration:none;font-size:10px;letter-spacing:.34em;opacity:.55;
-    position:relative;padding-bottom:5px;transition:opacity .25s,text-shadow .25s}
-  #nav a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;
-    background:linear-gradient(90deg,#7a5cff,#37b6ff);transition:width .3s ease}
-  #nav a:hover{opacity:1;text-shadow:0 0 14px rgba(150,120,255,.9)}
-  #nav a:hover::after{width:100%}
-  @media(max-width:520px){#nav{flex-direction:column;gap:12px}#nav ul{gap:14px}}
-  #vig{position:fixed;inset:0;z-index:2;pointer-events:none;
-    background:radial-gradient(ellipse at center,rgba(0,0,0,0) 45%,rgba(0,0,0,.85) 100%)}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#050207" />
+  <meta name="description" content="SKRILLA HQ — born of culture, born of Dagoretti." />
+  <title>SKRILLA HQ — Born of Culture</title>
+  <style>
+    :root {
+      --ink: #f4f0f7;
+      --muted: rgba(244, 240, 247, .53);
+      --faint: rgba(244, 240, 247, .22);
+      --line: rgba(244, 240, 247, .16);
+      --purple: #8e35db;
+      --violet: #bc7bff;
+      --night: #050207;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--night); }
+    body {
+      margin: 0;
+      min-height: 620vh;
+      overflow-x: hidden;
+      color: var(--ink);
+      background: var(--night);
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+
+    /* The entire film is pinned while the page gives the scroll room its pace. */
+    #film,
+    #c,
+    .screen-layer,
+    #grain,
+    #scanlines {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #film { z-index: 0; overflow: hidden; background: #050207; }
+    #c { display: block; z-index: 0; outline: none; }
+    .screen-layer { pointer-events: none; }
+
+    #purple-wash {
+      z-index: 1;
+      opacity: 0;
+      background:
+        radial-gradient(ellipse at 50% 47%, rgba(187, 92, 255, .96) 0%, rgba(121, 35, 183, .9) 25%, rgba(51, 9, 74, .93) 61%, rgba(8, 2, 13, .98) 100%),
+        #2d0745;
+      mix-blend-mode: screen;
+      transform: scale(1.06);
+      transition: opacity .16s linear;
+    }
+
+    #room-fade {
+      z-index: 2;
+      background: radial-gradient(ellipse at center, transparent 22%, rgba(1, 0, 3, .24) 62%, rgba(0, 0, 0, .79) 100%);
+    }
+
+    #vignette {
+      z-index: 3;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, .42) 76%, rgba(0, 0, 0, .9) 115%);
+    }
+
+    #grain {
+      z-index: 20;
+      opacity: .105;
+      pointer-events: none;
+      mix-blend-mode: soft-light;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.92'/%3E%3C/svg%3E");
+      animation: grain .18s steps(2) infinite;
+    }
+
+    #scanlines {
+      z-index: 19;
+      opacity: .055;
+      pointer-events: none;
+      background: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, rgba(255, 255, 255, .08) 4px);
+      mix-blend-mode: overlay;
+    }
+
+    @keyframes grain {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(2%, -1%); }
+      50% { transform: translate(-1%, 2%); }
+      75% { transform: translate(1%, 1%); }
+      100% { transform: translate(-2%, -2%); }
+    }
+
+    .topbar,
+    .side-note,
+    .progress-ui,
+    .scroll-cue,
+    .end-card,
+    .loader {
+      position: fixed;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .topbar {
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 90px;
+      padding: 27px clamp(20px, 4vw, 62px);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: start;
+      gap: 20px;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-size: 9px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 10px;
+      letter-spacing: .34em;
+      font-weight: 600;
+    }
+
+    .brand-mark {
+      width: 7px;
+      height: 7px;
+      display: inline-block;
+      border-radius: 50%;
+      background: var(--violet);
+      box-shadow: 0 0 18px 5px rgba(167, 80, 255, .72);
+    }
+
+    .location {
+      color: var(--muted);
+      text-align: center;
+      white-space: nowrap;
+      letter-spacing: .22em;
+    }
+
+    .top-links {
+      justify-self: end;
+      display: flex;
+      gap: clamp(15px, 2.4vw, 34px);
+    }
+
+    .top-links a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .35s ease, text-shadow .35s ease;
+      pointer-events: auto;
+    }
+
+    .top-links a:hover,
+    .top-links a:focus-visible { color: var(--ink); text-shadow: 0 0 15px var(--violet); outline: none; }
+
+    .title-stage {
+      position: fixed;
+      z-index: 8;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      text-align: center;
+    }
+
+    .title-lock {
+      width: min(93vw, 1220px);
+      transform: translateY(-1vh);
+    }
+
+    .title-kicker,
+    .title-sub {
+      margin: 0;
+      text-transform: uppercase;
+      font-size: clamp(8px, .72vw, 11px);
+      line-height: 1;
+      letter-spacing: .42em;
+      font-weight: 400;
+      color: var(--muted);
+      transition: opacity .2s ease;
+    }
+
+    .title-kicker { margin-bottom: clamp(22px, 3.8vh, 44px); }
+    .title-sub { margin-top: clamp(19px, 3.2vh, 35px); letter-spacing: .32em; }
+
+    /* The H1 stays the single typographic heart of the page. */
+    h1 {
+      position: relative;
+      height: clamp(56px, 13vw, 164px);
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(35px, 9.4vw, 144px);
+      line-height: .86;
+      font-weight: 400;
+      letter-spacing: -.065em;
+      white-space: nowrap;
+      text-shadow: 0 0 30px rgba(220, 192, 255, .12);
+    }
+
+    .phrase {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      filter: blur(9px);
+      transform: translate3d(0, 18px, 0) scale(.97);
+      will-change: opacity, filter, transform;
+    }
+
+    #phrase-0 { opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0) scale(1); }
+
+    .phrase em { font-style: italic; }
+
+    .side-note {
+      top: 50%;
+      left: clamp(20px, 3.8vw, 58px);
+      color: var(--muted);
+      writing-mode: vertical-rl;
+      transform: translateY(-50%) rotate(180deg);
+      font-size: 9px;
+      letter-spacing: .33em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .side-note::before {
+      content: "";
+      display: block;
+      width: 1px;
+      height: 45px;
+      margin: 0 auto 18px;
+      background: linear-gradient(to bottom, transparent, var(--violet));
+    }
+
+    .progress-ui {
+      left: clamp(20px, 4vw, 62px);
+      right: clamp(20px, 4vw, 62px);
+      bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 9px;
+      letter-spacing: .25em;
+    }
+
+    .progress-ui .numbers { min-width: 49px; }
+    .progress-rule { height: 1px; width: min(170px, 19vw); background: var(--line); position: relative; }
+    .progress-rule i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--violet); box-shadow: 0 0 10px var(--purple); }
+    .progress-caption { margin-left: auto; }
+
+    .scroll-cue {
+      left: 50%;
+      bottom: 25px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      color: rgba(244, 240, 247, .7);
+      text-transform: uppercase;
+      font-size: 9px;
+      letter-spacing: .38em;
+      transition: opacity .45s ease, transform .45s ease;
+    }
+
+    .scroll-cue::after {
+      content: "";
+      width: 27px;
+      height: 1px;
+      background: var(--violet);
+      box-shadow: 0 0 12px var(--purple);
+      animation: breathe 1.6s ease-in-out infinite;
+    }
+
+    @keyframes breathe { 0%, 100% { opacity: .3; transform: scaleX(.6); } 50% { opacity: 1; transform: scaleX(1); } }
+
+    .end-card {
+      left: 50%;
+      bottom: clamp(71px, 9vh, 112px);
+      width: min(90vw, 700px);
+      transform: translate(-50%, 18px);
+      text-align: center;
+      opacity: 0;
+    }
+
+    .end-card p { margin: 0; color: var(--muted); font-size: 9px; letter-spacing: .32em; text-transform: uppercase; }
+    .end-card strong { display: block; margin-top: 17px; font-family: Georgia, serif; font-size: clamp(19px, 2.2vw, 29px); font-weight: 400; letter-spacing: -.02em; }
+    .end-card a { display: inline-block; margin-top: 23px; padding: 11px 17px; border: 1px solid rgba(244,240,247,.22); text-decoration: none; text-transform: uppercase; letter-spacing: .3em; font-size: 9px; pointer-events: auto; transition: border-color .3s, background .3s; }
+    .end-card a:hover, .end-card a:focus-visible { border-color: var(--violet); background: rgba(156, 61, 221, .16); outline: none; }
+
+    .loader {
+      inset: 0;
+      z-index: 30;
+      background: #050207;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 17px;
+      transition: opacity 1s ease, visibility 1s ease;
+    }
+
+    .loader.is-done { opacity: 0; visibility: hidden; }
+    .loader-label { text-transform: uppercase; font-size: 9px; letter-spacing: .48em; color: var(--muted); margin-left: .48em; }
+    .loader-line { width: min(220px, 52vw); height: 1px; background: rgba(255,255,255,.13); overflow: hidden; }
+    .loader-line i { display: block; width: 0; height: 100%; background: var(--violet); box-shadow: 0 0 13px var(--purple); transition: width .25s ease; }
+
+    @media (max-width: 700px) {
+      body { min-height: 540vh; }
+      .topbar { height: 76px; padding-top: 21px; grid-template-columns: 1fr auto; }
+      .location { display: none; }
+      .top-links { gap: 14px; }
+      .top-links a:nth-child(3) { display: none; }
+      .side-note { display: none; }
+      .title-lock { transform: translateY(-2vh); }
+      .title-kicker { letter-spacing: .28em; }
+      .title-sub { letter-spacing: .2em; }
+      .progress-ui { bottom: 22px; }
+      .scroll-cue { bottom: 21px; font-size: 8px; }
+      .progress-caption { display: none; }
+      .progress-rule { width: 27vw; }
+      .end-card { bottom: 74px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #grain, .scroll-cue::after { animation: none; }
+      .phrase { transition: opacity .1s linear; }
+    }
+  </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<div id="vig"></div>
-<nav id="nav">
-  <div class="brand">SKRILLA</div>
-  <ul>
-    <li><a href="music.html">MUSIC</a></li>
-    <li><a href="videos.html">VIDEOS</a></li>
-    <li><a href="tour.html">TOUR</a></li>
-    <li><a href="merch.html">MERCH</a></li>
-  </ul>
-</nav>
-<div id="overlay"><h1>SKRILLA HQ</h1><p>ENTER</p></div>
-<div id="scrollhint">SCROLL TO WALK IN</div>
-<div id="loader"><div class="lbl">LOADING SKRILLA HQ</div><div id="bar"><i></i></div></div>
+  <div id="film" aria-hidden="true">
+    <canvas id="c"></canvas>
+    <div id="purple-wash" class="screen-layer"></div>
+    <div id="room-fade" class="screen-layer"></div>
+    <div id="vignette" class="screen-layer"></div>
+    <div id="scanlines" class="screen-layer"></div>
+    <div id="grain" class="screen-layer"></div>
+  </div>
 
-<script type="importmap">
-{"imports":{
-  "three":"https://unpkg.com/three@0.160.0/build/three.module.js",
-  "three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"
-}}
-</script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark"></span> SKRILLA HQ</div>
+    <div class="location">STUDIO 001 &nbsp; / &nbsp; DAGORETTI, NAIROBI</div>
+    <nav class="top-links" aria-label="Primary navigation">
+      <a href="#origin">ORIGIN</a>
+      <a href="music.html">SOUND</a>
+      <a href="merch.html">OBJECTS</a>
+    </nav>
+  </header>
 
-<script type="module">
-import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+  <main id="origin">
+    <section class="title-stage" aria-labelledby="title">
+      <div class="title-lock">
+        <p class="title-kicker" id="title-kicker">03:07 AM &nbsp; / &nbsp; THE ROOM IS LISTENING</p>
+        <h1 id="title" aria-label="SKRILLA HQ">
+          <span class="phrase" id="phrase-0" aria-hidden="true">SKRILLA HQ</span>
+          <span class="phrase" id="phrase-1" aria-hidden="true">BORN OF CULTURE</span>
+          <span class="phrase" id="phrase-2" aria-hidden="true">BORN OF DAGORETTI</span>
+          <span class="phrase" id="phrase-3" aria-hidden="true">SKRILLA HQ</span>
+        </h1>
+        <p class="title-sub" id="title-sub">A quiet room. A live wire. Scroll to enter.</p>
+      </div>
+    </section>
+  </main>
 
-const canvas = document.getElementById('c');
-const renderer = new THREE.WebGLRenderer({canvas, antialias:true, powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.setSize(innerWidth, innerHeight);
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+  <div class="side-note">A signal from the west side</div>
+  <div class="scroll-cue" id="scroll-cue">Scroll to walk in</div>
+  <div class="progress-ui">
+    <span class="numbers" id="stage-number">01 / 04</span>
+    <span class="progress-rule"><i id="progress-bar"></i></span>
+    <span class="progress-caption" id="progress-caption">Before the sound</span>
+  </div>
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x05050a);
-scene.fog = new THREE.FogExp2(0x07070d, 0.055);
+  <div class="end-card" id="end-card">
+    <p>SKRILLA HQ &nbsp; / &nbsp; DAGORETTI, NAIROBI</p>
+    <strong>The room is open.</strong>
+    <a href="music.html">Enter the archive&nbsp; ↗</a>
+  </div>
 
-const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 100);
-camera.position.set(0, 1.6, 8);   // doorway
-camera.lookAt(0, 1.6, 0);
+  <div class="loader" id="loader">
+    <div class="loader-label">Opening SKRILLA HQ</div>
+    <div class="loader-line"><i id="loader-bar"></i></div>
+  </div>
 
-/* ---------- MATERIALS ---------- */
-const matWall  = new THREE.MeshStandardMaterial({color:0x0b0b0e, roughness:.95, metalness:.02});
-const matFloor = new THREE.MeshStandardMaterial({color:0x17171a, roughness:.55, metalness:.15});
-const matCeil  = new THREE.MeshStandardMaterial({color:0x060608, roughness:1});
-const matDark  = new THREE.MeshStandardMaterial({color:0x121215, roughness:.6, metalness:.3});
-const matBlack = new THREE.MeshStandardMaterial({color:0x08080a, roughness:.4, metalness:.5});
+  <script type="importmap">
+    {"imports": {"three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"}}
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+    import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+    import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+    import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+    import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
-const R = 8, H = 3.2, half = R/2;
-const room = new THREE.Group(); scene.add(room);
+    const canvas = document.getElementById("c");
+    const loader = document.getElementById("loader");
+    const loaderBar = document.getElementById("loader-bar");
+    const purpleWash = document.getElementById("purple-wash");
+    const roomFade = document.getElementById("room-fade");
+    const scrollCue = document.getElementById("scroll-cue");
+    const progressBar = document.getElementById("progress-bar");
+    const stageNumber = document.getElementById("stage-number");
+    const progressCaption = document.getElementById("progress-caption");
+    const endCard = document.getElementById("end-card");
+    const titleKicker = document.getElementById("title-kicker");
+    const titleSub = document.getElementById("title-sub");
+    const phrases = [0, 1, 2, 3].map((n) => document.getElementById(`phrase-${n}`));
 
-function plane(w,h,mat,pos,rot){
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(w,h), mat);
-  m.position.set(...pos); if(rot) m.rotation.set(...rot); room.add(m); return m;
-}
-plane(R,R,matFloor,[0,0,0],[-Math.PI/2,0,0]);
-plane(R,R,matCeil,[0,H,0],[Math.PI/2,0,0]);
-plane(R,H,matWall,[0,H/2,-half]);                        // back
-plane(R,H,matWall,[0,H/2,half],[0,Math.PI,0]);           // front
-plane(R,H,matWall,[-half,H/2,0],[0,Math.PI/2,0]);        // left
-plane(R,H,matWall,[half,H/2,0],[0,-Math.PI/2,0]);        // right
+    const clamp = (n, a = 0, b = 1) => Math.min(b, Math.max(a, n));
+    const smooth = (n) => n * n * (3 - 2 * n);
+    const smoother = (n) => n * n * n * (n * (n * 6 - 15) + 10);
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const rand = (a, b) => a + Math.random() * (b - a);
 
-/* ---------- NEON SIGN "SKRILLA HQ" (tube-ish extruded strokes) ---------- */
-const neonMat = new THREE.MeshStandardMaterial({
-  color:0xffffff, emissive:0xffffff, emissiveIntensity:3.2, roughness:.3, metalness:0
-});
-const signGroup = new THREE.Group();
-signGroup.position.set(0, 2.05, -half+0.14);
-room.add(signGroup);
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: false,
+      powerPreference: "high-performance"
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
 
-// Build glyphs from a canvas texture (crisp + cheap) plus emissive plane for bloom
-const tc = document.createElement('canvas'); tc.width=1024; tc.height=256;
-const tx = tc.getContext('2d');
-tx.clearRect(0,0,1024,256);
-tx.font='700 120px "Helvetica Neue",Arial,sans-serif';
-tx.textAlign='center'; tx.textBaseline='middle';
-tx.shadowColor='#bcd2ff'; tx.shadowBlur=40;
-tx.fillStyle='#ffffff';
-tx.letterSpacing='14px';
-for(let i=0;i<4;i++) tx.fillText('SKRILLA HQ',512,132);
-const signTex = new THREE.CanvasTexture(tc);
-signTex.colorSpace = THREE.SRGBColorSpace;
-const sign = new THREE.Mesh(
-  new THREE.PlaneGeometry(4.0,1.0),
-  new THREE.MeshBasicMaterial({map:signTex, transparent:true, toneMapped:false})
-);
-signGroup.add(sign);
-// backing box
-const signBack = new THREE.Mesh(new THREE.BoxGeometry(4.3,1.25,.08), matBlack);
-signBack.position.z = -0.06; signGroup.add(signBack);
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050207);
+    scene.fog = new THREE.FogExp2(0x07030b, 0.035);
 
-const neonLight = new THREE.PointLight(0xdbe6ff, 14, 11, 2);
-neonLight.position.set(0,2.05,-half+0.6); room.add(neonLight);
+    const camera = new THREE.PerspectiveCamera(47, window.innerWidth / window.innerHeight, .1, 60);
+    camera.position.set(0, .03, 7.7);
+    camera.lookAt(0, 0, 0);
 
-/* ---------- DESK ---------- */
-const desk = new THREE.Group(); desk.position.set(0,0,-2.6); room.add(desk);
-const top = new THREE.Mesh(new THREE.BoxGeometry(3.2,.08,1.0), matDark);
-top.position.y=.75; desk.add(top);
-[-1.5,1.5].forEach(x=>{
-  const leg=new THREE.Mesh(new THREE.BoxGeometry(.08,.75,.9), matBlack);
-  leg.position.set(x,.375,0); desk.add(leg);
-});
+    // --- The closed room: almost invisible until the viewer has crossed its threshold.
+    const room = new THREE.Group();
+    scene.add(room);
+    const roomMat = (color, opacity = 1, roughness = .96) => new THREE.MeshStandardMaterial({
+      color, roughness, metalness: .04, transparent: true, opacity, side: THREE.DoubleSide
+    });
+    const backMat = roomMat(0x09070d);
+    const floorMat = roomMat(0x100b16, .88, .82);
+    const sideMat = roomMat(0x07060a, .7);
 
-// monitors
-function monitor(x,y,z,w,h,ry,hue){
-  const g=new THREE.Group(); g.position.set(x,y,z); g.rotation.y=ry;
-  const frame=new THREE.Mesh(new THREE.BoxGeometry(w,h,.05), matBlack); g.add(frame);
-  const scr=new THREE.Mesh(new THREE.PlaneGeometry(w*.94,h*.9),
-    new THREE.MeshBasicMaterial({color:hue, toneMapped:false}));
-  scr.position.z=.027; g.add(scr);
-  const stand=new THREE.Mesh(new THREE.BoxGeometry(.06,.22,.06), matBlack);
-  stand.position.y=-h/2-.11; g.add(stand);
-  desk.add(g);
-  const l=new THREE.PointLight(hue,2.2,3.2,2); l.position.set(x,y,z+.5); desk.add(l);
-  return g;
-}
-monitor(0,1.18,-.30,1.25,.7,0,0x2b6bff);
-monitor(-1.10,1.14,-.22,.85,.55,.32,0x6a3cff);
-monitor(1.10,1.14,-.22,.85,.55,-.32,0x1f8fff);
+    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(18, 11), backMat);
+    backWall.position.set(0, 0, -4.2);
+    room.add(backWall);
 
-// speakers
-function speaker(x){
-  const s=new THREE.Mesh(new THREE.BoxGeometry(.28,.44,.26), matBlack);
-  s.position.set(x,1.01,-.25); desk.add(s);
-  const cone=new THREE.Mesh(new THREE.CircleGeometry(.09,24),
-    new THREE.MeshStandardMaterial({color:0x1a1a1f,roughness:.7}));
-  cone.position.set(x,1.01,-.11); desk.add(cone);
-}
-speaker(-1.55); speaker(1.55);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 12), floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.set(0, -2.1, -1.0);
+    room.add(floor);
 
-// keyboard / mpc
-const mpc=new THREE.Mesh(new THREE.BoxGeometry(1.1,.05,.35), matDark);
-mpc.position.set(0,.82,.18); desk.add(mpc);
-for(let i=0;i<4;i++)for(let j=0;j<4;j++){
-  const p=new THREE.Mesh(new THREE.BoxGeometry(.09,.02,.07),
-    new THREE.MeshBasicMaterial({color:i%2?0x8a5cff:0x34a8ff, toneMapped:false}));
-  p.position.set(-.33+j*.22,.86,.05+i*.08); desk.add(p);
-}
+    const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(18, 12), roomMat(0x030306, .75));
+    ceiling.rotation.x = Math.PI / 2;
+    ceiling.position.set(0, 4.25, -1.0);
+    room.add(ceiling);
 
-/* ---------- LED STRIPS ---------- */
-function strip(w,h,d,pos,color,rot){
-  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),
-    new THREE.MeshBasicMaterial({color, toneMapped:false}));
-  m.position.set(...pos); if(rot)m.rotation.set(...rot); room.add(m);
-  return m;
-}
-strip(R-.2,.035,.035,[0,H-.12,-half+.08],0x7b3cff);
-strip(.035,.035,R-.2,[-half+.08,H-.12,0],0x2f7bff);
-strip(.035,.035,R-.2,[ half-.08,H-.12,0],0x7b3cff);
-strip(3.3,.03,.03,[0,.70,-2.10],0x9a4cff);
-const ledA=new THREE.PointLight(0x7b3cff,6,9,2); ledA.position.set(-2.6,H-.4,-1); room.add(ledA);
-const ledB=new THREE.PointLight(0x2f7bff,6,9,2); ledB.position.set(2.6,H-.4,-1); room.add(ledB);
-const deskGlow=new THREE.PointLight(0x9a4cff,4,4,2); deskGlow.position.set(0,.8,-2.2); room.add(deskGlow);
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 8), sideMat);
+    leftWall.position.set(-6, .55, -1.0);
+    leftWall.rotation.y = Math.PI / 2;
+    room.add(leftWall);
+    const rightWall = leftWall.clone();
+    rightWall.position.x = 6;
+    rightWall.rotation.y = -Math.PI / 2;
+    room.add(rightWall);
 
-/* ---------- POSTERS ---------- */
-function poster(x,y,z,ry,c1,c2){
-  const cv=document.createElement('canvas'); cv.width=256; cv.height=352;
-  const g=cv.getContext('2d');
-  const grd=g.createLinearGradient(0,0,256,352); grd.addColorStop(0,c1); grd.addColorStop(1,c2);
-  g.fillStyle=grd; g.fillRect(0,0,256,352);
-  g.fillStyle='rgba(255,255,255,.9)'; g.font='700 30px Arial'; g.textAlign='center';
-  g.fillText('SKRILLA',128,300); g.font='300 13px Arial'; g.fillText('WORLD TOUR',128,325);
-  g.beginPath(); g.arc(128,150,64,0,Math.PI*2); g.fillStyle='rgba(0,0,0,.45)'; g.fill();
-  const t=new THREE.CanvasTexture(cv); t.colorSpace=THREE.SRGBColorSpace;
-  const m=new THREE.Mesh(new THREE.PlaneGeometry(.8,1.1),
-    new THREE.MeshStandardMaterial({map:t, roughness:.9}));
-  m.position.set(x,y,z); m.rotation.y=ry; room.add(m);
-}
-poster(-half+.05,1.9,-1.2,Math.PI/2,'#3b1d7a','#0b0b22');
-poster(-half+.05,1.9, .4,Math.PI/2,'#0d3b63','#0a0a1a');
-poster( half-.05,1.9,-1.0,-Math.PI/2,'#5c1d4a','#120a1a');
+    // Sparse architecture lines read as a room without turning it into a set.
+    const roomLines = new THREE.Group();
+    const roomLineMat = new THREE.LineBasicMaterial({ color: 0x483653, transparent: true, opacity: .25 });
+    const lineSegments = [];
+    for (let i = -4; i <= 4; i++) {
+      lineSegments.push(-5.6, -2.08, i * 1.1, 5.6, -2.08, i * 1.1);
+    }
+    lineSegments.push(-5.6, -2.08, -4.2, -5.6, 3.3, -4.2, 5.6, -2.08, -4.2, 5.6, 3.3, -4.2);
+    const floorLineGeo = new THREE.BufferGeometry();
+    floorLineGeo.setAttribute("position", new THREE.Float32BufferAttribute(lineSegments, 3));
+    roomLines.add(new THREE.LineSegments(floorLineGeo, roomLineMat));
 
-/* ---------- PLANTS ---------- */
-function plant(x,z,s=1){
-  const g=new THREE.Group(); g.position.set(x,0,z); g.scale.setScalar(s);
-  const pot=new THREE.Mesh(new THREE.CylinderGeometry(.18,.13,.3,16),
-    new THREE.MeshStandardMaterial({color:0x1b1b1f,roughness:.9}));
-  pot.position.y=.15; g.add(pot);
-  const leafMat=new THREE.MeshStandardMaterial({color:0x1d4a2a,roughness:.8,side:THREE.DoubleSide});
-  for(let i=0;i<9;i++){
-    const l=new THREE.Mesh(new THREE.SphereGeometry(.18,8,6), leafMat);
-    l.scale.set(.35,1.5,.35);
-    l.position.set(Math.sin(i*1.7)*.16,.45+Math.random()*.45,Math.cos(i*1.7)*.16);
-    l.rotation.z=Math.sin(i)*.35; l.rotation.x=Math.cos(i)*.3;
-    g.add(l);
-  }
-  room.add(g);
-}
-plant(-3.2,-3.2,1.15); plant(3.2,-3.0,1); plant(2.9,1.6,.85);
+    const frameGeo = new THREE.BufferGeometry();
+    frameGeo.setAttribute("position", new THREE.Float32BufferAttribute([
+      -4.5, -1.95, -4.08, 4.5, -1.95, -4.08,
+      -4.5, 3.18, -4.08, 4.5, 3.18, -4.08,
+      -4.5, -1.95, -4.08, -4.5, 3.18, -4.08,
+      4.5, -1.95, -4.08, 4.5, 3.18, -4.08
+    ], 3));
+    roomLines.add(new THREE.LineSegments(frameGeo, new THREE.LineBasicMaterial({ color: 0x6b426d, transparent: true, opacity: .25 })));
+    room.add(roomLines);
 
-/* ---------- AMBIENT FOG PARTICLES ---------- */
-const N=380, pos=new Float32Array(N*3);
-for(let i=0;i<N;i++){
-  pos[i*3]=(Math.random()-.5)*R*.95;
-  pos[i*3+1]=Math.random()*H;
-  pos[i*3+2]=(Math.random()-.5)*R*.95;
-}
-const dustGeo=new THREE.BufferGeometry();
-dustGeo.setAttribute('position', new THREE.BufferAttribute(pos,3));
-const dust=new THREE.Points(dustGeo, new THREE.PointsMaterial({
-  color:0x9fb6ff, size:.022, transparent:true, opacity:.5, depthWrite:false
-}));
-scene.add(dust);
+    // Two quiet strips in the back wall establish the late-night studio temperature.
+    const stripMat = new THREE.MeshBasicMaterial({ color: 0x321344, transparent: true, opacity: .45 });
+    [-3.95, 3.95].forEach((x) => {
+      const strip = new THREE.Mesh(new THREE.BoxGeometry(.012, 5.0, .012), stripMat.clone());
+      strip.position.set(x, .52, -4.06);
+      room.add(strip);
+    });
 
-/* ---------- LIGHTING (soft baked-feel) ---------- */
-scene.add(new THREE.AmbientLight(0x30364d, .55));
-scene.add(new THREE.HemisphereLight(0x4a5a8a, 0x0a0a0c, .35));
-const key=new THREE.SpotLight(0xbfd4ff,18,12,.75,.5,2);
-key.position.set(0,H-.25,-1.2); key.target.position.set(0,.8,-2.6);
-room.add(key, key.target);
+    // --- The untouched object at the center: black crystal, dark core, hairline fractures.
+    const relic = new THREE.Group();
+    relic.position.set(0, -.1, -.1);
+    scene.add(relic);
 
-/* ---------- POST / BLOOM ---------- */
-const composer=new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene,camera));
-const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight), 0.95, 0.65, 0.72);
-composer.addPass(bloom);
-composer.addPass(new OutputPass());
+    const crystalGeometry = new THREE.IcosahedronGeometry(.5, 1);
+    const crystalMaterial = new THREE.MeshStandardMaterial({
+      color: 0x08050d,
+      emissive: 0x210b31,
+      emissiveIntensity: .32,
+      metalness: .9,
+      roughness: .18,
+      transparent: true,
+      opacity: 1
+    });
+    const crystal = new THREE.Mesh(crystalGeometry, crystalMaterial);
+    relic.add(crystal);
 
-/* ---------- CAMERA LOGIC (no OrbitControls) ---------- */
-const state={z:8, mx:0, my:0, tmx:0, tmy:0};
-const MAXDEG=10*Math.PI/180;
+    const crystalEdges = new THREE.LineSegments(
+      new THREE.EdgesGeometry(crystalGeometry, 1),
+      new THREE.LineBasicMaterial({ color: 0x9c55bf, transparent: true, opacity: .32, blending: THREE.AdditiveBlending })
+    );
+    crystalEdges.scale.setScalar(1.012);
+    relic.add(crystalEdges);
 
-addEventListener('pointermove', e=>{
-  state.tmx=(e.clientX/innerWidth)*2-1;
-  state.tmy=(e.clientY/innerHeight)*2-1;
-}, {passive:true});
+    const coreMaterial = new THREE.MeshBasicMaterial({ color: 0x6e2c92, transparent: true, opacity: .18, blending: THREE.AdditiveBlending });
+    const core = new THREE.Mesh(new THREE.SphereGeometry(.17, 20, 20), coreMaterial);
+    relic.add(core);
 
-gsap.registerPlugin(ScrollTrigger);
-const overlay=document.getElementById('overlay');
-const hint=document.getElementById('scrollhint');
-const nav=document.getElementById('nav');
+    // Generate branching cracks once so every scroll through the birth has a physical logic.
+    const crackPositions = [];
+    const crackCount = 12;
+    for (let i = 0; i < crackCount; i++) {
+      const angle = (i / crackCount) * Math.PI * 2 + rand(-.13, .13);
+      const x = Math.cos(angle), y = Math.sin(angle);
+      const length = rand(.35, .76);
+      crackPositions.push(0, 0, .515, x * length * .62, y * length * .62, .53);
+      const branches = 2 + (i % 2);
+      for (let b = 0; b < branches; b++) {
+        const start = .23 + b * .14;
+        const branchAngle = angle + rand(-.75, .75);
+        crackPositions.push(
+          x * length * start, y * length * start, .535,
+          x * length * (start + .13), y * length * (start + .13) + Math.sin(branchAngle) * .1, .54
+        );
+      }
+    }
+    const crackGeo = new THREE.BufferGeometry();
+    crackGeo.setAttribute("position", new THREE.Float32BufferAttribute(crackPositions, 3));
+    const crackMaterial = new THREE.LineBasicMaterial({ color: 0xd2a1ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending });
+    const cracks = new THREE.LineSegments(crackGeo, crackMaterial);
+    relic.add(cracks);
 
-ScrollTrigger.create({
-  trigger:document.body, start:'top top', end:'bottom bottom', scrub:1.1,
-  onUpdate:self=>{
-    const p=self.progress;
-    state.z = 8 - p*6;                 // 8 -> 2
-    const o = Math.max(0, 1 - p*3.2);
-    overlay.style.opacity=o;
-    overlay.style.transform=`translateY(${-p*60}px) scale(${1+p*.12})`;
-    hint.style.opacity = o*0.4;
-    nav.style.opacity = 0.55 + p*0.45;   // nav gets clearer as you walk in
-  }
-});
+    const relicLight = new THREE.PointLight(0x8427ae, .65, 3.3, 2);
+    relicLight.position.set(0, 0, .4);
+    scene.add(relicLight);
 
-const lerp=(a,b,t)=>a+(b-a)*t;
-let last=performance.now();
-function tick(now){
-  requestAnimationFrame(tick);
-  const dt=Math.min((now-last)/1000,.05); last=now;
-  const k=1-Math.pow(0.001, dt);       // frame-rate independent smoothing
+    // A radial texture is made in memory: no image files, just light becoming visible.
+    function glowTexture() {
+      const size = 128;
+      const cv = document.createElement("canvas");
+      cv.width = cv.height = size;
+      const ctx = cv.getContext("2d");
+      const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+      g.addColorStop(0, "rgba(217, 140, 255, 1)");
+      g.addColorStop(.13, "rgba(155, 55, 226, .78)");
+      g.addColorStop(.5, "rgba(104, 22, 169, .19)");
+      g.addColorStop(1, "rgba(65, 8, 104, 0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, size, size);
+      const texture = new THREE.CanvasTexture(cv);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      return texture;
+    }
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: glowTexture(), color: 0x9f46d9, transparent: true, opacity: .13,
+      blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false
+    }));
+    glow.scale.set(.9, .9, 1);
+    glow.position.z = .06;
+    scene.add(glow);
 
-  state.mx=lerp(state.mx,state.tmx,k);
-  state.my=lerp(state.my,state.tmy,k);
+    // --- Explosion: one field of particles, driven entirely by scroll progress.
+    const particleCount = window.innerWidth < 700 ? 3600 : 7000;
+    const particlePositions = new Float32Array(particleCount * 3);
+    const particleDirs = new Float32Array(particleCount * 3);
+    const particleSpeed = new Float32Array(particleCount);
+    const particleSize = new Float32Array(particleCount);
+    const particleSeed = new Float32Array(particleCount);
+    const particleLayer = new Float32Array(particleCount);
 
-  camera.position.z = lerp(camera.position.z, state.z, k);
-  camera.position.x = lerp(camera.position.x, state.mx*0.25, k);
-  camera.position.y = lerp(camera.position.y, 1.6 - state.my*0.10, k);
+    for (let i = 0; i < particleCount; i++) {
+      const j = i * 3;
+      const z = rand(-1, 1);
+      const a = rand(0, Math.PI * 2);
+      const r = Math.sqrt(1 - z * z);
+      particleDirs[j] = r * Math.cos(a);
+      particleDirs[j + 1] = r * Math.sin(a);
+      particleDirs[j + 2] = z;
+      particlePositions[j] = particlePositions[j + 1] = particlePositions[j + 2] = 0;
+      particleSpeed[i] = Math.pow(Math.random(), .54);
+      particleSize[i] = rand(1.3, 5.6);
+      particleSeed[i] = Math.random();
+      particleLayer[i] = Math.random();
+    }
 
-  camera.rotation.order='YXZ';
-  camera.rotation.y = -state.mx*MAXDEG;
-  camera.rotation.x = -state.my*MAXDEG;
+    const particleGeo = new THREE.BufferGeometry();
+    particleGeo.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
+    particleGeo.setAttribute("aDir", new THREE.BufferAttribute(particleDirs, 3));
+    particleGeo.setAttribute("aSpeed", new THREE.BufferAttribute(particleSpeed, 1));
+    particleGeo.setAttribute("aSize", new THREE.BufferAttribute(particleSize, 1));
+    particleGeo.setAttribute("aSeed", new THREE.BufferAttribute(particleSeed, 1));
+    particleGeo.setAttribute("aLayer", new THREE.BufferAttribute(particleLayer, 1));
 
-  const t=now*0.001;
-  neonLight.intensity = 13 + Math.sin(t*9.1)*Math.sin(t*2.3)*1.6;
-  sign.material.opacity = 0.93 + Math.sin(t*13.7)*0.05;
-  sign.material.transparent = true;
-  dust.rotation.y = t*0.012;
-  dust.position.y = Math.sin(t*0.3)*0.05;
+    const particleMaterial = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      uniforms: {
+        uTime: { value: 0 },
+        uExplosion: { value: 0 },
+        uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, 2) },
+        uOpacity: { value: 1 }
+      },
+      vertexShader: `
+        uniform float uTime;
+        uniform float uExplosion;
+        uniform float uPixelRatio;
+        attribute vec3 aDir;
+        attribute float aSpeed;
+        attribute float aSize;
+        attribute float aSeed;
+        attribute float aLayer;
+        varying float vAlpha;
+        varying float vTint;
+        void main() {
+          float e = smoothstep(0.0, 1.0, uExplosion);
+          float burst = e * e * (3.0 - 2.0 * e);
+          float travel = (0.22 + aSpeed * 5.9) * burst;
+          vec3 p = aDir * (0.035 + travel);
+          float swirl = (0.12 + aLayer * .62) * burst;
+          float ca = cos(swirl + uTime * (.08 + aSeed * .08));
+          float sa = sin(swirl + uTime * (.08 + aSeed * .08));
+          p.xy = mat2(ca, -sa, sa, ca) * p.xy;
+          p.x += sin(uTime * .42 + aSeed * 31.0) * .055 * burst;
+          p.y += cos(uTime * .31 + aSeed * 24.0) * .09 * burst + aLayer * .28 * burst;
+          p.z += sin(uTime * .35 + aSeed * 20.0) * .12 * burst;
+          vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
+          gl_Position = projectionMatrix * mvPosition;
+          float perspective = 7.0 / max(1.0, -mvPosition.z);
+          gl_PointSize = aSize * uPixelRatio * (1.0 + e * 1.7) * perspective;
+          vAlpha = (0.25 + aSpeed * .76) * (1.0 - smoothstep(.88, 1.0, aSpeed) * .35);
+          vTint = aLayer;
+        }
+      `,
+      fragmentShader: `
+        varying float vAlpha;
+        varying float vTint;
+        void main() {
+          vec2 uv = gl_PointCoord - .5;
+          float d = length(uv);
+          float soft = smoothstep(.5, .04, d);
+          vec3 cool = vec3(.43, .10, .72);
+          vec3 hot = vec3(.88, .47, 1.0);
+          vec3 color = mix(cool, hot, smoothstep(.35, .93, vTint));
+          gl_FragColor = vec4(color, soft * vAlpha * .74);
+        }
+      `
+    });
+    const particles = new THREE.Points(particleGeo, particleMaterial);
+    particles.position.set(0, -.1, .03);
+    scene.add(particles);
 
-  composer.render();
-}
+    // Larger, slower motes give the explosion its smoke-like body.
+    const hazeCount = window.innerWidth < 700 ? 420 : 750;
+    const hazeArray = new Float32Array(hazeCount * 3);
+    const hazeData = [];
+    for (let i = 0; i < hazeCount; i++) {
+      const j = i * 3;
+      hazeArray[j] = hazeArray[j + 1] = hazeArray[j + 2] = 0;
+      hazeData.push({
+        x: rand(-1, 1), y: rand(-1, 1), z: rand(-1, 1),
+        speed: rand(.5, 1.3), size: rand(9, 26), seed: Math.random()
+      });
+    }
+    const hazeGeo = new THREE.BufferGeometry();
+    hazeGeo.setAttribute("position", new THREE.BufferAttribute(hazeArray, 3));
+    const hazeMaterial = new THREE.PointsMaterial({
+      color: 0x8e31c7, size: 0.15, transparent: true, opacity: 0, depthWrite: false,
+      blending: THREE.AdditiveBlending, map: glowTexture(), alphaTest: .001, sizeAttenuation: true
+    });
+    const haze = new THREE.Points(hazeGeo, hazeMaterial);
+    haze.position.set(0, -.12, -.15);
+    scene.add(haze);
 
-addEventListener('resize', ()=>{
-  camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-  renderer.setSize(innerWidth,innerHeight);
-  composer.setSize(innerWidth,innerHeight);
-  bloom.setSize(innerWidth,innerHeight);
-});
+    // Rings are the visible pressure wave: restrained while the room is closed, expansive after impact.
+    const rings = [];
+    for (let i = 0; i < 3; i++) {
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(.45 + i * .08, .455 + i * .08, 128),
+        new THREE.MeshBasicMaterial({ color: i === 1 ? 0xc17bff : 0x7d2eb0, transparent: true, opacity: 0, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })
+      );
+      ring.position.set(0, -.1, .12 + i * .025);
+      ring.scale.setScalar(.8);
+      scene.add(ring);
+      rings.push(ring);
+    }
 
-/* ---------- LOADER ---------- */
-const loader=document.getElementById('loader'), bar=document.querySelector('#bar i');
-let prog=0;
-const fake=setInterval(()=>{
-  prog=Math.min(100, prog+Math.random()*18);
-  bar.style.width=prog+'%';
-  if(prog>=100){
-    clearInterval(fake);
-    renderer.compile(scene,camera);
-    requestAnimationFrame(tick);
-    setTimeout(()=>{ loader.classList.add('hide'); ScrollTrigger.refresh(); }, 350);
-    gsap.from(overlay,{opacity:0,y:30,duration:1.6,delay:.5,ease:'power3.out'});
-    gsap.from('#nav a',{opacity:0,y:-10,duration:.7,delay:1.25,stagger:.08,ease:'power2.out'});
-  }
-},120);
-</script>
+    scene.add(new THREE.AmbientLight(0x281c35, .48));
+    const topLight = new THREE.PointLight(0x341249, 1.7, 11, 2);
+    topLight.position.set(-2.4, 2.9, 1.8);
+    scene.add(topLight);
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.05, .78, .34);
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+
+    // Scroll state is eased so a fast wheel movement still reads like a film edit.
+    let targetProgress = 0;
+    let progress = 0;
+    let pointerX = 0, pointerY = 0;
+    let smoothPointerX = 0, smoothPointerY = 0;
+    let clock = 0;
+    let last = performance.now();
+
+    function readScroll() {
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      targetProgress = clamp(window.scrollY / max);
+    }
+    window.addEventListener("scroll", readScroll, { passive: true });
+    window.addEventListener("pointermove", (event) => {
+      pointerX = (event.clientX / window.innerWidth - .5) * 2;
+      pointerY = (event.clientY / window.innerHeight - .5) * 2;
+    }, { passive: true });
+
+    function rangeOpacity(p, start, inEnd, outStart, end) {
+      if (p < start || p > end) return 0;
+      // Keep the opening title visible on the first frame before the first scroll tick.
+      if (start === 0 && p === 0) return 1;
+      if (p < inEnd) return smooth((p - start) / (inEnd - start));
+      if (p > outStart) return 1 - smooth((p - outStart) / (end - outStart));
+      return 1;
+    }
+
+    function updateWords(p) {
+      const ranges = [
+        [.00, .015, .115, .17],
+        [.105, .20, .33, .405],
+        [.34, .43, .59, .69],
+        [.625, .72, .96, 1.0]
+      ];
+      phrases.forEach((phrase, i) => {
+        const alpha = rangeOpacity(p, ...ranges[i]);
+        phrase.style.opacity = alpha.toFixed(3);
+        phrase.style.filter = `blur(${((1 - alpha) * 9).toFixed(2)}px)`;
+        phrase.style.transform = `translate3d(0, ${(1 - alpha) * 18}px, 0) scale(${(.97 + alpha * .03).toFixed(4)})`;
+      });
+
+      const captions = ["Before the sound", "The first fracture", "The culture moves", "The room is open"];
+      const stage = p < .18 ? 1 : p < .405 ? 2 : p < .69 ? 3 : 4;
+      stageNumber.textContent = `0${stage} / 04`;
+      progressCaption.textContent = captions[stage - 1];
+      titleKicker.textContent = p < .18 ? "03:07 AM  /  THE ROOM IS LISTENING" : p < .405 ? "A SIGNAL UNDER THE SKIN" : p < .69 ? "DAGORETTI, NAIROBI  /  LIVE" : "SKRILLA HQ  /  KEEP THE SIGNAL OPEN";
+      titleSub.textContent = p < .18 ? "A quiet room. A live wire. Scroll to enter." : p < .405 ? "Every origin starts as pressure." : p < .69 ? "Culture does not arrive. It erupts." : "The room is open. The signal remains.";
+    }
+
+    function updateScene(p, time) {
+      const birth = clamp((p - .14) / .64);
+      const fracture = clamp((p - .13) / .20);
+      const explosion = smoother(birth);
+      particleMaterial.uniforms.uTime.value = time;
+      particleMaterial.uniforms.uExplosion.value = explosion;
+      particleMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio || 1, 2);
+
+      // The crystal loses mass as its light moves into the particle field.
+      const relicFade = 1 - smooth(clamp((p - .20) / .26));
+      relic.scale.setScalar(1 + fracture * .08);
+      crystal.rotation.y = time * .16;
+      crystal.rotation.x = Math.sin(time * .42) * .12;
+      crystalMaterial.opacity = relicFade;
+      crystalMaterial.emissiveIntensity = .3 + fracture * 1.6;
+      crystalEdges.material.opacity = .24 + fracture * 1.1;
+      cracks.material.opacity = smooth(fracture) * .95;
+      coreMaterial.opacity = .15 + fracture * 1.0;
+      relicLight.intensity = .55 + fracture * 6.0;
+      glow.material.opacity = .08 + explosion * 1.12;
+      glow.scale.setScalar(.82 + explosion * 4.7);
+
+      // Smoke motes are updated on the CPU for a soft, slow, organic drift.
+      const hazePosition = hazeGeo.attributes.position.array;
+      const hazeReach = .12 + explosion * 4.1;
+      for (let i = 0; i < hazeCount; i++) {
+        const d = hazeData[i];
+        const j = i * 3;
+        const breathe = Math.sin(time * d.speed + d.seed * 20) * .12;
+        hazePosition[j] = d.x * hazeReach + breathe;
+        hazePosition[j + 1] = d.y * hazeReach + Math.sin(time * .25 + d.seed * 10) * .2 + explosion * .35;
+        hazePosition[j + 2] = d.z * hazeReach * .55;
+      }
+      hazeGeo.attributes.position.needsUpdate = true;
+      hazeMaterial.opacity = explosion * .055;
+      hazeMaterial.size = .13 + explosion * .25;
+      haze.rotation.y = time * .025;
+
+      rings.forEach((ring, i) => {
+        const delay = i * .11;
+        const ringP = clamp((birth - delay) / .72);
+        ring.scale.setScalar(.8 + ringP * (4.8 + i * 1.1));
+        ring.material.opacity = smooth(ringP) * (1 - ringP) * (.65 - i * .11);
+        ring.rotation.z = time * (.04 + i * .02) * (i % 2 ? -1 : 1);
+      });
+
+      // The closed architecture recedes rather than disappearing instantly.
+      const architectureFade = 1 - smooth(clamp((p - .36) / .38));
+      room.traverse((child) => {
+        if (!child.material) return;
+        const materials = Array.isArray(child.material) ? child.material : [child.material];
+        materials.forEach((material) => {
+          if (material.userData.baseOpacity === undefined) material.userData.baseOpacity = material.opacity;
+          material.opacity = material.userData.baseOpacity * (.32 + architectureFade * .68);
+        });
+      });
+
+      camera.position.x = lerp(camera.position.x, smoothPointerX * .12, .035);
+      camera.position.y = lerp(camera.position.y, .03 - smoothPointerY * .08 - explosion * .08, .035);
+      camera.position.z = lerp(camera.position.z, 7.7 - explosion * .85, .035);
+      camera.lookAt(0, -.05 - explosion * .06, 0);
+      scene.fog.density = .033 + explosion * .018;
+      bloom.strength = 1.0 + explosion * 1.75;
+      bloom.radius = .72 + explosion * .25;
+
+      purpleWash.style.opacity = (.78 * smooth(clamp((p - .36) / .48))).toFixed(3);
+      roomFade.style.opacity = (.55 + explosion * .18).toFixed(3);
+      progressBar.style.width = `${(p * 100).toFixed(2)}%`;
+      scrollCue.style.opacity = `${clamp(1 - p * 9)}`;
+      scrollCue.style.transform = `translateX(-50%) translateY(${p * 16}px)`;
+      endCard.style.opacity = smooth(clamp((p - .77) / .16)).toFixed(3);
+      endCard.style.transform = `translate(-50%, ${18 - smooth(clamp((p - .77) / .16)) * 18}px)`;
+    }
+
+    function animate(now) {
+      requestAnimationFrame(animate);
+      const delta = Math.min(.05, (now - last) / 1000);
+      last = now;
+      clock += delta;
+      progress = lerp(progress, targetProgress, 1 - Math.pow(.0005, delta));
+      smoothPointerX = lerp(smoothPointerX, pointerX, .035);
+      smoothPointerY = lerp(smoothPointerY, pointerY, .035);
+      updateWords(progress);
+      updateScene(progress, clock);
+      composer.render();
+    }
+
+    function resize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      composer.setSize(window.innerWidth, window.innerHeight);
+    }
+    window.addEventListener("resize", resize);
+
+    readScroll();
+    updateWords(0);
+
+    // Small loader keeps the first frame intentional instead of showing a blank WebGL canvas.
+    let loaded = 0;
+    const loadTimer = setInterval(() => {
+      loaded = Math.min(100, loaded + rand(9, 24));
+      loaderBar.style.width = `${loaded}%`;
+      if (loaded >= 100) {
+        clearInterval(loadTimer);
+        renderer.compile(scene, camera);
+        requestAnimationFrame(animate);
+        setTimeout(() => loader.classList.add("is-done"), 420);
+      }
+    }, 110);
+  </script>
 </body>
 </html>
