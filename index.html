@@ -21,10 +21,11 @@
     /* ────────────────────────────────────────────────────────────
        SKRILLA HQ — single-file build
        Layer stack (back → front):
-         body background IMG_0548.PNG  (z:auto, fixed)
-         body::before   rgba(0,0,0,.35) light overlay   z:0
-         canvas#bg      transparent THREE smoke, screen blend  z:1
-         .stage / main  UI + content                      z:2/3
+         body           solid #000
+         body::before   IMG_0548.PNG fixed, sharp          z:0
+         body::after    radial vignette only               z:1
+         canvas#bg      transparent THREE smoke, screen     z:2  (opacity .55)
+         .stage / main  UI + content                       z:3
          nav / ticker                                      z:8/7
        ──────────────────────────────────────────────────────────── */
     :root{
@@ -36,32 +37,45 @@
     html{ scroll-behavior:smooth; }
     html, body{ margin:0; padding:0; }
 
-    /* CRITICAL — keep the praying-man photo visible under everything */
+    /* body is pure black — NO purple background anywhere */
     body{
-      background: url('./IMG_0548.PNG') center / cover no-repeat fixed;
-      background-color: black;
+      background:#000 !important;
+      background-color:#000 !important;
       color:var(--white);
       font-family:'Space Grotesk', system-ui, sans-serif;
       overflow-x:hidden;
       -webkit-font-smoothing:antialiased;
     }
-    /* light overlay so praying man stays visible, not too dark */
+    /* z:0 — IMG_0548.PNG, fixed, sharp, no colour overlay on top of it */
     body::before{
       content:'';
       position:fixed;
       inset:0;
-      background: rgba(0,0,0,0.35);
       z-index:0;
+      background-image:url('./IMG_0548.PNG');
+      background-size:cover;
+      background-position:center 20%;
+      background-repeat:no-repeat;
+      filter:contrast(1.15) brightness(0.85) sepia(0.2);
       pointer-events:none;
     }
-    /* transparent WebGL smoke layer, screen-blended over the photo */
-    canvas#bg{
+    /* z:1 — vignette only, keeps subject bright in the centre */
+    body::after{
+      content:'';
       position:fixed;
       inset:0;
       z-index:1;
-      background: transparent !important;
-      mix-blend-mode: screen;
-      opacity: 0.92;
+      background:radial-gradient(ellipse at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 75%);
+      pointer-events:none;
+    }
+    /* z:2 — transparent WebGL purple smoke, screen-blended glow */
+    canvas#bg{
+      position:fixed;
+      inset:0;
+      z-index:2;
+      background:transparent !important;
+      mix-blend-mode:screen;
+      opacity:0.55 !important;
       width:100%;
       height:100%;
       pointer-events:none;
@@ -105,7 +119,7 @@
 
     /* ── hero stage ──────────────────────────────────────────── */
     .stage{
-      position:fixed; inset:0; z-index:2;
+      position:fixed; inset:0; z-index:3;
       display:flex; flex-direction:column; align-items:center; justify-content:center;
       text-align:center; padding:0 4vw;
       pointer-events:none;
@@ -119,6 +133,8 @@
       line-height:.92;
       letter-spacing:.01em;
       color:#fff;
+      opacity:1;
+      -webkit-text-fill-color:#fff;
       text-shadow:
         0 0 12px rgba(194,122,255,.95),
         0 0 42px rgba(194,122,255,.55),
@@ -155,7 +171,7 @@
 
     .scroll-hint{
       position:fixed; left:50%; bottom:4.6rem; transform:translateX(-50%);
-      z-index:2; font-size:.62rem; letter-spacing:.4em; color:rgba(255,255,255,.6);
+      z-index:3; font-size:.62rem; letter-spacing:.4em; color:rgba(255,255,255,.6);
       pointer-events:none;
     }
 
