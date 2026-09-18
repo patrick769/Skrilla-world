@@ -76,10 +76,12 @@
     /* the two hairline circles that slowly scale up around the sac */
     #rings { position: absolute; inset: 0; width: 100%; height: 100%; }
     #ring-group { opacity: .2; }
+    /* scaled with CSS transform (composited) instead of per-frame SVG attribute rewrites */
+    #ring-1, #ring-2 { transform-box: view-box; transform-origin: 50% 50%; will-change: transform; }
 
     #grain {
       position: absolute;
-      inset: -60%;
+      inset: -14%;            /* still fully covers after the ±2% jitter — 1/3 the blend cost */
       opacity: .05;
       pointer-events: none;
       mix-blend-mode: soft-light;           /* invisible on pure black, lives on the fluid */
@@ -381,7 +383,22 @@
     /* ────────────────────────────────────────────────────────────
        1 · renderer / scene / camera  (single canvas)
        ──────────────────────────────────────────────────────────── */
-    const quality = { dpr: Math.min(window.devicePixelRatio || 1, 2) };
+    // quality ladder: the fps governor (section 10) walks down this until the
+    // film holds a stable framerate, and climbs back up when the GPU has room
+    const dprMax = Math.min(window.devicePixelRatio || 1, 2);
+    const TIERS = IS_SMALL ? [
+      { dpr: Math.min(dprMax, 1.5), sim: 0.42, bloom: 1.00 },
+      { dpr: 1.25, sim: 0.36, bloom: 0.70 },
+      { dpr: 1.0,  sim: 0.30, bloom: 0.55 },
+      { dpr: 1.0,  sim: 0.26, bloom: 0.40 },
+    ] : [
+      { dpr: dprMax, sim: 0.45, bloom: 1.00 },
+      { dpr: 1.5,    sim: 0.38, bloom: 0.70 },
+      { dpr: 1.25,   sim: 0.33, bloom: 0.55 },
+      { dpr: 1.0,    sim: 0.28, bloom: 0.40 },
+    ];
+    let tier = 0;
+    const quality = { dpr: TIERS[0].dpr, sim: TIERS[0].sim, bloomScale: TIERS[0].bloom };
 
     const renderer = new THREE.WebGLRenderer({
       canvas, antialias: false, alpha: false, powerPreference: "high-performance", stencil: false
@@ -544,6 +561,14 @@
         varying float vTear;
 
         void main(){
+          // the burst tears the membrane away in soft organic patches.
+          // edge sweeps from 1.4 (nothing torn) to -0.4 (everything torn).
+          // This is the cheap part — evaluated first, so torn fragments
+          // bail out before spending any noise during the explosion.
+          float edge = 1.4 - uDissolve * 1.8;
+          float tear = 1.0 - smoothstep(edge - 0.30, edge + 0.30, vTear);
+          if (tear * uOpacity < 0.0035) discard;
+
           vec3 N = normalize(vNrm);
           vec3 V = normalize(vView);
           float facing = clamp(dot(N, V), 0.0, 1.0);
@@ -573,11 +598,7 @@
           col += uColorCore * (smoothstep(0.1, 1.2, vDisp) * 0.45);
 
           float a = (0.10 + 0.68 * fres + vein * 0.5 * vAmt + bolt * 0.9) * uOpacity;
-
-          // the burst tears the membrane away in soft organic patches.
-          // edge sweeps from 1.4 (nothing torn) to -0.4 (everything torn)
-          float edge = 1.4 - uDissolve * 1.8;
-          a *= 1.0 - smoothstep(edge - 0.30, edge + 0.30, vTear);
+          a *= tear;
 
           gl_FragColor = vec4(col, clamp(a, 0.0, 1.0));
         }
@@ -837,13 +858,23 @@
     /* ────────────────────────────────────────────────────────────
        6 · postprocessing — bloom 0.8 / 0.6
        ──────────────────────────────────────────────────────────── */
-    const composer = new EffectComposer(renderer);
+    // every mesh in the scene is additive with depthTest off, so the post
+    // pipeline never touches a depth buffer — skip allocating/clearing one
+    const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, {
+      type: THREE.HalfFloatType, depthBuffer: false, stencilBuffer: false
+    }));
     composer.addPass(new RenderPass(scene, camera));
     const bloom = new UnrealBloomPass(
       new THREE.Vector2(window.innerWidth, window.innerHeight), 0.8, 0.6, 0.14
     );
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
+    // the bloom blur chain is reallocated at `bloomScale` of screen size.
+    // the glow is soft, so shrinking it costs nothing visually but a lot
+    // on weak GPUs — the governor below retunes it at runtime
+    let bloomScale = quality.bloomScale;
+    const _bloomSetSize = bloom.setSize.bind(bloom);
+    bloom.setSize = (w, h) => _bloomSetSize(Math.max(128, (w * bloomScale) | 0), Math.max(128, (h * bloomScale) | 0));
 
     /* ────────────────────────────────────────────────────────────
        7 · scroll state — GSAP ScrollTrigger, scrub 1.5
@@ -996,6 +1027,10 @@
 
       renderer.setPixelRatio(dpr);
       renderer.setSize(w, h);
+      // the composer captures the pixel ratio at construction — resync it,
+      // otherwise the post pipeline keeps rendering at the old resolution
+      // whenever the governor (or a window resize) changes dpr
+      composer.setPixelRatio(dpr);
       composer.setSize(w, h);
 
       camera.aspect = w / h;
@@ -1005,7 +1040,7 @@
       const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
       bgQuad.scale.set(viewH * camera.aspect, viewH, 1);
 
-      const sw = clamp(Math.round(w * dpr * 0.45), 192, 800);
+      const sw = clamp(Math.round(w * dpr * quality.sim), 192, 800);
       const sh = Math.max(96, Math.round(sw * h / w));
       rtA.setSize(sw, sh);
       rtB.setSize(sw, sh);
@@ -1037,8 +1072,22 @@
     /* ────────────────────────────────────────────────────────────
        10 · frame loop
        ──────────────────────────────────────────────────────────── */
-    let time = 0, last = performance.now(), frames = 0, fpsAcc = 0, adapted = false;
+    let time = 0, last = performance.now();
     const timeScale = REDUCED ? 0.22 : 1;
+    const frameK = (lambda, dt) => 1 - Math.exp(-lambda * dt);   // framerate-independent smoothing (120Hz ≠ 2x responsiveness)
+
+    // fps governor: walks the quality ladder until the film holds a stable
+    // framerate (replaces the old one-shot "dpr → 1 after 3.2s" guard)
+    let govWarm = 0, govFrames = 0, govTime = 0, govBad = 0, govGood = 0;
+    const DROP_AT = [45, 42, 38];   // sustained fps below this drops one tier
+    const applyTier = () => {
+      const t = TIERS[tier];
+      quality.dpr = t.dpr;
+      quality.sim = t.sim;
+      bloomScale = t.bloom;
+      resize();
+    };
+    let fluidLive = false;
 
     function frame(now) {
       requestAnimationFrame(frame);
@@ -1051,8 +1100,8 @@
         sampleKeys(progress);
       }
 
-      spx += (px - spx) * 0.045;
-      spy += (py - spy) * 0.045;
+      spx += (px - spx) * frameK(2.8, dt);
+      spy += (py - spy) * frameK(2.8, dt);
 
       // heartbeat: alive at rest, hard pulse at 40%
       const idleBeat = 0.5 + 0.5 * Math.sin(time * 1.85);
@@ -1060,11 +1109,15 @@
       const scale = S.orbScale * (1 + beat * 0.05);
 
       orb.scale.setScalar(scale);
-      orb.position.x += (spx * 0.17 - orb.position.x) * 0.05;
-      orb.position.y += (-spy * 0.12 - orb.position.y) * 0.05;
+      orb.position.x += (spx * 0.17 - orb.position.x) * frameK(3.0, dt);
+      orb.position.y += (-spy * 0.12 - orb.position.y) * frameK(3.0, dt);
       orb.rotation.y = time * 0.055 + spx * 0.14;
       orb.rotation.x = Math.sin(time * 0.21) * 0.07 - spy * 0.09;
 
+
+      // the sac is fully gone by the starfield — stop drawing it
+      const orbOn = S.orbOpacity > 0.004;
+      shell.visible = orbOn; core.visible = orbOn; halo.visible = orbOn;
 
       // shell
       shellMat.uniforms.uTime.value = time;
@@ -1083,8 +1136,8 @@
       haloMat.uniforms.uOpacity.value = clamp((0.13 + S.coreGlow * 0.24) * S.orbOpacity * (1 - S.fluid * 0.65), 0, 1);
 
       // camera drifts into the burst
-      camera.position.x += (spx * 0.09 - camera.position.x) * 0.04;
-      camera.position.y += (-spy * 0.07 - camera.position.y) * 0.04;
+      camera.position.x += (spx * 0.09 - camera.position.x) * frameK(2.4, dt);
+      camera.position.y += (-spy * 0.07 - camera.position.y) * frameK(2.4, dt);
       camera.position.z = CAM_Z - S.stretch * 1.15;
       camera.lookAt(orb.position.x * 0.4, orb.position.y * 0.4, 0);
 
@@ -1094,46 +1147,73 @@
       halo.quaternion.copy(camera.quaternion);
 
       // ── fluid step ──
-      const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * camera.position.z;
-      const fpsScale = Math.min(2, dt * 60);
-      simMat.uniforms.uPrev.value = rtA.texture;
-      simMat.uniforms.uTime.value = time;
-      simMat.uniforms.uDissip.value = Math.pow(0.975, dt * 60);
-      simMat.uniforms.uEmit.value = S.smoke * 0.038 * fpsScale;
-      simMat.uniforms.uSwirl.value = S.swirl;
-      simMat.uniforms.uEmitPos.value.set(
-        clamp(0.5 + orb.position.x / (viewH * camera.aspect), -0.5, 1.5),
-        clamp(0.5 - orb.position.y / viewH, -0.5, 1.5)
-      );
-      simMat.uniforms.uEmitRadius.value = clamp((scale / viewH) * 1.45 + 0.03, 0.02, 4);
+      // pre-burst the background is pure black, so the advection sim and the
+      // full-screen blur cost two passes for nothing — skip them both
+      const fluidOn = S.fluid > 0.004 || S.star > 0.004;
+      if (fluidOn) {
+        if (!fluidLive) {   // re-entering the fluid world: start from clean buffers
+          renderer.setRenderTarget(rtA); renderer.clear(true, false, false);
+          renderer.setRenderTarget(rtB); renderer.clear(true, false, false);
+          renderer.setRenderTarget(null);
+        }
+        fluidLive = true;
 
-      renderer.setRenderTarget(rtB);
-      renderer.render(simScene, simCam);
-      renderer.setRenderTarget(null);
-      const swap = rtA; rtA = rtB; rtB = swap;
+        const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * camera.position.z;
+        const fpsScale = Math.min(2, dt * 60);
+        simMat.uniforms.uPrev.value = rtA.texture;
+        simMat.uniforms.uTime.value = time;
+        simMat.uniforms.uDissip.value = Math.pow(0.975, dt * 60);
+        simMat.uniforms.uEmit.value = S.smoke * 0.038 * fpsScale;
+        simMat.uniforms.uSwirl.value = S.swirl;
+        simMat.uniforms.uEmitPos.value.set(
+          clamp(0.5 + orb.position.x / (viewH * camera.aspect), -0.5, 1.5),
+          clamp(0.5 - orb.position.y / viewH, -0.5, 1.5)
+        );
+        simMat.uniforms.uEmitRadius.value = clamp((scale / viewH) * 1.45 + 0.03, 0.02, 4);
 
-      // ── composite ──
-      compMat.uniforms.uSmoke.value = rtA.texture;
-      compMat.uniforms.uTime.value = time;
-      compMat.uniforms.uBlur.value = S.blur;
-      compMat.uniforms.uFluid.value = S.fluid;
-      compMat.uniforms.uStar.value = S.star;
+        renderer.setRenderTarget(rtB);
+        renderer.render(simScene, simCam);
+        renderer.setRenderTarget(null);
+        const swap = rtA; rtA = rtB; rtB = swap;
 
-      // ── hairline circles, slowly scaling up ──
+        // ── composite ──
+        compMat.uniforms.uSmoke.value = rtA.texture;
+        compMat.uniforms.uTime.value = time;
+        compMat.uniforms.uBlur.value = S.blur;
+        compMat.uniforms.uFluid.value = S.fluid;
+        compMat.uniforms.uStar.value = S.star;
+      } else {
+        fluidLive = false;
+      }
+      bgQuad.visible = fluidOn;
+
+      // ── hairline circles, slowly scaling up (composited CSS transform) ──
       const s1 = S.ring, s2 = 1 + (S.ring - 1) * 0.68;
-      ring1.setAttribute("transform", `translate(${ringCx} ${ringCy}) scale(${s1.toFixed(4)}) translate(${-ringCx} ${-ringCy})`);
-      ring2.setAttribute("transform", `translate(${ringCx} ${ringCy}) scale(${s2.toFixed(4)}) translate(${(-ringCx).toFixed(2)} ${(-ringCy).toFixed(2)})`);
+      ring1.style.transform = `scale(${s1.toFixed(4)})`;
+      ring2.style.transform = `scale(${s2.toFixed(4)})`;
       ringGroup.style.opacity = S.ringOpacity.toFixed(3);
 
       composer.render();
 
-      // one-shot quality guard for weak GPUs
-      frames++; fpsAcc += dt;
-      if (!adapted && fpsAcc > 3.2) {
-        adapted = true;
-        if (frames / fpsAcc < 40 && quality.dpr > 1) {
-          quality.dpr = 1;
-          resize();
+      // ── fps governor ──
+      govWarm += dt;
+      if (govWarm > 2.0) {
+        govFrames++; govTime += dt;
+        if (govTime >= 1.0) {
+          const fps = govFrames / govTime;
+          govFrames = 0; govTime = 0;
+          if (fps < 24 && tier < TIERS.length - 1) {           // catastrophic: jump to the floor
+            tier = TIERS.length - 1; govBad = 0; govGood = 0; applyTier();
+          } else if (fps < DROP_AT[tier] && tier < TIERS.length - 1) {
+            if (++govBad >= 2) { tier++; govBad = 0; govGood = 0; applyTier(); }   // two bad seconds in a row
+          } else {
+            govBad = 0;
+          }
+          if (tier > 0 && fps > 57) {                          // steady again: earn the quality back
+            if (++govGood >= 5) { tier--; govGood = 0; govBad = 0; applyTier(); }
+          } else {
+            govGood = 0;
+          }
         }
       }
     }
