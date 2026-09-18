@@ -2,400 +2,350 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#050207" />
-  <meta name="description" content="SKRILLA HQ — born of culture, born of Dagoretti." />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="SKRILLA HQ — a signal under the skin. Born of culture, born of Dagoretti, Nairobi." />
   <title>SKRILLA HQ — Born of Culture</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+
   <style>
+    /* ─────────────────────────────────────────────────────────────
+       SKRILLA HQ — "BORN OF NATURE" reference build
+       Pure black. One canvas. Giant serif. Hairline chrome.
+       ───────────────────────────────────────────────────────────── */
     :root {
-      --ink: #f4f0f7;
-      --muted: rgba(244, 240, 247, .53);
-      --faint: rgba(244, 240, 247, .22);
-      --line: rgba(244, 240, 247, .16);
-      --purple: #8e35db;
-      --violet: #bc7bff;
-      --night: #050207;
+      --black: #000000;
+      --white: #FFFFFF;
+      --core: #C27AFF;
+      --glow: #6B21A8;
+      --micro: rgba(255, 255, 255, .55);
+      --micro-dim: rgba(255, 255, 255, .3);
+      --hairline: rgba(255, 255, 255, .18);
+      --pad: clamp(18px, 3.4vw, 46px);
+      --pad-y: clamp(18px, 3.2vh, 32px);
     }
 
-    * { box-sizing: border-box; }
-    html { background: var(--night); }
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { background: var(--black); }
+
     body {
       margin: 0;
-      min-height: 620vh;
-      overflow-x: hidden;
-      color: var(--ink);
-      background: var(--night);
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background: var(--black);            /* pure black, never a gradient */
+      color: var(--white);
+      font-family: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
     }
 
-    a { color: inherit; }
+    ::selection { background: rgba(194, 122, 255, .3); color: #fff; }
 
-    /* The entire film is pinned while the page gives the scroll room its pace. */
-    #film,
-    #c,
-    .screen-layer,
-    #grain,
-    #scanlines {
+    /* micro type: 8px, uppercase, tracking .3em — never bold */
+    .micro {
+      margin: 0;
+      font-size: 8px;
+      font-weight: 400;
+      line-height: 1.4;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--micro);
+      white-space: nowrap;
+    }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+
+    /* ── the film ─────────────────────────────────────────────── */
+    #film {
       position: fixed;
       inset: 0;
-      width: 100%;
-      height: 100%;
+      z-index: 0;
+      background: var(--black);
+      overflow: hidden;
     }
 
-    #film { z-index: 0; overflow: hidden; background: #050207; }
-    #c { display: block; z-index: 0; outline: none; }
-    .screen-layer { pointer-events: none; }
+    #c { display: block; width: 100%; height: 100%; }
 
-    #purple-wash {
-      z-index: 1;
-      opacity: 0;
-      background:
-        radial-gradient(ellipse at 50% 47%, rgba(187, 92, 255, .96) 0%, rgba(121, 35, 183, .9) 25%, rgba(51, 9, 74, .93) 61%, rgba(8, 2, 13, .98) 100%),
-        #2d0745;
-      mix-blend-mode: screen;
-      transform: scale(1.06);
-      transition: opacity .16s linear;
-    }
-
-    #room-fade {
-      z-index: 2;
-      background: radial-gradient(ellipse at center, transparent 22%, rgba(1, 0, 3, .24) 62%, rgba(0, 0, 0, .79) 100%);
-    }
-
-    #vignette {
-      z-index: 3;
-      background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, .42) 76%, rgba(0, 0, 0, .9) 115%);
-    }
+    /* the two hairline circles that slowly scale up around the sac */
+    #rings { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #ring-group { opacity: .2; }
 
     #grain {
-      z-index: 20;
-      opacity: .105;
+      position: absolute;
+      inset: -60%;
+      opacity: .05;
       pointer-events: none;
-      mix-blend-mode: soft-light;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.92'/%3E%3C/svg%3E");
-      animation: grain .18s steps(2) infinite;
-    }
-
-    #scanlines {
-      z-index: 19;
-      opacity: .055;
-      pointer-events: none;
-      background: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, rgba(255, 255, 255, .08) 4px);
-      mix-blend-mode: overlay;
+      mix-blend-mode: soft-light;           /* invisible on pure black, lives on the fluid */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grain .6s steps(3) infinite;
     }
 
     @keyframes grain {
-      0% { transform: translate(0, 0); }
-      25% { transform: translate(2%, -1%); }
-      50% { transform: translate(-1%, 2%); }
-      75% { transform: translate(1%, 1%); }
-      100% { transform: translate(-2%, -2%); }
+      0% { transform: translate3d(0, 0, 0); }
+      33% { transform: translate3d(-2%, 1%, 0); }
+      66% { transform: translate3d(1%, -2%, 0); }
+      100% { transform: translate3d(2%, 2%, 0); }
     }
 
-    .topbar,
-    .side-note,
-    .progress-ui,
-    .scroll-cue,
-    .end-card,
-    .loader {
+    /* ── fixed chrome ─────────────────────────────────────────── */
+    #hud {
       position: fixed;
-      z-index: 10;
+      top: 0; left: 0; right: 0;
+      z-index: 7;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      padding: var(--pad-y) var(--pad);
       pointer-events: none;
     }
 
-    .topbar {
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 90px;
-      padding: 27px clamp(20px, 4vw, 62px);
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: start;
-      gap: 20px;
-      text-transform: uppercase;
-      letter-spacing: .18em;
-      font-size: 9px;
+    #hud .brand { display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, .82); }
+    #hud .brand i {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--core);
+      box-shadow: 0 0 12px 3px rgba(194, 122, 255, .55);
+      animation: live 3.4s ease-in-out infinite;
     }
+    @keyframes live { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
 
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 11px;
-      font-size: 10px;
-      letter-spacing: .34em;
-      font-weight: 600;
-    }
-
-    .brand-mark {
-      width: 7px;
-      height: 7px;
-      display: inline-block;
-      border-radius: 50%;
-      background: var(--violet);
-      box-shadow: 0 0 18px 5px rgba(167, 80, 255, .72);
-    }
-
-    .location {
-      color: var(--muted);
-      text-align: center;
-      white-space: nowrap;
-      letter-spacing: .22em;
-    }
-
-    .top-links {
-      justify-self: end;
-      display: flex;
-      gap: clamp(15px, 2.4vw, 34px);
-    }
-
-    .top-links a {
-      color: var(--muted);
-      text-decoration: none;
-      transition: color .35s ease, text-shadow .35s ease;
-      pointer-events: auto;
-    }
-
-    .top-links a:hover,
-    .top-links a:focus-visible { color: var(--ink); text-shadow: 0 0 15px var(--violet); outline: none; }
-
-    .title-stage {
+    /* the counter that replaces the progress bar: tiny, bottom left */
+    #counter {
       position: fixed;
-      z-index: 8;
+      left: var(--pad);
+      bottom: var(--pad-y);
+      z-index: 7;
+      pointer-events: none;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #cue {
+      position: fixed;
+      right: var(--pad);
+      bottom: var(--pad-y);
+      z-index: 7;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      pointer-events: none;
+    }
+    #cue i {
+      display: block;
+      width: 26px; height: 1px;
+      background: rgba(255, 255, 255, .5);
+      transform-origin: right center;
+      animation: breathe 2.6s ease-in-out infinite;
+    }
+    @keyframes breathe { 0%, 100% { transform: scaleX(.3); opacity: .3; } 50% { transform: scaleX(1); opacity: .85; } }
+
+    /* ── typography stage ─────────────────────────────────────── */
+    #title {
+      position: fixed;
       inset: 0;
+      z-index: 6;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 0 var(--pad);
       pointer-events: none;
       text-align: center;
     }
 
-    .title-lock {
-      width: min(93vw, 1220px);
-      transform: translateY(-1vh);
-    }
+    .stack { position: relative; width: 100%; max-width: 1560px; }
 
-    .title-kicker,
-    .title-sub {
-      margin: 0;
-      text-transform: uppercase;
-      font-size: clamp(8px, .72vw, 11px);
-      line-height: 1;
-      letter-spacing: .42em;
-      font-weight: 400;
-      color: var(--muted);
-      transition: opacity .2s ease;
-    }
+    /* tiny sub-text sits above the H1 and cross-fades in place */
+    .subs { position: relative; height: 11px; margin: 0 0 clamp(20px, 3.8vh, 46px); }
+    .sub { position: absolute; left: 50%; top: 0; opacity: 0; will-change: opacity, transform; }
 
-    .title-kicker { margin-bottom: clamp(22px, 3.8vh, 44px); }
-    .title-sub { margin-top: clamp(19px, 3.2vh, 35px); letter-spacing: .32em; }
-
-    /* The H1 stays the single typographic heart of the page. */
     h1 {
       position: relative;
-      height: clamp(56px, 13vw, 164px);
+      height: .95em;
       margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(35px, 9.4vw, 144px);
-      line-height: .86;
-      font-weight: 400;
-      letter-spacing: -.065em;
+      font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+      font-weight: 700;
+      font-size: clamp(30px, 7vw, 138px);   /* 7vw, exactly as specced */
+      line-height: .95;
+      letter-spacing: -.02em;                /* -2% */
+      color: var(--white);
       white-space: nowrap;
-      text-shadow: 0 0 30px rgba(220, 192, 255, .12);
     }
 
     .phrase {
       position: absolute;
-      inset: 0;
+      left: 50%; top: 50%;
+      opacity: 0;
+      white-space: nowrap;
+      will-change: opacity, transform, filter;
+    }
+
+    /* ── scroll room ──────────────────────────────────────────── */
+    main { position: relative; z-index: 9; }
+    #track { height: 520vh; pointer-events: none; }
+
+    /* ── last section: the only place with buttons ────────────── */
+    #final {
+      position: relative;
+      z-index: 8;
+      min-height: 104vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      opacity: 0;
-      filter: blur(9px);
-      transform: translate3d(0, 18px, 0) scale(.97);
-      will-change: opacity, filter, transform;
+      padding: 18vh var(--pad) 12vh;
     }
 
-    #phrase-0 { opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0) scale(1); }
+    .final-inner { width: 100%; max-width: 860px; text-align: center; }
 
-    .phrase em { font-style: italic; }
-
-    .side-note {
-      top: 50%;
-      left: clamp(20px, 3.8vw, 58px);
-      color: var(--muted);
-      writing-mode: vertical-rl;
-      transform: translateY(-50%) rotate(180deg);
-      font-size: 9px;
-      letter-spacing: .33em;
-      text-transform: uppercase;
-      white-space: nowrap;
+    h2 {
+      margin: 22px 0 0;
+      font-family: "Playfair Display", Georgia, serif;
+      font-weight: 700;
+      font-size: clamp(32px, 6vw, 84px);
+      line-height: .96;
+      letter-spacing: -.02em;
+      color: var(--white);
     }
 
-    .side-note::before {
-      content: "";
-      display: block;
-      width: 1px;
-      height: 45px;
-      margin: 0 auto 18px;
-      background: linear-gradient(to bottom, transparent, var(--violet));
+    .final-copy {
+      margin: 30px auto 0;
+      max-width: 460px;
+      font-size: 8px;
+      line-height: 2.3;
+      letter-spacing: .26em;
+      color: rgba(255, 255, 255, .48);
+      white-space: normal;
     }
 
-    .progress-ui {
-      left: clamp(20px, 4vw, 62px);
-      right: clamp(20px, 4vw, 62px);
-      bottom: 28px;
-      display: flex;
+    .links { margin: 48px 0 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+    .links a {
+      display: inline-flex;
       align-items: center;
-      gap: 15px;
-      color: var(--muted);
+      gap: 14px;
+      padding: 16px 22px;
+      border: 1px solid var(--hairline);
+      color: var(--white);
+      text-decoration: none;
+      font-size: 8px;
+      letter-spacing: .3em;
       text-transform: uppercase;
-      font-size: 9px;
-      letter-spacing: .25em;
+      transition: border-color .45s ease, background .45s ease, transform .45s ease;
     }
-
-    .progress-ui .numbers { min-width: 49px; }
-    .progress-rule { height: 1px; width: min(170px, 19vw); background: var(--line); position: relative; }
-    .progress-rule i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--violet); box-shadow: 0 0 10px var(--purple); }
-    .progress-caption { margin-left: auto; }
-
-    .scroll-cue {
-      left: 50%;
-      bottom: 25px;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      color: rgba(244, 240, 247, .7);
-      text-transform: uppercase;
-      font-size: 9px;
-      letter-spacing: .38em;
-      transition: opacity .45s ease, transform .45s ease;
+    .links a span { color: var(--core); transition: transform .45s ease; }
+    .links a:hover, .links a:focus-visible {
+      border-color: rgba(194, 122, 255, .7);
+      background: rgba(194, 122, 255, .07);
+      transform: translateY(-2px);
+      outline: none;
     }
+    .links a:hover span, .links a:focus-visible span { transform: translate(2px, -2px); }
 
-    .scroll-cue::after {
-      content: "";
-      width: 27px;
-      height: 1px;
-      background: var(--violet);
-      box-shadow: 0 0 12px var(--purple);
-      animation: breathe 1.6s ease-in-out infinite;
-    }
+    .fine { margin-top: 60px; font-size: 7px; letter-spacing: .28em; color: var(--micro-dim); }
 
-    @keyframes breathe { 0%, 100% { opacity: .3; transform: scaleX(.6); } 50% { opacity: 1; transform: scaleX(1); } }
-
-    .end-card {
-      left: 50%;
-      bottom: clamp(71px, 9vh, 112px);
-      width: min(90vw, 700px);
-      transform: translate(-50%, 18px);
-      text-align: center;
-      opacity: 0;
-    }
-
-    .end-card p { margin: 0; color: var(--muted); font-size: 9px; letter-spacing: .32em; text-transform: uppercase; }
-    .end-card strong { display: block; margin-top: 17px; font-family: Georgia, serif; font-size: clamp(19px, 2.2vw, 29px); font-weight: 400; letter-spacing: -.02em; }
-    .end-card a { display: inline-block; margin-top: 23px; padding: 11px 17px; border: 1px solid rgba(244,240,247,.22); text-decoration: none; text-transform: uppercase; letter-spacing: .3em; font-size: 9px; pointer-events: auto; transition: border-color .3s, background .3s; }
-    .end-card a:hover, .end-card a:focus-visible { border-color: var(--violet); background: rgba(156, 61, 221, .16); outline: none; }
-
-    .loader {
+    /* ── loader ───────────────────────────────────────────────── */
+    #loader {
+      position: fixed;
       inset: 0;
       z-index: 30;
-      background: #050207;
+      background: var(--black);
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 17px;
-      transition: opacity 1s ease, visibility 1s ease;
+      transition: opacity .9s ease, visibility .9s ease;
+      animation: loaderFail .9s 8s forwards;   /* never trap the page if a CDN dies */
     }
+    #loader .micro { letter-spacing: .5em; margin-left: .5em; animation: live 1.6s ease-in-out infinite; }
+    #loader.done { opacity: 0; visibility: hidden; }
+    @keyframes loaderFail { to { opacity: 0; visibility: hidden; } }
 
-    .loader.is-done { opacity: 0; visibility: hidden; }
-    .loader-label { text-transform: uppercase; font-size: 9px; letter-spacing: .48em; color: var(--muted); margin-left: .48em; }
-    .loader-line { width: min(220px, 52vw); height: 1px; background: rgba(255,255,255,.13); overflow: hidden; }
-    .loader-line i { display: block; width: 0; height: 100%; background: var(--violet); box-shadow: 0 0 13px var(--purple); transition: width .25s ease; }
-
-    @media (max-width: 700px) {
-      body { min-height: 540vh; }
-      .topbar { height: 76px; padding-top: 21px; grid-template-columns: 1fr auto; }
-      .location { display: none; }
-      .top-links { gap: 14px; }
-      .top-links a:nth-child(3) { display: none; }
-      .side-note { display: none; }
-      .title-lock { transform: translateY(-2vh); }
-      .title-kicker { letter-spacing: .28em; }
-      .title-sub { letter-spacing: .2em; }
-      .progress-ui { bottom: 22px; }
-      .scroll-cue { bottom: 21px; font-size: 8px; }
-      .progress-caption { display: none; }
-      .progress-rule { width: 27vw; }
-      .end-card { bottom: 74px; }
+    @media (max-width: 720px) {
+      #track { height: 460vh; }
+      #hud .place { display: none; }
+      .subs { margin-bottom: 22px; }
+      .links a { padding: 14px 16px; letter-spacing: .24em; }
+      .fine { letter-spacing: .2em; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      #grain, .scroll-cue::after { animation: none; }
-      .phrase { transition: opacity .1s linear; }
+      #grain, #cue i, #hud .brand i, #loader .micro { animation: none; }
     }
   </style>
 </head>
+
 <body>
+  <!-- ══ one canvas, one film ══════════════════════════════════ -->
   <div id="film" aria-hidden="true">
     <canvas id="c"></canvas>
-    <div id="purple-wash" class="screen-layer"></div>
-    <div id="room-fade" class="screen-layer"></div>
-    <div id="vignette" class="screen-layer"></div>
-    <div id="scanlines" class="screen-layer"></div>
-    <div id="grain" class="screen-layer"></div>
+    <svg id="rings" xmlns="http://www.w3.org/2000/svg">
+      <g id="ring-group" fill="none" stroke="#FFFFFF" stroke-width="0.5">
+        <circle id="ring-1" vector-effect="non-scaling-stroke" r="100" />
+        <circle id="ring-2" vector-effect="non-scaling-stroke" r="100" />
+      </g>
+    </svg>
+    <div id="grain"></div>
   </div>
 
-  <header class="topbar">
-    <div class="brand"><span class="brand-mark"></span> SKRILLA HQ</div>
-    <div class="location">STUDIO 001 &nbsp; / &nbsp; DAGORETTI, NAIROBI</div>
-    <nav class="top-links" aria-label="Primary navigation">
-      <a href="#origin">ORIGIN</a>
-      <a href="music.html">SOUND</a>
-      <a href="merch.html">OBJECTS</a>
-    </nav>
+  <header id="hud">
+    <p class="micro brand"><i></i> SKRILLA HQ</p>
+    <p class="micro place">DAGORETTI — NAIROBI, KENYA</p>
   </header>
 
-  <main id="origin">
-    <section class="title-stage" aria-labelledby="title">
-      <div class="title-lock">
-        <p class="title-kicker" id="title-kicker">03:07 AM &nbsp; / &nbsp; THE ROOM IS LISTENING</p>
-        <h1 id="title" aria-label="SKRILLA HQ">
-          <span class="phrase" id="phrase-0" aria-hidden="true">SKRILLA HQ</span>
-          <span class="phrase" id="phrase-1" aria-hidden="true">BORN OF CULTURE</span>
-          <span class="phrase" id="phrase-2" aria-hidden="true">BORN OF DAGORETTI</span>
-          <span class="phrase" id="phrase-3" aria-hidden="true">SKRILLA HQ</span>
-        </h1>
-        <p class="title-sub" id="title-sub">A quiet room. A live wire. Scroll to enter.</p>
+  <div id="title">
+    <div class="stack">
+      <div class="subs">
+        <p class="micro sub" id="sub-a">A SIGNAL UNDER THE SKIN</p>
+        <p class="micro sub" id="sub-b">EVERY ORIGIN IS PRESSURE</p>
+        <p class="micro sub" id="sub-c">SKRILLA — DAGORETTI, NAIROBI</p>
+      </div>
+      <h1>
+        <span class="sr-only">SKRILLA HQ — Born of Culture, Born of Dagoretti</span>
+        <span class="phrase" id="phrase-0" aria-hidden="true">BORN OF CULTURE</span>
+        <span class="phrase" id="phrase-1" aria-hidden="true">BORN OF DAGORETTI</span>
+        <span class="phrase" id="phrase-2" aria-hidden="true">SKRILLA HQ</span>
+      </h1>
+    </div>
+  </div>
+
+  <p class="micro" id="counter">01/04</p>
+  <div id="cue"><p class="micro">SCROLL</p><i></i></div>
+
+  <main>
+    <section id="track" aria-hidden="true"></section>
+
+    <section id="final" aria-labelledby="final-title">
+      <div class="final-inner">
+        <p class="micro reveal">04/04 — THE ROOM IS OPEN</p>
+        <h2 id="final-title" class="reveal">ENTER THE ARCHIVE</h2>
+        <p class="micro final-copy reveal">Sound, objects, dates and film. Everything cut in Dagoretti, worn everywhere else.</p>
+        <nav class="links reveal" aria-label="Archive">
+          <a href="music.html">SOUND <span>↗</span></a>
+          <a href="merch.html">OBJECTS <span>↗</span></a>
+          <a href="tour.html">DATES <span>↗</span></a>
+          <a href="videos.html">FILM <span>↗</span></a>
+        </nav>
+        <p class="micro fine reveal">© <span id="year">2026</span> SKRILLA HQ — BORN OF CULTURE / BORN OF DAGORETTI</p>
       </div>
     </section>
   </main>
 
-  <div class="side-note">A signal from the west side</div>
-  <div class="scroll-cue" id="scroll-cue">Scroll to walk in</div>
-  <div class="progress-ui">
-    <span class="numbers" id="stage-number">01 / 04</span>
-    <span class="progress-rule"><i id="progress-bar"></i></span>
-    <span class="progress-caption" id="progress-caption">Before the sound</span>
-  </div>
+  <div id="loader"><p class="micro">SKRILLA HQ</p></div>
 
-  <div class="end-card" id="end-card">
-    <p>SKRILLA HQ &nbsp; / &nbsp; DAGORETTI, NAIROBI</p>
-    <strong>The room is open.</strong>
-    <a href="music.html">Enter the archive&nbsp; ↗</a>
-  </div>
-
-  <div class="loader" id="loader">
-    <div class="loader-label">Opening SKRILLA HQ</div>
-    <div class="loader-line"><i id="loader-bar"></i></div>
-  </div>
+  <!-- ══ motion ════════════════════════════════════════════════ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>window.gsap || document.write('<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"><\/script>');</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script>(window.gsap && window.ScrollTrigger) || document.write('<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"><\/script>');</script>
 
   <script type="importmap">
     {"imports": {"three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"}}
   </script>
+
   <script type="module">
     import * as THREE from "three";
     import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
@@ -403,488 +353,822 @@
     import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
     import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
-    const canvas = document.getElementById("c");
-    const loader = document.getElementById("loader");
-    const loaderBar = document.getElementById("loader-bar");
-    const purpleWash = document.getElementById("purple-wash");
-    const roomFade = document.getElementById("room-fade");
-    const scrollCue = document.getElementById("scroll-cue");
-    const progressBar = document.getElementById("progress-bar");
-    const stageNumber = document.getElementById("stage-number");
-    const progressCaption = document.getElementById("progress-caption");
-    const endCard = document.getElementById("end-card");
-    const titleKicker = document.getElementById("title-kicker");
-    const titleSub = document.getElementById("title-sub");
-    const phrases = [0, 1, 2, 3].map((n) => document.getElementById(`phrase-${n}`));
+    /* ────────────────────────────────────────────────────────────
+       0 · helpers, dom, constants
+       ──────────────────────────────────────────────────────────── */
+    const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+    const IS_SMALL = window.innerWidth < 720;
+    const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const clamp = (n, a = 0, b = 1) => Math.min(b, Math.max(a, n));
-    const smooth = (n) => n * n * (3 - 2 * n);
-    const smoother = (n) => n * n * n * (n * (n * 6 - 15) + 10);
-    const lerp = (a, b, t) => a + (b - a) * t;
-    const rand = (a, b) => a + Math.random() * (b - a);
+    const canvas   = document.getElementById("c");
+    const loader   = document.getElementById("loader");
+    const counter  = document.getElementById("counter");
+    const cue      = document.getElementById("cue");
+    const ringsSvg = document.getElementById("rings");
+    const ringGroup = document.getElementById("ring-group");
+    const ring1 = document.getElementById("ring-1");
+    const ring2 = document.getElementById("ring-2");
+    const subA = document.getElementById("sub-a");
+    const subB = document.getElementById("sub-b");
+    const subC = document.getElementById("sub-c");
+    const phrases = [0, 1, 2].map((i) => document.getElementById(`phrase-${i}`));
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const COLOR_CORE = new THREE.Color("#C27AFF").multiplyScalar(1.22);   // purple core
+    const COLOR_GLOW = new THREE.Color("#6B21A8").multiplyScalar(1.15);   // outer glow
+    const COLOR_HOT  = new THREE.Color(1.0, 0.93, 1.0);
+
+    /* ────────────────────────────────────────────────────────────
+       1 · renderer / scene / camera  (single canvas)
+       ──────────────────────────────────────────────────────────── */
+    const quality = { dpr: Math.min(window.devicePixelRatio || 1, 2) };
 
     const renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true,
-      alpha: false,
-      powerPreference: "high-performance"
+      canvas, antialias: false, alpha: false, powerPreference: "high-performance", stencil: false
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(quality.dpr);
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 1);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 1.1;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x050207);
-    scene.fog = new THREE.FogExp2(0x07030b, 0.035);
+    scene.background = new THREE.Color(0x000000);   // pure black. no gradient, ever.
 
-    const camera = new THREE.PerspectiveCamera(47, window.innerWidth / window.innerHeight, .1, 60);
-    camera.position.set(0, .03, 7.7);
-    camera.lookAt(0, 0, 0);
+    const CAM_Z = 5.2;
+    const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 120);
+    camera.position.set(0, 0, CAM_Z);
+    scene.add(camera);
 
-    // --- The closed room: almost invisible until the viewer has crossed its threshold.
-    const room = new THREE.Group();
-    scene.add(room);
-    const roomMat = (color, opacity = 1, roughness = .96) => new THREE.MeshStandardMaterial({
-      color, roughness, metalness: .04, transparent: true, opacity, side: THREE.DoubleSide
-    });
-    const backMat = roomMat(0x09070d);
-    const floorMat = roomMat(0x100b16, .88, .82);
-    const sideMat = roomMat(0x07060a, .7);
+    /* ────────────────────────────────────────────────────────────
+       2 · shared GLSL: simplex noise + fbm
+       ──────────────────────────────────────────────────────────── */
+    const NOISE = `
+      vec3 mod289(vec3 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
+      vec4 mod289(vec4 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
+      vec4 permute(vec4 x){ return mod289(((x * 34.0) + 1.0) * x); }
+      vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - 0.85373472095314 * r; }
 
-    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(18, 11), backMat);
-    backWall.position.set(0, 0, -4.2);
-    room.add(backWall);
-
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 12), floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.set(0, -2.1, -1.0);
-    room.add(floor);
-
-    const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(18, 12), roomMat(0x030306, .75));
-    ceiling.rotation.x = Math.PI / 2;
-    ceiling.position.set(0, 4.25, -1.0);
-    room.add(ceiling);
-
-    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(12, 8), sideMat);
-    leftWall.position.set(-6, .55, -1.0);
-    leftWall.rotation.y = Math.PI / 2;
-    room.add(leftWall);
-    const rightWall = leftWall.clone();
-    rightWall.position.x = 6;
-    rightWall.rotation.y = -Math.PI / 2;
-    room.add(rightWall);
-
-    // Sparse architecture lines read as a room without turning it into a set.
-    const roomLines = new THREE.Group();
-    const roomLineMat = new THREE.LineBasicMaterial({ color: 0x483653, transparent: true, opacity: .25 });
-    const lineSegments = [];
-    for (let i = -4; i <= 4; i++) {
-      lineSegments.push(-5.6, -2.08, i * 1.1, 5.6, -2.08, i * 1.1);
-    }
-    lineSegments.push(-5.6, -2.08, -4.2, -5.6, 3.3, -4.2, 5.6, -2.08, -4.2, 5.6, 3.3, -4.2);
-    const floorLineGeo = new THREE.BufferGeometry();
-    floorLineGeo.setAttribute("position", new THREE.Float32BufferAttribute(lineSegments, 3));
-    roomLines.add(new THREE.LineSegments(floorLineGeo, roomLineMat));
-
-    const frameGeo = new THREE.BufferGeometry();
-    frameGeo.setAttribute("position", new THREE.Float32BufferAttribute([
-      -4.5, -1.95, -4.08, 4.5, -1.95, -4.08,
-      -4.5, 3.18, -4.08, 4.5, 3.18, -4.08,
-      -4.5, -1.95, -4.08, -4.5, 3.18, -4.08,
-      4.5, -1.95, -4.08, 4.5, 3.18, -4.08
-    ], 3));
-    roomLines.add(new THREE.LineSegments(frameGeo, new THREE.LineBasicMaterial({ color: 0x6b426d, transparent: true, opacity: .25 })));
-    room.add(roomLines);
-
-    // Two quiet strips in the back wall establish the late-night studio temperature.
-    const stripMat = new THREE.MeshBasicMaterial({ color: 0x321344, transparent: true, opacity: .45 });
-    [-3.95, 3.95].forEach((x) => {
-      const strip = new THREE.Mesh(new THREE.BoxGeometry(.012, 5.0, .012), stripMat.clone());
-      strip.position.set(x, .52, -4.06);
-      room.add(strip);
-    });
-
-    // --- The untouched object at the center: black crystal, dark core, hairline fractures.
-    const relic = new THREE.Group();
-    relic.position.set(0, -.1, -.1);
-    scene.add(relic);
-
-    const crystalGeometry = new THREE.IcosahedronGeometry(.5, 1);
-    const crystalMaterial = new THREE.MeshStandardMaterial({
-      color: 0x08050d,
-      emissive: 0x210b31,
-      emissiveIntensity: .32,
-      metalness: .9,
-      roughness: .18,
-      transparent: true,
-      opacity: 1
-    });
-    const crystal = new THREE.Mesh(crystalGeometry, crystalMaterial);
-    relic.add(crystal);
-
-    const crystalEdges = new THREE.LineSegments(
-      new THREE.EdgesGeometry(crystalGeometry, 1),
-      new THREE.LineBasicMaterial({ color: 0x9c55bf, transparent: true, opacity: .32, blending: THREE.AdditiveBlending })
-    );
-    crystalEdges.scale.setScalar(1.012);
-    relic.add(crystalEdges);
-
-    const coreMaterial = new THREE.MeshBasicMaterial({ color: 0x6e2c92, transparent: true, opacity: .18, blending: THREE.AdditiveBlending });
-    const core = new THREE.Mesh(new THREE.SphereGeometry(.17, 20, 20), coreMaterial);
-    relic.add(core);
-
-    // Generate branching cracks once so every scroll through the birth has a physical logic.
-    const crackPositions = [];
-    const crackCount = 12;
-    for (let i = 0; i < crackCount; i++) {
-      const angle = (i / crackCount) * Math.PI * 2 + rand(-.13, .13);
-      const x = Math.cos(angle), y = Math.sin(angle);
-      const length = rand(.35, .76);
-      crackPositions.push(0, 0, .515, x * length * .62, y * length * .62, .53);
-      const branches = 2 + (i % 2);
-      for (let b = 0; b < branches; b++) {
-        const start = .23 + b * .14;
-        const branchAngle = angle + rand(-.75, .75);
-        crackPositions.push(
-          x * length * start, y * length * start, .535,
-          x * length * (start + .13), y * length * (start + .13) + Math.sin(branchAngle) * .1, .54
-        );
+      float snoise(vec3 v){
+        const vec2 C = vec2(1.0 / 6.0, 1.0 / 3.0);
+        const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+        vec3 i  = floor(v + dot(v, C.yyy));
+        vec3 x0 = v - i + dot(i, C.xxx);
+        vec3 g = step(x0.yzx, x0.xyz);
+        vec3 l = 1.0 - g;
+        vec3 i1 = min(g.xyz, l.zxy);
+        vec3 i2 = max(g.xyz, l.zxy);
+        vec3 x1 = x0 - i1 + C.xxx;
+        vec3 x2 = x0 - i2 + C.yyy;
+        vec3 x3 = x0 - D.yyy;
+        i = mod289(i);
+        vec4 p = permute(permute(permute(
+                   i.z + vec4(0.0, i1.z, i2.z, 1.0))
+                 + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+                 + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+        float n_ = 0.142857142857;
+        vec3 ns = n_ * D.wyz - D.xzx;
+        vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+        vec4 x_ = floor(j * ns.z);
+        vec4 y_ = floor(j - 7.0 * x_);
+        vec4 x = x_ * ns.x + ns.yyyy;
+        vec4 y = y_ * ns.x + ns.yyyy;
+        vec4 h = 1.0 - abs(x) - abs(y);
+        vec4 b0 = vec4(x.xy, y.xy);
+        vec4 b1 = vec4(x.zw, y.zw);
+        vec4 s0 = floor(b0) * 2.0 + 1.0;
+        vec4 s1 = floor(b1) * 2.0 + 1.0;
+        vec4 sh = -step(h, vec4(0.0));
+        vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;
+        vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
+        vec3 p0 = vec3(a0.xy, h.x);
+        vec3 p1 = vec3(a0.zw, h.y);
+        vec3 p2 = vec3(a1.xy, h.z);
+        vec3 p3 = vec3(a1.zw, h.w);
+        vec4 norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));
+        p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+        vec4 m = max(0.6 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);
+        m = m * m;
+        return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
       }
-    }
-    const crackGeo = new THREE.BufferGeometry();
-    crackGeo.setAttribute("position", new THREE.Float32BufferAttribute(crackPositions, 3));
-    const crackMaterial = new THREE.LineBasicMaterial({ color: 0xd2a1ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending });
-    const cracks = new THREE.LineSegments(crackGeo, crackMaterial);
-    relic.add(cracks);
 
-    const relicLight = new THREE.PointLight(0x8427ae, .65, 3.3, 2);
-    relicLight.position.set(0, 0, .4);
-    scene.add(relicLight);
+      float fbm3(vec3 p){
+        float a = 0.5, s = 0.0;
+        for (int i = 0; i < 3; i++){ s += a * snoise(p); p *= 2.03; a *= 0.5; }
+        return s;
+      }
+      float fbm4(vec3 p){
+        float a = 0.5, s = 0.0;
+        for (int i = 0; i < 4; i++){ s += a * snoise(p); p *= 2.03; a *= 0.5; }
+        return s;
+      }
+    `;
 
-    // A radial texture is made in memory: no image files, just light becoming visible.
-    function glowTexture() {
-      const size = 128;
-      const cv = document.createElement("canvas");
-      cv.width = cv.height = size;
-      const ctx = cv.getContext("2d");
-      const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-      g.addColorStop(0, "rgba(217, 140, 255, 1)");
-      g.addColorStop(.13, "rgba(155, 55, 226, .78)");
-      g.addColorStop(.5, "rgba(104, 22, 169, .19)");
-      g.addColorStop(1, "rgba(65, 8, 104, 0)");
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, size, size);
-      const texture = new THREE.CanvasTexture(cv);
-      texture.colorSpace = THREE.SRGBColorSpace;
-      return texture;
-    }
-    const glow = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: glowTexture(), color: 0x9f46d9, transparent: true, opacity: .13,
-      blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false
-    }));
-    glow.scale.set(.9, .9, 1);
-    glow.position.z = .06;
-    scene.add(glow);
+    /* ────────────────────────────────────────────────────────────
+       3 · the orb — one organic sac, not a dot field
+       ──────────────────────────────────────────────────────────── */
+    const orb = new THREE.Group();
+    scene.add(orb);
 
-    // --- Explosion: one field of particles, driven entirely by scroll progress.
-    const particleCount = window.innerWidth < 700 ? 3600 : 7000;
-    const particlePositions = new Float32Array(particleCount * 3);
-    const particleDirs = new Float32Array(particleCount * 3);
-    const particleSpeed = new Float32Array(particleCount);
-    const particleSize = new Float32Array(particleCount);
-    const particleSeed = new Float32Array(particleCount);
-    const particleLayer = new Float32Array(particleCount);
-
-    for (let i = 0; i < particleCount; i++) {
-      const j = i * 3;
-      const z = rand(-1, 1);
-      const a = rand(0, Math.PI * 2);
-      const r = Math.sqrt(1 - z * z);
-      particleDirs[j] = r * Math.cos(a);
-      particleDirs[j + 1] = r * Math.sin(a);
-      particleDirs[j + 2] = z;
-      particlePositions[j] = particlePositions[j + 1] = particlePositions[j + 2] = 0;
-      particleSpeed[i] = Math.pow(Math.random(), .54);
-      particleSize[i] = rand(1.3, 5.6);
-      particleSeed[i] = Math.random();
-      particleLayer[i] = Math.random();
-    }
-
-    const particleGeo = new THREE.BufferGeometry();
-    particleGeo.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
-    particleGeo.setAttribute("aDir", new THREE.BufferAttribute(particleDirs, 3));
-    particleGeo.setAttribute("aSpeed", new THREE.BufferAttribute(particleSpeed, 1));
-    particleGeo.setAttribute("aSize", new THREE.BufferAttribute(particleSize, 1));
-    particleGeo.setAttribute("aSeed", new THREE.BufferAttribute(particleSeed, 1));
-    particleGeo.setAttribute("aLayer", new THREE.BufferAttribute(particleLayer, 1));
-
-    const particleMaterial = new THREE.ShaderMaterial({
+    // 3a · membrane: fractal-noise displaced sphere with liquid veins + curl lightning
+    const shellGeo = new THREE.IcosahedronGeometry(1, IS_SMALL ? 16 : 28);
+    const shellMat = new THREE.ShaderMaterial({
       transparent: true,
+      depthTest: false,
       depthWrite: false,
+      side: THREE.DoubleSide,
       blending: THREE.AdditiveBlending,
       uniforms: {
-        uTime: { value: 0 },
-        uExplosion: { value: 0 },
-        uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, 2) },
-        uOpacity: { value: 1 }
+        uTime:      { value: 0 },
+        uDisplace:  { value: 0.15 },
+        uFreq:      { value: 1.0 },
+        uStretch:   { value: 0.0 },
+        uVeins:     { value: 0.55 },
+        uCore:      { value: 0.42 },
+        uOpacity:   { value: 1.0 },
+        uDissolve:  { value: 0.0 },
+        uColorCore: { value: COLOR_CORE },
+        uColorGlow: { value: COLOR_GLOW }
       },
-      vertexShader: `
+      vertexShader: NOISE + `
         uniform float uTime;
-        uniform float uExplosion;
-        uniform float uPixelRatio;
-        attribute vec3 aDir;
-        attribute float aSpeed;
-        attribute float aSize;
-        attribute float aSeed;
-        attribute float aLayer;
-        varying float vAlpha;
-        varying float vTint;
-        void main() {
-          float e = smoothstep(0.0, 1.0, uExplosion);
-          float burst = e * e * (3.0 - 2.0 * e);
-          float travel = (0.22 + aSpeed * 5.9) * burst;
-          vec3 p = aDir * (0.035 + travel);
-          float swirl = (0.12 + aLayer * .62) * burst;
-          float ca = cos(swirl + uTime * (.08 + aSeed * .08));
-          float sa = sin(swirl + uTime * (.08 + aSeed * .08));
-          p.xy = mat2(ca, -sa, sa, ca) * p.xy;
-          p.x += sin(uTime * .42 + aSeed * 31.0) * .055 * burst;
-          p.y += cos(uTime * .31 + aSeed * 24.0) * .09 * burst + aLayer * .28 * burst;
-          p.z += sin(uTime * .35 + aSeed * 20.0) * .12 * burst;
-          vec4 mvPosition = modelViewMatrix * vec4(p, 1.0);
-          gl_Position = projectionMatrix * mvPosition;
-          float perspective = 7.0 / max(1.0, -mvPosition.z);
-          gl_PointSize = aSize * uPixelRatio * (1.0 + e * 1.7) * perspective;
-          vAlpha = (0.25 + aSpeed * .76) * (1.0 - smoothstep(.88, 1.0, aSpeed) * .35);
-          vTint = aLayer;
+        uniform float uDisplace;
+        uniform float uFreq;
+        uniform float uStretch;
+        varying vec3 vBase;
+        varying vec3 vNrm;
+        varying vec3 vView;
+        varying float vDisp;
+        varying float vTear;
+
+        void main(){
+          vBase = normalize(position);
+
+          // the burst pulls the sac into a falling drop before it lets go
+          vec3 p = position;
+          p.y *= 1.0 + uStretch * 1.15;
+          p.x *= 1.0 - uStretch * 0.22;
+          p.z *= 1.0 - uStretch * 0.22;
+
+          float t = uTime * 0.16;
+          vec3 q = vBase * (1.55 * uFreq) + vec3(0.0, t * 0.62, t * 0.34);
+          float n = fbm4(q);
+          n += 0.45 * fbm4(q * 2.1 - vec3(t * 0.42, 0.0, t * 0.21));
+
+          float d = n * uDisplace;
+          vDisp = d;
+
+          // where the membrane rips open is decided per-vertex, not per-pixel
+          vTear = fbm3(vBase * 2.6 + vec3(0.0, uTime * 0.22, 0.0)) * 0.5 + 0.5;
+
+          vec3 displaced = p + normal * d;
+          vec4 world = modelMatrix * vec4(displaced, 1.0);
+          vNrm = normalize(mat3(modelMatrix) * normal);
+          vView = normalize(cameraPosition - world.xyz);
+          gl_Position = projectionMatrix * viewMatrix * world;
         }
       `,
-      fragmentShader: `
-        varying float vAlpha;
-        varying float vTint;
-        void main() {
-          vec2 uv = gl_PointCoord - .5;
-          float d = length(uv);
-          float soft = smoothstep(.5, .04, d);
-          vec3 cool = vec3(.43, .10, .72);
-          vec3 hot = vec3(.88, .47, 1.0);
-          vec3 color = mix(cool, hot, smoothstep(.35, .93, vTint));
-          gl_FragColor = vec4(color, soft * vAlpha * .74);
+      fragmentShader: NOISE + `
+        uniform float uTime;
+        uniform float uVeins;
+        uniform float uCore;
+        uniform float uOpacity;
+        uniform float uDissolve;
+        uniform vec3 uColorCore;
+        uniform vec3 uColorGlow;
+        varying vec3 vBase;
+        varying vec3 vNrm;
+        varying vec3 vView;
+        varying float vDisp;
+        varying float vTear;
+
+        void main(){
+          vec3 N = normalize(vNrm);
+          vec3 V = normalize(vView);
+          float facing = clamp(dot(N, V), 0.0, 1.0);
+          float fres = pow(1.0 - facing, 2.6);
+          float vAmt = clamp(uVeins, 0.0, 2.2);
+          float t = uTime;
+
+          vec3 q = vBase * 2.15;
+
+          // domain warp = the liquid moving under the membrane
+          float w1 = snoise(q + vec3(0.0, t * 0.13, 3.1));
+          float w2 = snoise(q + vec3(5.2, 1.3, t * 0.11));
+          vec3 warp = vec3(w1, w2, (w1 + w2) * 0.5);
+
+          float f = fbm3(q * 1.55 + warp * 1.75 + vec3(0.0, t * 0.07, 0.0));
+          float vein = (1.0 - smoothstep(0.0, 0.115, abs(f))) * (0.5 + 0.5 * smoothstep(-0.7, 0.9, f));
+
+          // electric crackle riding the same fluid, faster and sharper
+          float l = snoise(q * 3.05 - warp * 2.2 + vec3(t * 0.95, t * 1.7, -t * 0.62));
+          float bolt = 1.0 - smoothstep(0.0, 0.05, abs(l));
+          bolt *= 0.3 + 0.7 * pow(abs(sin(t * 5.1 + f * 6.0)), 6.0);
+
+          vec3 col = uColorGlow * (0.10 + 0.66 * fres);
+          col += uColorCore * (vein * 0.62 * vAmt);
+          col += uColorCore * (pow(facing, 3.0) * uCore * 0.55);
+          col += vec3(1.0, 0.93, 1.0) * (bolt * 0.72 * vAmt);
+          col += uColorCore * (smoothstep(0.1, 1.2, vDisp) * 0.45);
+
+          float a = (0.10 + 0.68 * fres + vein * 0.5 * vAmt + bolt * 0.9) * uOpacity;
+
+          // the burst tears the membrane away in soft organic patches.
+          // edge sweeps from 1.4 (nothing torn) to -0.4 (everything torn)
+          float edge = 1.4 - uDissolve * 1.8;
+          a *= 1.0 - smoothstep(edge - 0.30, edge + 0.30, vTear);
+
+          gl_FragColor = vec4(col, clamp(a, 0.0, 1.0));
         }
       `
     });
-    const particles = new THREE.Points(particleGeo, particleMaterial);
-    particles.position.set(0, -.1, .03);
-    scene.add(particles);
+    const shell = new THREE.Mesh(shellGeo, shellMat);
+    shell.renderOrder = 3;
+    orb.add(shell);
 
-    // Larger, slower motes give the explosion its smoke-like body.
-    const hazeCount = window.innerWidth < 700 ? 420 : 750;
-    const hazeArray = new Float32Array(hazeCount * 3);
-    const hazeData = [];
-    for (let i = 0; i < hazeCount; i++) {
-      const j = i * 3;
-      hazeArray[j] = hazeArray[j + 1] = hazeArray[j + 2] = 0;
-      hazeData.push({
-        x: rand(-1, 1), y: rand(-1, 1), z: rand(-1, 1),
-        speed: rand(.5, 1.3), size: rand(9, 26), seed: Math.random()
-      });
-    }
-    const hazeGeo = new THREE.BufferGeometry();
-    hazeGeo.setAttribute("position", new THREE.BufferAttribute(hazeArray, 3));
-    const hazeMaterial = new THREE.PointsMaterial({
-      color: 0x8e31c7, size: 0.15, transparent: true, opacity: 0, depthWrite: false,
-      blending: THREE.AdditiveBlending, map: glowTexture(), alphaTest: .001, sizeAttenuation: true
+    // 3b · inner core: the wet light at the centre of the sac
+    const coreMat = new THREE.ShaderMaterial({
+      transparent: true, depthTest: false, depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      uniforms: {
+        uTime: { value: 0 }, uOpacity: { value: 0.42 },
+        uColorCore: { value: COLOR_CORE }, uColorGlow: { value: COLOR_GLOW }
+      },
+      vertexShader: `
+        varying vec3 vNrm; varying vec3 vView; varying vec3 vPos;
+        void main(){
+          vPos = position;
+          vec4 world = modelMatrix * vec4(position, 1.0);
+          vNrm = normalize(mat3(modelMatrix) * normal);
+          vView = normalize(cameraPosition - world.xyz);
+          gl_Position = projectionMatrix * viewMatrix * world;
+        }
+      `,
+      fragmentShader: NOISE + `
+        uniform float uTime; uniform float uOpacity;
+        uniform vec3 uColorCore; uniform vec3 uColorGlow;
+        varying vec3 vNrm; varying vec3 vView; varying vec3 vPos;
+        void main(){
+          float facing = clamp(dot(normalize(vNrm), normalize(vView)), 0.0, 1.0);
+          float body = pow(facing, 1.7);
+          float wobble = 0.72 + 0.28 * fbm3(vPos * 2.4 + vec3(0.0, uTime * 0.26, uTime * 0.11));
+          vec3 col = mix(uColorGlow, uColorCore, body) * (body * 1.35) * wobble;
+          col += vec3(1.0, 0.94, 1.0) * pow(body, 7.0) * 0.5;
+          gl_FragColor = vec4(col, body * uOpacity);
+        }
+      `
     });
-    const haze = new THREE.Points(hazeGeo, hazeMaterial);
-    haze.position.set(0, -.12, -.15);
-    scene.add(haze);
+    const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.52, IS_SMALL ? 4 : 6), coreMat);
+    core.renderOrder = 2;
+    orb.add(core);
 
-    // Rings are the visible pressure wave: restrained while the room is closed, expansive after impact.
-    const rings = [];
-    for (let i = 0; i < 3; i++) {
-      const ring = new THREE.Mesh(
-        new THREE.RingGeometry(.45 + i * .08, .455 + i * .08, 128),
-        new THREE.MeshBasicMaterial({ color: i === 1 ? 0xc17bff : 0x7d2eb0, transparent: true, opacity: 0, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })
-      );
-      ring.position.set(0, -.1, .12 + i * .025);
-      ring.scale.setScalar(.8);
-      scene.add(ring);
-      rings.push(ring);
-    }
+    // 3c · outer glow: billboarded falloff in #6B21A8 (kept out of the orb
+    //      group so it can face the camera exactly)
+    const haloMat = new THREE.ShaderMaterial({
+      transparent: true, depthTest: false, depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      uniforms: {
+        uTime: { value: 0 }, uOpacity: { value: 0.3 },
+        uColorCore: { value: COLOR_CORE }, uColorGlow: { value: COLOR_GLOW }
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+      `,
+      fragmentShader: `
+        uniform float uTime; uniform float uOpacity;
+        uniform vec3 uColorCore; uniform vec3 uColorGlow;
+        varying vec2 vUv;
+        void main(){
+          float d = clamp(length(vUv - 0.5) * 2.0, 0.0, 1.0);
+          float fall = pow(1.0 - d, 3.1);
+          // cheap breathing wobble — no noise budget spent on a full-screen glow
+          fall *= 0.86 + 0.14 * sin(vUv.x * 9.0 + uTime * 0.7) * cos(vUv.y * 7.0 - uTime * 0.5);
+          vec3 col = mix(uColorGlow, uColorCore * 0.55, pow(1.0 - d, 7.0));
+          gl_FragColor = vec4(col * fall * uOpacity, fall * uOpacity);
+        }
+      `
+    });
+    const halo = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), haloMat);
+    halo.renderOrder = 1;
+    halo.frustumCulled = false;
+    scene.add(halo);
 
-    scene.add(new THREE.AmbientLight(0x281c35, .48));
-    const topLight = new THREE.PointLight(0x341249, 1.7, 11, 2);
-    topLight.position.set(-2.4, 2.9, 1.8);
-    scene.add(topLight);
+    /* ────────────────────────────────────────────────────────────
+       4 · FBO fluid: curl-noise advection of the burst (ping-pong)
+       ──────────────────────────────────────────────────────────── */
+    const rtType = renderer.capabilities.isWebGL2 ? THREE.HalfFloatType : THREE.UnsignedByteType;
+    const rtOpts = {
+      type: rtType, format: THREE.RGBAFormat,
+      minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
+      wrapS: THREE.ClampToEdgeWrapping, wrapT: THREE.ClampToEdgeWrapping,
+      depthBuffer: false, stencilBuffer: false, generateMipmaps: false
+    };
+    let rtA = new THREE.WebGLRenderTarget(256, 256, rtOpts);
+    let rtB = new THREE.WebGLRenderTarget(256, 256, rtOpts);
 
+    const simScene = new THREE.Scene();
+    const simCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const simMat = new THREE.ShaderMaterial({
+      depthTest: false, depthWrite: false,
+      uniforms: {
+        uPrev: { value: rtA.texture },
+        uTexel: { value: new THREE.Vector2(1 / 256, 1 / 256) },
+        uAspect: { value: 1 },
+        uTime: { value: 0 },
+        uDissip: { value: 0.982 },
+        uEmit: { value: 0 },
+        uEmitRadius: { value: 0.2 },
+        uEmitPos: { value: new THREE.Vector2(0.5, 0.5) },
+        uSwirl: { value: 0.2 },
+        uStep: { value: 0.0016 }
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
+      `,
+      fragmentShader: NOISE + `
+        uniform sampler2D uPrev;
+        uniform vec2 uTexel;
+        uniform float uAspect;
+        uniform float uTime;
+        uniform float uDissip;
+        uniform float uEmit;
+        uniform float uEmitRadius;
+        uniform vec2 uEmitPos;
+        uniform float uSwirl;
+        uniform float uStep;
+        varying vec2 vUv;
+
+        // divergence-free velocity from the curl of a scalar noise field
+        vec2 curl(vec2 p, float t){
+          float e = 0.09;
+          float dy = snoise(vec3(p.x, p.y + e, t)) - snoise(vec3(p.x, p.y - e, t));
+          float dx = snoise(vec3(p.x + e, p.y, t)) - snoise(vec3(p.x - e, p.y, t));
+          return vec2(dy, -dx) / (2.0 * e);
+        }
+
+        void main(){
+          vec2 uv = vUv;
+          vec2 p = vec2(uv.x * uAspect, uv.y);
+
+          vec2 vel = curl(p * 1.35 + vec2(0.0, uTime * 0.035), uTime * 0.06) * uSwirl;
+          vel.y += 0.055 * uSwirl;                       // smoke always rises
+          vec2 dens = texture2D(uPrev, uv - vel * uStep).rg;
+
+          dens *= uDissip;
+          dens = max(dens - 0.0016, 0.0);
+
+          // emission follows the body of the orb, metaball-soft at the edge
+          vec2 d = (uv - uEmitPos) * vec2(uAspect, 1.0);
+          float r = length(d);
+          float rad = max(uEmitRadius, 0.01);
+          float blob = 1.0 - smoothstep(rad * 0.12, rad, r);
+
+          vec3 q = vec3(p * 2.6, uTime * 0.13);
+          float warp = fbm3(q);
+          float fil = snoise(q * 3.1 + warp * 1.6 + vec3(uTime * 0.05, 0.0, 0.0));
+          blob *= 0.55 + 0.65 * (warp * 0.5 + 0.5);
+
+          float heat = 0.3 + 0.7 * smoothstep(0.15, 0.85, fil * 0.5 + 0.5);
+          dens = clamp(dens + vec2(blob * uEmit, blob * heat * uEmit * 1.2), 0.0, 3.0);
+
+          gl_FragColor = vec4(dens, 0.0, 1.0);
+        }
+      `
+    });
+    simScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), simMat));
+
+    /* ────────────────────────────────────────────────────────────
+       5 · composite: blurred fluid + starfield, glued to the camera
+       ──────────────────────────────────────────────────────────── */
+    const compMat = new THREE.ShaderMaterial({
+      depthTest: false, depthWrite: false, transparent: false,
+      uniforms: {
+        uSmoke: { value: rtA.texture },
+        uTexel: { value: new THREE.Vector2(1 / 256, 1 / 256) },
+        uAspect: { value: 1 },
+        uTime: { value: 0 },
+        uBlur: { value: 0.1 },     // up to ~40px of liquid blur
+        uFluid: { value: 0 },
+        uStar: { value: 0 },
+        uColorCore: { value: COLOR_CORE },
+        uColorGlow: { value: COLOR_GLOW }
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+      `,
+      fragmentShader: `
+        uniform sampler2D uSmoke;
+        uniform vec2 uTexel;
+        uniform float uAspect;
+        uniform float uTime;
+        uniform float uBlur;
+        uniform float uFluid;
+        uniform float uStar;
+        uniform vec3 uColorCore;
+        uniform vec3 uColorGlow;
+        varying vec2 vUv;
+
+        float hash21(vec2 p){
+          p = fract(p * vec2(123.34, 456.21));
+          p += dot(p, p + 45.32);
+          return fract(p.x * p.y);
+        }
+
+        vec3 starLayer(vec2 uv, float scale, float size, float t, float seed){
+          vec2 g = uv * scale;
+          vec2 id = floor(g);
+          vec2 f = fract(g) - 0.5;
+          float h = hash21(id + seed);
+          vec2 pos = (vec2(hash21(id + seed + 1.7), hash21(id + seed + 4.3)) - 0.5) * 0.72;
+          float d = length(f - pos);
+          float dot_ = (1.0 - smoothstep(0.0, size, d)) + (1.0 - smoothstep(0.0, size * 4.5, d)) * 0.14;
+          float tw = 0.55 + 0.45 * sin(t * (0.7 + h * 2.4) + h * 41.0);
+          float vis = step(0.72, h);
+          vec3 tint = mix(vec3(1.0), uColorCore, 0.34 * hash21(id + seed + 9.1));
+          return tint * dot_ * tw * vis * (0.45 + h * 0.85);
+        }
+
+        void main(){
+          // wide poisson blur of the fluid buffer: liquid smoke, not particles
+          float radius = 1.0 + uBlur * 26.0;
+          vec2 sum = texture2D(uSmoke, vUv).rg * 1.15;
+          float wsum = 1.15;
+          for (int i = 0; i < 14; i++){
+            float fi = float(i);
+            float ang = fi * 2.39996323;
+            float rr = sqrt((fi + 0.5) / 14.0);
+            vec2 off = vec2(cos(ang), sin(ang)) * rr * radius;
+            float w = 1.0 - rr * 0.4;
+            sum += texture2D(uSmoke, vUv + off * uTexel).rg * w;
+            wsum += w;
+          }
+          vec2 dens = sum / wsum;
+          float d = dens.r;
+          float heat = dens.g;
+
+          vec3 fluid = mix(uColorGlow, uColorCore, smoothstep(0.02, 0.42, d));
+          fluid = mix(fluid, vec3(1.0, 0.92, 1.0), smoothstep(0.55, 1.3, d) * 0.72);
+          fluid *= d * 1.25;
+          fluid += vec3(1.0, 0.9, 1.0) * pow(clamp(heat, 0.0, 1.6), 3.0) * 0.32;
+          fluid *= uFluid;
+
+          vec2 suv = vec2(vUv.x * uAspect, vUv.y);
+          vec3 stars = starLayer(suv, 22.0, 0.055, uTime, 0.0)
+                     + starLayer(suv + 13.7, 38.0, 0.040, uTime * 0.85, 21.0)
+                     + starLayer(suv * 0.72 + 41.2, 13.0, 0.075, uTime * 1.15, 57.0);
+          stars *= uStar;
+
+          vec3 nebula = uColorGlow * d * 0.4 * uStar;
+
+          gl_FragColor = vec4(max(fluid * (1.0 - uStar * 0.72) + nebula + stars, 0.0), 1.0);
+        }
+      `
+    });
+    const bgQuad = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), compMat);
+    bgQuad.renderOrder = -10;
+    bgQuad.frustumCulled = false;
+    bgQuad.position.z = -1;
+    camera.add(bgQuad);
+
+    /* ────────────────────────────────────────────────────────────
+       6 · postprocessing — bloom 0.8 / 0.6
+       ──────────────────────────────────────────────────────────── */
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.05, .78, .34);
+    const bloom = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight), 0.8, 0.6, 0.14
+    );
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
 
-    // Scroll state is eased so a fast wheel movement still reads like a film edit.
-    let targetProgress = 0;
-    let progress = 0;
-    let pointerX = 0, pointerY = 0;
-    let smoothPointerX = 0, smoothPointerY = 0;
-    let clock = 0;
-    let last = performance.now();
+    /* ────────────────────────────────────────────────────────────
+       7 · scroll state — GSAP ScrollTrigger, scrub 1.5
+       ──────────────────────────────────────────────────────────── */
+    // one keyframe table drives everything, so the GL timeline and the
+    // no-GSAP fallback can never drift apart
+    const KEYS = [
+      { at: 0.00, ease: "sine.inOut",
+        orbScale: 0.60, displace: 0.15, freq: 1.00, stretch: 0.00, veins: 0.55, coreGlow: 0.42,
+        dissolve: 0.00, orbOpacity: 1.00, smoke: 0.00, swirl: 0.18, fluid: 0.00, blur: 0.10,
+        star: 0.00, ring: 1.00, ringOpacity: 0.20 },
+      { at: 0.40, ease: "sine.inOut",
+        orbScale: 0.80, displace: 0.21, freq: 1.05, stretch: 0.00, veins: 0.85, coreGlow: 0.62,
+        dissolve: 0.00, orbOpacity: 1.00, smoke: 0.00, swirl: 0.26, fluid: 0.00, blur: 0.10,
+        star: 0.00, ring: 1.26, ringOpacity: 0.20 },
+      { at: 0.65, ease: "power1.inOut",
+        orbScale: 1.15, displace: 0.44, freq: 1.30, stretch: 0.05, veins: 1.35, coreGlow: 1.00,
+        dissolve: 0.00, orbOpacity: 1.00, smoke: 0.16, swirl: 0.45, fluid: 0.16, blur: 0.18,
+        star: 0.00, ring: 1.58, ringOpacity: 0.07 },
+      { at: 0.85, ease: "power2.in",                 // 65% → EXPLOSION
+        orbScale: 15.0, displace: 3.40, freq: 0.50, stretch: 1.00, veins: 2.20, coreGlow: 1.35,
+        dissolve: 1.00, orbOpacity: 0.00, smoke: 1.00, swirl: 1.15, fluid: 1.00, blur: 1.00,
+        star: 0.00, ring: 2.10, ringOpacity: 0.00 },
+      { at: 1.00, ease: "sine.inOut",                // 85% → starfield
+        orbScale: 18.0, displace: 4.20, freq: 0.42, stretch: 1.00, veins: 1.20, coreGlow: 0.60,
+        dissolve: 1.00, orbOpacity: 0.00, smoke: 0.14, swirl: 0.34, fluid: 0.42, blur: 0.55,
+        star: 1.00, ring: 2.60, ringOpacity: 0.00 }
+    ];
+    const PROP_KEYS = Object.keys(KEYS[0]).filter((k) => k !== "at" && k !== "ease");
 
-    function readScroll() {
-      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      targetProgress = clamp(window.scrollY / max);
-    }
-    window.addEventListener("scroll", readScroll, { passive: true });
-    window.addEventListener("pointermove", (event) => {
-      pointerX = (event.clientX / window.innerWidth - .5) * 2;
-      pointerY = (event.clientY / window.innerHeight - .5) * 2;
-    }, { passive: true });
+    const S = { pulse: 0 };
+    PROP_KEYS.forEach((k) => { S[k] = KEYS[0][k]; });
 
-    function rangeOpacity(p, start, inEnd, outStart, end) {
-      if (p < start || p > end) return 0;
-      // Keep the opening title visible on the first frame before the first scroll tick.
-      if (start === 0 && p === 0) return 1;
-      if (p < inEnd) return smooth((p - start) / (inEnd - start));
-      if (p > outStart) return 1 - smooth((p - outStart) / (end - outStart));
-      return 1;
-    }
+    let progress = 0;          // eased progress actually rendered
+    let targetProgress = 0;    // raw scroll progress (fallback path)
+    let stage = 1;
 
-    function updateWords(p) {
-      const ranges = [
-        [.00, .015, .115, .17],
-        [.105, .20, .33, .405],
-        [.34, .43, .59, .69],
-        [.625, .72, .96, 1.0]
-      ];
-      phrases.forEach((phrase, i) => {
-        const alpha = rangeOpacity(p, ...ranges[i]);
-        phrase.style.opacity = alpha.toFixed(3);
-        phrase.style.filter = `blur(${((1 - alpha) * 9).toFixed(2)}px)`;
-        phrase.style.transform = `translate3d(0, ${(1 - alpha) * 18}px, 0) scale(${(.97 + alpha * .03).toFixed(4)})`;
+    const setStage = (p) => {
+      const next = p < 0.40 ? 1 : p < 0.65 ? 2 : p < 0.85 ? 3 : 4;
+      if (next !== stage) { stage = next; counter.textContent = `0${stage}/04`; }
+    };
+
+    const gsapOK = !!(window.gsap && window.ScrollTrigger);
+    let tl = null;
+
+    if (gsapOK) {
+      gsap.registerPlugin(ScrollTrigger);
+
+      tl = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: "#track",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1.5,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            // follow the scrubbed timeline so the counter moves with the film
+            progress = self.animation ? self.animation.progress() : self.progress;
+            setStage(progress);
+          }
+        }
       });
 
-      const captions = ["Before the sound", "The first fracture", "The culture moves", "The room is open"];
-      const stage = p < .18 ? 1 : p < .405 ? 2 : p < .69 ? 3 : 4;
-      stageNumber.textContent = `0${stage} / 04`;
-      progressCaption.textContent = captions[stage - 1];
-      titleKicker.textContent = p < .18 ? "03:07 AM  /  THE ROOM IS LISTENING" : p < .405 ? "A SIGNAL UNDER THE SKIN" : p < .69 ? "DAGORETTI, NAIROBI  /  LIVE" : "SKRILLA HQ  /  KEEP THE SIGNAL OPEN";
-      titleSub.textContent = p < .18 ? "A quiet room. A live wire. Scroll to enter." : p < .405 ? "Every origin starts as pressure." : p < .69 ? "Culture does not arrive. It erupts." : "The room is open. The signal remains.";
-    }
-
-    function updateScene(p, time) {
-      const birth = clamp((p - .14) / .64);
-      const fracture = clamp((p - .13) / .20);
-      const explosion = smoother(birth);
-      particleMaterial.uniforms.uTime.value = time;
-      particleMaterial.uniforms.uExplosion.value = explosion;
-      particleMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio || 1, 2);
-
-      // The crystal loses mass as its light moves into the particle field.
-      const relicFade = 1 - smooth(clamp((p - .20) / .26));
-      relic.scale.setScalar(1 + fracture * .08);
-      crystal.rotation.y = time * .16;
-      crystal.rotation.x = Math.sin(time * .42) * .12;
-      crystalMaterial.opacity = relicFade;
-      crystalMaterial.emissiveIntensity = .3 + fracture * 1.6;
-      crystalEdges.material.opacity = .24 + fracture * 1.1;
-      cracks.material.opacity = smooth(fracture) * .95;
-      coreMaterial.opacity = .15 + fracture * 1.0;
-      relicLight.intensity = .55 + fracture * 6.0;
-      glow.material.opacity = .08 + explosion * 1.12;
-      glow.scale.setScalar(.82 + explosion * 4.7);
-
-      // Smoke motes are updated on the CPU for a soft, slow, organic drift.
-      const hazePosition = hazeGeo.attributes.position.array;
-      const hazeReach = .12 + explosion * 4.1;
-      for (let i = 0; i < hazeCount; i++) {
-        const d = hazeData[i];
-        const j = i * 3;
-        const breathe = Math.sin(time * d.speed + d.seed * 20) * .12;
-        hazePosition[j] = d.x * hazeReach + breathe;
-        hazePosition[j + 1] = d.y * hazeReach + Math.sin(time * .25 + d.seed * 10) * .2 + explosion * .35;
-        hazePosition[j + 2] = d.z * hazeReach * .55;
+      // world keyframes, built straight off the table
+      for (let i = 1; i < KEYS.length; i++) {
+        const a = KEYS[i - 1], b = KEYS[i];
+        const vars = { duration: +(b.at - a.at).toFixed(4), ease: b.ease };
+        PROP_KEYS.forEach((k) => { vars[k] = b[k]; });
+        tl.to(S, vars, a.at);
       }
-      hazeGeo.attributes.position.needsUpdate = true;
-      hazeMaterial.opacity = explosion * .055;
-      hazeMaterial.size = .13 + explosion * .25;
-      haze.rotation.y = time * .025;
 
-      rings.forEach((ring, i) => {
-        const delay = i * .11;
-        const ringP = clamp((birth - delay) / .72);
-        ring.scale.setScalar(.8 + ringP * (4.8 + i * 1.1));
-        ring.material.opacity = smooth(ringP) * (1 - ringP) * (.65 - i * .11);
-        ring.rotation.z = time * (.04 + i * .02) * (i % 2 ? -1 : 1);
+      // the 40% pulse: pressure, then release
+      tl.to(S, { pulse: 1, duration: 0.10, ease: "sine.in" }, 0.40);
+      tl.to(S, { pulse: 0, duration: 0.15, ease: "sine.out" }, 0.50);
+
+      // type
+      const setPhrase = (el, i) => gsap.set(el, { xPercent: -50, yPercent: -50, x: 0, y: 0, opacity: i === 0 ? 1 : 0, filter: "blur(0px)" });
+      phrases.forEach(setPhrase);
+      gsap.set([subA, subB, subC], { xPercent: -50, yPercent: 0, x: 0, y: 0, opacity: 0, filter: "blur(0px)" });
+      gsap.set(subA, { opacity: 1 });
+
+      tl.to(cue, { opacity: 0, duration: 0.04, ease: "power1.in" }, 0.015);
+
+      tl.to(subA, { opacity: 0, y: -9, filter: "blur(5px)", duration: 0.05, ease: "power1.in" }, 0.33);
+      tl.fromTo(subB, { opacity: 0, y: 9, filter: "blur(5px)" },
+                        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.05, ease: "power1.out" }, 0.40);
+      tl.to(subB, { opacity: 0, y: -9, filter: "blur(5px)", duration: 0.05, ease: "power1.in" }, 0.58);
+      tl.fromTo(subC, { opacity: 0, y: 10, filter: "blur(5px)" },
+                        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.06, ease: "power1.out" }, 0.87);
+
+      tl.to(phrases[0], { opacity: 0, y: -16, filter: "blur(9px)", duration: 0.06, ease: "power1.in" }, 0.32);
+      tl.fromTo(phrases[1], { opacity: 0, y: 18, filter: "blur(9px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.06, ease: "power2.out" }, 0.40);
+      tl.to(phrases[1], { opacity: 0, y: -16, filter: "blur(9px)", duration: 0.06, ease: "power1.in" }, 0.60);
+      tl.fromTo(phrases[2], { opacity: 0, y: 22, filter: "blur(12px)", letterSpacing: "0.05em" },
+                          { opacity: 1, y: 0, filter: "blur(0px)", letterSpacing: "-0.02em", duration: 0.09, ease: "power2.out" }, 0.85);
+
+      // the film hands over to the last section
+      gsap.to("#title, #hud, #counter", {
+        opacity: 0, ease: "none",
+        scrollTrigger: { trigger: "#final", start: "top 94%", end: "top 46%", scrub: true }
       });
-
-      // The closed architecture recedes rather than disappearing instantly.
-      const architectureFade = 1 - smooth(clamp((p - .36) / .38));
-      room.traverse((child) => {
-        if (!child.material) return;
-        const materials = Array.isArray(child.material) ? child.material : [child.material];
-        materials.forEach((material) => {
-          if (material.userData.baseOpacity === undefined) material.userData.baseOpacity = material.opacity;
-          material.opacity = material.userData.baseOpacity * (.32 + architectureFade * .68);
-        });
+      gsap.from("#final .reveal", {
+        opacity: 0, y: 26, stagger: 0.07, ease: "power2.out",
+        scrollTrigger: { trigger: "#final", start: "top 74%", end: "top 22%", scrub: 0.6 }
       });
-
-      camera.position.x = lerp(camera.position.x, smoothPointerX * .12, .035);
-      camera.position.y = lerp(camera.position.y, .03 - smoothPointerY * .08 - explosion * .08, .035);
-      camera.position.z = lerp(camera.position.z, 7.7 - explosion * .85, .035);
-      camera.lookAt(0, -.05 - explosion * .06, 0);
-      scene.fog.density = .033 + explosion * .018;
-      bloom.strength = 1.0 + explosion * 1.75;
-      bloom.radius = .72 + explosion * .25;
-
-      purpleWash.style.opacity = (.78 * smooth(clamp((p - .36) / .48))).toFixed(3);
-      roomFade.style.opacity = (.55 + explosion * .18).toFixed(3);
-      progressBar.style.width = `${(p * 100).toFixed(2)}%`;
-      scrollCue.style.opacity = `${clamp(1 - p * 9)}`;
-      scrollCue.style.transform = `translateX(-50%) translateY(${p * 16}px)`;
-      endCard.style.opacity = smooth(clamp((p - .77) / .16)).toFixed(3);
-      endCard.style.transform = `translate(-50%, ${18 - smooth(clamp((p - .77) / .16)) * 18}px)`;
+    } else {
+      // CDN failure path: same keyframe table, hand-eased
+      window.addEventListener("scroll", () => {
+        const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        targetProgress = clamp(window.scrollY / max);
+      }, { passive: true });
     }
 
-    function animate(now) {
-      requestAnimationFrame(animate);
-      const delta = Math.min(.05, (now - last) / 1000);
-      last = now;
-      clock += delta;
-      progress = lerp(progress, targetProgress, 1 - Math.pow(.0005, delta));
-      smoothPointerX = lerp(smoothPointerX, pointerX, .035);
-      smoothPointerY = lerp(smoothPointerY, pointerY, .035);
-      updateWords(progress);
-      updateScene(progress, clock);
-      composer.render();
+    function sampleKeys(p) {
+      p = clamp(p);
+      let i = 1;
+      while (i < KEYS.length - 1 && p > KEYS[i].at) i++;
+      const a = KEYS[i - 1], b = KEYS[i];
+      const t = clamp((p - a.at) / (b.at - a.at));
+      const e = t * t * (3 - 2 * t);
+      PROP_KEYS.forEach((k) => { S[k] = a[k] + (b[k] - a[k]) * e; });
+      S.pulse = (p > 0.40 && p < 0.65) ? Math.sin(clamp((p - 0.40) / 0.25) * Math.PI) : 0;
+
+      const show = (el, on) => { el.style.opacity = on ? "1" : "0"; };
+      show(subA, p < 0.37); show(subB, p >= 0.40 && p < 0.62); show(subC, p >= 0.87);
+      show(phrases[0], p < 0.36); show(phrases[1], p >= 0.40 && p < 0.64); show(phrases[2], p >= 0.85);
+      cue.style.opacity = `${clamp(1 - p * 14)}`;
+      setStage(p);
+    }
+
+    /* ────────────────────────────────────────────────────────────
+       8 · layout / resize
+       ──────────────────────────────────────────────────────────── */
+    let ringCx = 0, ringCy = 0;
+
+    function layoutRings(w, h) {
+      ringsSvg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+      ringsSvg.setAttribute("width", w);
+      ringsSvg.setAttribute("height", h);
+      ringCx = w / 2; ringCy = h / 2;
+      const base = Math.min(w, h);
+      ring1.setAttribute("cx", ringCx); ring1.setAttribute("cy", ringCy); ring1.setAttribute("r", base * 0.205);
+      ring2.setAttribute("cx", ringCx); ring2.setAttribute("cy", ringCy); ring2.setAttribute("r", base * 0.278);
     }
 
     function resize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      const w = window.innerWidth, h = window.innerHeight;
+      const dpr = quality.dpr;
+
+      renderer.setPixelRatio(dpr);
+      renderer.setSize(w, h);
+      composer.setSize(w, h);
+
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      composer.setSize(window.innerWidth, window.innerHeight);
+
+      // keep the composite quad exactly filling the frustum at z = -1
+      const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+      bgQuad.scale.set(viewH * camera.aspect, viewH, 1);
+
+      const sw = clamp(Math.round(w * dpr * 0.45), 192, 800);
+      const sh = Math.max(96, Math.round(sw * h / w));
+      rtA.setSize(sw, sh);
+      rtB.setSize(sw, sh);
+      simMat.uniforms.uTexel.value.set(1 / sw, 1 / sh);
+      simMat.uniforms.uAspect.value = sw / sh;
+      compMat.uniforms.uTexel.value.set(1 / sw, 1 / sh);
+      compMat.uniforms.uAspect.value = w / h;
+
+      layoutRings(w, h);
     }
-    window.addEventListener("resize", resize);
 
-    readScroll();
-    updateWords(0);
+    let resizeTimer = 0;
+    window.addEventListener("resize", () => {
+      resize();
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => { if (gsapOK) ScrollTrigger.refresh(); }, 220);
+    });
+    window.addEventListener("orientationchange", () => setTimeout(resize, 260));
 
-    // Small loader keeps the first frame intentional instead of showing a blank WebGL canvas.
-    let loaded = 0;
-    const loadTimer = setInterval(() => {
-      loaded = Math.min(100, loaded + rand(9, 24));
-      loaderBar.style.width = `${loaded}%`;
-      if (loaded >= 100) {
-        clearInterval(loadTimer);
-        renderer.compile(scene, camera);
-        requestAnimationFrame(animate);
-        setTimeout(() => loader.classList.add("is-done"), 420);
+    /* ────────────────────────────────────────────────────────────
+       9 · pointer
+       ──────────────────────────────────────────────────────────── */
+    let px = 0, py = 0, spx = 0, spy = 0;
+    window.addEventListener("pointermove", (e) => {
+      px = (e.clientX / window.innerWidth - 0.5) * 2;
+      py = (e.clientY / window.innerHeight - 0.5) * 2;
+    }, { passive: true });
+
+    /* ────────────────────────────────────────────────────────────
+       10 · frame loop
+       ──────────────────────────────────────────────────────────── */
+    let time = 0, last = performance.now(), frames = 0, fpsAcc = 0, adapted = false;
+    const timeScale = REDUCED ? 0.22 : 1;
+
+    function frame(now) {
+      requestAnimationFrame(frame);
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      time += dt * timeScale;
+
+      if (!gsapOK) {
+        progress += (targetProgress - progress) * (1 - Math.pow(0.0009, dt));
+        sampleKeys(progress);
       }
-    }, 110);
+
+      spx += (px - spx) * 0.045;
+      spy += (py - spy) * 0.045;
+
+      // heartbeat: alive at rest, hard pulse at 40%
+      const idleBeat = 0.5 + 0.5 * Math.sin(time * 1.85);
+      const beat = idleBeat * 0.16 + S.pulse * (0.5 + 0.5 * Math.sin(time * 8.0));
+      const scale = S.orbScale * (1 + beat * 0.05);
+
+      orb.scale.setScalar(scale);
+      orb.position.x += (spx * 0.17 - orb.position.x) * 0.05;
+      orb.position.y += (-spy * 0.12 - orb.position.y) * 0.05;
+      orb.rotation.y = time * 0.055 + spx * 0.14;
+      orb.rotation.x = Math.sin(time * 0.21) * 0.07 - spy * 0.09;
+
+
+      // shell
+      shellMat.uniforms.uTime.value = time;
+      shellMat.uniforms.uDisplace.value = S.displace * (1 + beat * 0.2);
+      shellMat.uniforms.uFreq.value = S.freq;
+      shellMat.uniforms.uStretch.value = S.stretch;
+      shellMat.uniforms.uVeins.value = S.veins * (1 + beat * 0.55);
+      shellMat.uniforms.uCore.value = S.coreGlow * (0.85 + beat * 0.3);
+      shellMat.uniforms.uOpacity.value = S.orbOpacity;
+      shellMat.uniforms.uDissolve.value = S.dissolve;
+
+      // core + halo
+      coreMat.uniforms.uTime.value = time;
+      coreMat.uniforms.uOpacity.value = clamp(S.coreGlow * S.orbOpacity, 0, 1);
+      haloMat.uniforms.uTime.value = time;
+      haloMat.uniforms.uOpacity.value = clamp((0.13 + S.coreGlow * 0.24) * S.orbOpacity * (1 - S.fluid * 0.65), 0, 1);
+
+      // camera drifts into the burst
+      camera.position.x += (spx * 0.09 - camera.position.x) * 0.04;
+      camera.position.y += (-spy * 0.07 - camera.position.y) * 0.04;
+      camera.position.z = CAM_Z - S.stretch * 1.15;
+      camera.lookAt(orb.position.x * 0.4, orb.position.y * 0.4, 0);
+
+      // halo lives in the scene so it can billboard to the camera exactly
+      halo.position.copy(orb.position);
+      halo.scale.setScalar(scale * 5.4);
+      halo.quaternion.copy(camera.quaternion);
+
+      // ── fluid step ──
+      const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * camera.position.z;
+      const fpsScale = Math.min(2, dt * 60);
+      simMat.uniforms.uPrev.value = rtA.texture;
+      simMat.uniforms.uTime.value = time;
+      simMat.uniforms.uDissip.value = Math.pow(0.975, dt * 60);
+      simMat.uniforms.uEmit.value = S.smoke * 0.038 * fpsScale;
+      simMat.uniforms.uSwirl.value = S.swirl;
+      simMat.uniforms.uEmitPos.value.set(
+        clamp(0.5 + orb.position.x / (viewH * camera.aspect), -0.5, 1.5),
+        clamp(0.5 - orb.position.y / viewH, -0.5, 1.5)
+      );
+      simMat.uniforms.uEmitRadius.value = clamp((scale / viewH) * 1.45 + 0.03, 0.02, 4);
+
+      renderer.setRenderTarget(rtB);
+      renderer.render(simScene, simCam);
+      renderer.setRenderTarget(null);
+      const swap = rtA; rtA = rtB; rtB = swap;
+
+      // ── composite ──
+      compMat.uniforms.uSmoke.value = rtA.texture;
+      compMat.uniforms.uTime.value = time;
+      compMat.uniforms.uBlur.value = S.blur;
+      compMat.uniforms.uFluid.value = S.fluid;
+      compMat.uniforms.uStar.value = S.star;
+
+      // ── hairline circles, slowly scaling up ──
+      const s1 = S.ring, s2 = 1 + (S.ring - 1) * 0.68;
+      ring1.setAttribute("transform", `translate(${ringCx} ${ringCy}) scale(${s1.toFixed(4)}) translate(${-ringCx} ${-ringCy})`);
+      ring2.setAttribute("transform", `translate(${ringCx} ${ringCy}) scale(${s2.toFixed(4)}) translate(${(-ringCx).toFixed(2)} ${(-ringCy).toFixed(2)})`);
+      ringGroup.style.opacity = S.ringOpacity.toFixed(3);
+
+      composer.render();
+
+      // one-shot quality guard for weak GPUs
+      frames++; fpsAcc += dt;
+      if (!adapted && fpsAcc > 3.2) {
+        adapted = true;
+        if (frames / fpsAcc < 40 && quality.dpr > 1) {
+          quality.dpr = 1;
+          resize();
+        }
+      }
+    }
+
+    /* ────────────────────────────────────────────────────────────
+       11 · boot
+       ──────────────────────────────────────────────────────────── */
+    resize();
+    renderer.setRenderTarget(rtA); renderer.clear(true, false, false);
+    renderer.setRenderTarget(rtB); renderer.clear(true, false, false);
+    renderer.setRenderTarget(null);
+
+    if (!gsapOK) {
+      // no GSAP: put the opening type on screen by hand
+      phrases.forEach((el, i) => {
+        el.style.transform = "translate(-50%, -50%)";
+        el.style.opacity = i === 0 ? "1" : "0";
+      });
+      [subA, subB, subC].forEach((el) => { el.style.transform = "translateX(-50%)"; });
+      subA.style.opacity = "1";
+    }
+
+    renderer.compile(scene, camera);
+    if (gsapOK) { setStage(0); tl.progress(0); } else { sampleKeys(0); }
+    requestAnimationFrame(frame);
+
+    const openRoom = () => loader.classList.add("done");
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => setTimeout(openRoom, 260));
+    } else {
+      setTimeout(openRoom, 600);
+    }
+    if (gsapOK) setTimeout(() => ScrollTrigger.refresh(), 700);
+
+    window.__skrillaReady = true;
   </script>
 </body>
 </html>
