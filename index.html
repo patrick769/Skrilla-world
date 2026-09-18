@@ -4,1251 +4,608 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#000000" />
-  <meta name="description" content="SKRILLA HQ — a signal under the skin. Born of culture, born of Dagoretti, Nairobi." />
-  <title>SKRILLA HQ — Born of Culture</title>
+  <meta name="description" content="SKRILLA HQ — DAGORETTI • NAIROBI • EST. 2021 • OWNED. OUT NOW: BLOOD &amp; PRAYER EP." />
+  <title>SKRILLA HQ — BLOOD &amp; PRAYER EP</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='72' font-size='72' text-anchor='middle' fill='%23C27AFF' font-family='Arial Black'%3ES%3C/text%3E%3C/svg%3E" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Three.js r160 ships ES modules only (UMD build removed at r160) -->
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+  </script>
 
   <style>
-    /* ─────────────────────────────────────────────────────────────
-       SKRILLA HQ — "BORN OF NATURE" reference build
-       Pure black. One canvas. Giant serif. Hairline chrome.
-       ───────────────────────────────────────────────────────────── */
-    :root {
-      --black: #000000;
-      --white: #FFFFFF;
-      --core: #C27AFF;
-      --glow: #6B21A8;
-      --micro: rgba(255, 255, 255, .55);
-      --micro-dim: rgba(255, 255, 255, .3);
-      --hairline: rgba(255, 255, 255, .18);
-      --pad: clamp(18px, 3.4vw, 46px);
-      --pad-y: clamp(18px, 3.2vh, 32px);
+    /* ────────────────────────────────────────────────────────────
+       SKRILLA HQ — single-file build
+       Layer stack (back → front):
+         body background IMG_0548.PNG  (z:auto, fixed)
+         body::before   rgba(0,0,0,.35) light overlay   z:0
+         canvas#bg      transparent THREE smoke, screen blend  z:1
+         .stage / main  UI + content                      z:2/3
+         nav / ticker                                      z:8/7
+       ──────────────────────────────────────────────────────────── */
+    :root{
+      --purple:#C27AFF;
+      --purple-deep:#6B21A8;
+      --white:#ffffff;
+    }
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    html, body{ margin:0; padding:0; }
+
+    /* CRITICAL — keep the praying-man photo visible under everything */
+    body{
+      background: url('./IMG_0548.PNG') center / cover no-repeat fixed;
+      background-color: black;
+      color:var(--white);
+      font-family:'Space Grotesk', system-ui, sans-serif;
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+    /* light overlay so praying man stays visible, not too dark */
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,0.35);
+      z-index:0;
+      pointer-events:none;
+    }
+    /* transparent WebGL smoke layer, screen-blended over the photo */
+    canvas#bg{
+      position:fixed;
+      inset:0;
+      z-index:1;
+      background: transparent !important;
+      mix-blend-mode: screen;
+      opacity: 0.92;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      display:block;
     }
 
-    *, *::before, *::after { box-sizing: border-box; }
+    ::selection{ background:var(--purple-deep); color:#fff; }
 
-    html { background: var(--black); }
+    /* ── top nav ─────────────────────────────────────────────── */
+    .nav{
+      position:fixed; top:0; left:0; right:0; z-index:8;
+      display:flex; align-items:center; gap:clamp(1rem,2.4vw,2.2rem);
+      padding:1.05rem clamp(1rem,4vw,3rem);
+      background:linear-gradient(to bottom, rgba(0,0,0,.78), rgba(0,0,0,0));
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+    }
+    .brand{
+      font-family:'Anton', sans-serif; font-weight:900;
+      font-size:1.25rem; letter-spacing:.08em; color:#fff;
+      text-decoration:none; text-shadow:0 0 16px rgba(194,122,255,.8);
+      margin-right:auto;
+    }
+    .nav .links{ display:flex; gap:clamp(.8rem,1.8vw,1.6rem); overflow-x:auto; scrollbar-width:none; }
+    .nav .links::-webkit-scrollbar{ display:none; }
+    .nav .links a{
+      color:rgba(255,255,255,.86); text-decoration:none;
+      font-size:.74rem; font-weight:700; letter-spacing:.18em;
+      padding:.4rem 0; white-space:nowrap;
+      transition:color .2s, text-shadow .2s;
+    }
+    .nav .links a:hover{ color:var(--purple); text-shadow:0 0 14px rgba(194,122,255,.9); }
+    .btn-listen{
+      border:1px solid var(--purple); color:var(--purple);
+      background:rgba(107,33,168,.18);
+      font:700 .72rem/1 'Space Grotesk', sans-serif; letter-spacing:.2em;
+      padding:.7rem 1.15rem; text-decoration:none; white-space:nowrap;
+      transition:background .2s, color .2s, box-shadow .2s;
+    }
+    .btn-listen:hover{ background:var(--purple); color:#000; box-shadow:0 0 26px rgba(194,122,255,.75); }
 
-    body {
-      margin: 0;
-      background: var(--black);            /* pure black, never a gradient */
-      color: var(--white);
-      font-family: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
-      overflow-x: hidden;
+    /* ── hero stage ──────────────────────────────────────────── */
+    .stage{
+      position:fixed; inset:0; z-index:2;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      text-align:center; padding:0 4vw;
+      pointer-events:none;
+      will-change:opacity, transform;
+    }
+    .stage h1{
+      margin:0;
+      font-family:'Anton', sans-serif;
+      font-weight:900;                 /* Anton ships 400; 900 requested for max thickness */
+      font-size:12vw;
+      line-height:.92;
+      letter-spacing:.01em;
+      color:#fff;
+      text-shadow:
+        0 0 12px rgba(194,122,255,.95),
+        0 0 42px rgba(194,122,255,.55),
+        0 0 120px rgba(107,33,168,.85);
+    }
+    .stage .sub{
+      margin:1.4rem 0 0;
+      font-size:clamp(.62rem, 1.5vw, 1rem);
+      font-weight:500;
+      letter-spacing:.46em;
+      color:rgba(255,255,255,.94);
+      text-shadow:0 0 18px rgba(107,33,168,.95);
+      text-transform:uppercase;
+    }
+    .cta{ display:flex; gap:1.1rem; margin-top:2.6rem; flex-wrap:wrap; justify-content:center; }
+    .cta a{
+      pointer-events:auto;
+      font:700 .8rem/1 'Space Grotesk', sans-serif;
+      letter-spacing:.24em; text-decoration:none;
+      padding:1.05rem 2.1rem;
+      transition:transform .2s, box-shadow .2s, background .2s, color .2s;
+    }
+    .cta a:hover{ transform:translateY(-2px); }
+    .btn-primary{
+      background:var(--purple); color:#000;
+      box-shadow:0 0 34px rgba(194,122,255,.65);
+    }
+    .btn-primary:hover{ box-shadow:0 0 52px rgba(194,122,255,.95); }
+    .btn-ghost{
+      border:1px solid rgba(255,255,255,.65); color:#fff;
+      background:rgba(0,0,0,.25);
+    }
+    .btn-ghost:hover{ border-color:var(--purple); color:var(--purple); box-shadow:0 0 26px rgba(194,122,255,.5); }
+
+    .scroll-hint{
+      position:fixed; left:50%; bottom:4.6rem; transform:translateX(-50%);
+      z-index:2; font-size:.62rem; letter-spacing:.4em; color:rgba(255,255,255,.6);
+      pointer-events:none;
     }
 
-    ::selection { background: rgba(194, 122, 255, .3); color: #fff; }
+    /* scroll runway that drives the 0.8 → 12 smoke explosion */
+    #explode-track{ height:420vh; }
 
-    /* micro type: 8px, uppercase, tracking .3em — never bold */
-    .micro {
-      margin: 0;
-      font-size: 8px;
-      font-weight: 400;
-      line-height: 1.4;
-      letter-spacing: .3em;
-      text-transform: uppercase;
-      color: var(--micro);
-      white-space: nowrap;
+    /* ── content ─────────────────────────────────────────────── */
+    main{ position:relative; z-index:3; }
+    .panel{
+      background:rgba(4,0,8,.78);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      border-top:1px solid rgba(194,122,255,.28);
+      padding:16vh 6vw 14vh;
+    }
+    .panel h2{
+      font-family:'Anton', sans-serif; font-weight:900;
+      font-size:clamp(2.4rem, 6vw, 5rem);
+      margin:0 0 .4em; letter-spacing:.02em; color:#fff;
+      text-shadow:0 0 30px rgba(107,33,168,.9);
+    }
+    .panel .kicker{
+      font-size:.68rem; letter-spacing:.42em; color:var(--purple);
+      font-weight:700; margin-bottom:1.2rem;
+    }
+    .rows{ list-style:none; margin:0; padding:0; }
+    .rows li{
+      display:flex; align-items:baseline; gap:1.4rem;
+      padding:1.15rem .4rem;
+      border-bottom:1px solid rgba(255,255,255,.12);
+    }
+    .rows .idx{ color:var(--purple); font-weight:700; font-size:.8rem; letter-spacing:.2em; }
+    .rows .t{ font-family:'Anton', sans-serif; font-size:clamp(1.1rem,2.6vw,1.8rem); letter-spacing:.05em; }
+    .rows .meta{ margin-left:auto; color:rgba(255,255,255,.55); font-size:.72rem; letter-spacing:.22em; }
+    .rows a{ color:inherit; text-decoration:none; }
+    .rows a:hover .t{ color:var(--purple); text-shadow:0 0 18px rgba(194,122,255,.8); }
+    .rows .link{ color:var(--purple); font-size:.72rem; letter-spacing:.24em; font-weight:700; }
+
+    .merch-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1.4rem; }
+    .merch-card{
+      border:1px solid rgba(194,122,255,.35);
+      background:rgba(107,33,168,.12);
+      padding:2rem 1.6rem;
+      display:flex; flex-direction:column; gap:.8rem;
+      transition:box-shadow .25s, transform .25s;
+    }
+    .merch-card:hover{ box-shadow:0 0 40px rgba(107,33,168,.6); transform:translateY(-4px); }
+    .merch-card .t{ font-family:'Anton', sans-serif; font-size:1.5rem; letter-spacing:.04em; }
+    .merch-card .meta{ color:rgba(255,255,255,.55); font-size:.7rem; letter-spacing:.26em; }
+    .merch-card a{ color:var(--purple); text-decoration:none; font-size:.72rem; letter-spacing:.24em; font-weight:700; margin-top:auto; }
+
+    .about-wrap{ display:grid; grid-template-columns:minmax(220px,420px) 1fr; gap:3rem; align-items:center; }
+    @media (max-width:820px){ .about-wrap{ grid-template-columns:1fr; } }
+    .about-wrap img{ width:100%; display:block; filter:grayscale(.4) contrast(1.1); border:1px solid rgba(194,122,255,.4); box-shadow:0 0 60px rgba(107,33,168,.45); }
+    .about-wrap p{ line-height:1.8; color:rgba(255,255,255,.85); max-width:60ch; }
+
+    .socials{ display:flex; flex-wrap:wrap; gap:1rem; }
+    .socials a{
+      border:1px solid rgba(255,255,255,.35); color:#fff; text-decoration:none;
+      padding:.9rem 1.5rem; font-size:.72rem; font-weight:700; letter-spacing:.24em;
+      transition:border-color .2s, color .2s, box-shadow .2s;
+    }
+    .socials a:hover{ border-color:var(--purple); color:var(--purple); box-shadow:0 0 24px rgba(194,122,255,.55); }
+
+    footer{
+      position:relative; z-index:3;
+      padding:5rem 6vw 6.5rem;
+      background:rgba(0,0,0,.85);
+      color:rgba(255,255,255,.5);
+      font-size:.68rem; letter-spacing:.3em;
     }
 
-    .sr-only {
-      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    /* ── bottom ticker ───────────────────────────────────────── */
+    .ticker{
+      position:fixed; left:0; right:0; bottom:0; z-index:7;
+      background:rgba(0,0,0,.88);
+      border-top:1px solid var(--purple);
+      overflow:hidden;
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
     }
-
-    /* ── the film ─────────────────────────────────────────────── */
-    #film {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      background: var(--black);
-      overflow: hidden;
+    .ticker-track{
+      display:flex; width:max-content;
+      animation:marquee 26s linear infinite;
     }
-
-    #c { display: block; width: 100%; height: 100%; }
-
-    /* the two hairline circles that slowly scale up around the sac */
-    #rings { position: absolute; inset: 0; width: 100%; height: 100%; }
-    #ring-group { opacity: .2; }
-    /* scaled with CSS transform (composited) instead of per-frame SVG attribute rewrites */
-    #ring-1, #ring-2 { transform-box: view-box; transform-origin: 50% 50%; will-change: transform; }
-
-    #grain {
-      position: absolute;
-      inset: -14%;            /* still fully covers after the ±2% jitter — 1/3 the blend cost */
-      opacity: .05;
-      pointer-events: none;
-      mix-blend-mode: soft-light;           /* invisible on pure black, lives on the fluid */
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      animation: grain .6s steps(3) infinite;
+    .ticker .tg{
+      display:flex; align-items:center;
+      padding:.85rem 0;
+      font-family:'Anton', sans-serif;
+      font-size:.95rem; letter-spacing:.22em; color:var(--purple);
+      white-space:nowrap;
     }
+    .ticker .tg i{ font-style:normal; color:#fff; padding:0 1.4rem; }
+    @keyframes marquee{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
 
-    @keyframes grain {
-      0% { transform: translate3d(0, 0, 0); }
-      33% { transform: translate3d(-2%, 1%, 0); }
-      66% { transform: translate3d(1%, -2%, 0); }
-      100% { transform: translate3d(2%, 2%, 0); }
-    }
-
-    /* ── fixed chrome ─────────────────────────────────────────── */
-    #hud {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 7;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 18px;
-      padding: var(--pad-y) var(--pad);
-      pointer-events: none;
-    }
-
-    #hud .brand { display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, .82); }
-    #hud .brand i {
-      width: 5px; height: 5px; border-radius: 50%;
-      background: var(--core);
-      box-shadow: 0 0 12px 3px rgba(194, 122, 255, .55);
-      animation: live 3.4s ease-in-out infinite;
-    }
-    @keyframes live { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
-
-    /* the counter that replaces the progress bar: tiny, bottom left */
-    #counter {
-      position: fixed;
-      left: var(--pad);
-      bottom: var(--pad-y);
-      z-index: 7;
-      pointer-events: none;
-      font-variant-numeric: tabular-nums;
-    }
-
-    #cue {
-      position: fixed;
-      right: var(--pad);
-      bottom: var(--pad-y);
-      z-index: 7;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      pointer-events: none;
-    }
-    #cue i {
-      display: block;
-      width: 26px; height: 1px;
-      background: rgba(255, 255, 255, .5);
-      transform-origin: right center;
-      animation: breathe 2.6s ease-in-out infinite;
-    }
-    @keyframes breathe { 0%, 100% { transform: scaleX(.3); opacity: .3; } 50% { transform: scaleX(1); opacity: .85; } }
-
-    /* ── typography stage ─────────────────────────────────────── */
-    #title {
-      position: fixed;
-      inset: 0;
-      z-index: 6;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 var(--pad);
-      pointer-events: none;
-      text-align: center;
-    }
-
-    .stack { position: relative; width: 100%; max-width: 1560px; }
-
-    /* tiny sub-text sits above the H1 and cross-fades in place */
-    .subs { position: relative; height: 11px; margin: 0 0 clamp(20px, 3.8vh, 46px); }
-    .sub { position: absolute; left: 50%; top: 0; opacity: 0; will-change: opacity, transform; }
-
-    h1 {
-      position: relative;
-      height: .95em;
-      margin: 0;
-      font-family: "Playfair Display", Georgia, "Times New Roman", serif;
-      font-weight: 700;
-      font-size: clamp(30px, 7vw, 138px);   /* 7vw, exactly as specced */
-      line-height: .95;
-      letter-spacing: -.02em;                /* -2% */
-      color: var(--white);
-      white-space: nowrap;
-    }
-
-    .phrase {
-      position: absolute;
-      left: 50%; top: 50%;
-      opacity: 0;
-      white-space: nowrap;
-      will-change: opacity, transform, filter;
-    }
-
-    /* ── scroll room ──────────────────────────────────────────── */
-    main { position: relative; z-index: 9; }
-    #track { height: 520vh; pointer-events: none; }
-
-    /* ── last section: the only place with buttons ────────────── */
-    #final {
-      position: relative;
-      z-index: 8;
-      min-height: 104vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 18vh var(--pad) 12vh;
-    }
-
-    .final-inner { width: 100%; max-width: 860px; text-align: center; }
-
-    h2 {
-      margin: 22px 0 0;
-      font-family: "Playfair Display", Georgia, serif;
-      font-weight: 700;
-      font-size: clamp(32px, 6vw, 84px);
-      line-height: .96;
-      letter-spacing: -.02em;
-      color: var(--white);
-    }
-
-    .final-copy {
-      margin: 30px auto 0;
-      max-width: 460px;
-      font-size: 8px;
-      line-height: 2.3;
-      letter-spacing: .26em;
-      color: rgba(255, 255, 255, .48);
-      white-space: normal;
-    }
-
-    .links { margin: 48px 0 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-
-    .links a {
-      display: inline-flex;
-      align-items: center;
-      gap: 14px;
-      padding: 16px 22px;
-      border: 1px solid var(--hairline);
-      color: var(--white);
-      text-decoration: none;
-      font-size: 8px;
-      letter-spacing: .3em;
-      text-transform: uppercase;
-      transition: border-color .45s ease, background .45s ease, transform .45s ease;
-    }
-    .links a span { color: var(--core); transition: transform .45s ease; }
-    .links a:hover, .links a:focus-visible {
-      border-color: rgba(194, 122, 255, .7);
-      background: rgba(194, 122, 255, .07);
-      transform: translateY(-2px);
-      outline: none;
-    }
-    .links a:hover span, .links a:focus-visible span { transform: translate(2px, -2px); }
-
-    .fine { margin-top: 60px; font-size: 7px; letter-spacing: .28em; color: var(--micro-dim); }
-
-    /* ── loader ───────────────────────────────────────────────── */
-    #loader {
-      position: fixed;
-      inset: 0;
-      z-index: 30;
-      background: var(--black);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity .9s ease, visibility .9s ease;
-      animation: loaderFail .9s 8s forwards;   /* never trap the page if a CDN dies */
-    }
-    #loader .micro { letter-spacing: .5em; margin-left: .5em; animation: live 1.6s ease-in-out infinite; }
-    #loader.done { opacity: 0; visibility: hidden; }
-    @keyframes loaderFail { to { opacity: 0; visibility: hidden; } }
-
-    @media (max-width: 720px) {
-      #track { height: 460vh; }
-      #hud .place { display: none; }
-      .subs { margin-bottom: 22px; }
-      .links a { padding: 14px 16px; letter-spacing: .24em; }
-      .fine { letter-spacing: .2em; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      #grain, #cue i, #hud .brand i, #loader .micro { animation: none; }
+    @media (prefers-reduced-motion: reduce){
+      html{ scroll-behavior:auto; }
+      .ticker-track{ animation:none; }
     }
   </style>
 </head>
+<body id="top">
 
-<body>
-  <!-- ══ one canvas, one film ══════════════════════════════════ -->
-  <div id="film" aria-hidden="true">
-    <canvas id="c"></canvas>
-    <svg id="rings" xmlns="http://www.w3.org/2000/svg">
-      <g id="ring-group" fill="none" stroke="#FFFFFF" stroke-width="0.5">
-        <circle id="ring-1" vector-effect="non-scaling-stroke" r="100" />
-        <circle id="ring-2" vector-effect="non-scaling-stroke" r="100" />
-      </g>
-    </svg>
-    <div id="grain"></div>
-  </div>
+  <!-- transparent WebGL smoke layer (screen-blended over the photo) -->
+  <canvas id="bg" aria-hidden="true"></canvas>
 
-  <header id="hud">
-    <p class="micro brand"><i></i> SKRILLA HQ</p>
-    <p class="micro place">DAGORETTI — NAIROBI, KENYA</p>
+  <header class="nav">
+    <a class="brand" href="#top">SKRILLA</a>
+    <nav class="links" aria-label="Primary">
+      <a href="#top">HOME</a>
+      <a href="#music">MUSIC</a>
+      <a href="#tour">TOUR</a>
+      <a href="#merch">MERCH</a>
+      <a href="#about">ABOUT</a>
+      <a href="#contact">CONTACT</a>
+    </nav>
+    <a class="btn-listen" href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener">LISTEN NOW</a>
   </header>
 
-  <div id="title">
-    <div class="stack">
-      <div class="subs">
-        <p class="micro sub" id="sub-a">A SIGNAL UNDER THE SKIN</p>
-        <p class="micro sub" id="sub-b">EVERY ORIGIN IS PRESSURE</p>
-        <p class="micro sub" id="sub-c">SKRILLA — DAGORETTI, NAIROBI</p>
-      </div>
-      <h1>
-        <span class="sr-only">SKRILLA HQ — Born of Culture, Born of Dagoretti</span>
-        <span class="phrase" id="phrase-0" aria-hidden="true">BORN OF CULTURE</span>
-        <span class="phrase" id="phrase-1" aria-hidden="true">BORN OF DAGORETTI</span>
-        <span class="phrase" id="phrase-2" aria-hidden="true">SKRILLA HQ</span>
-      </h1>
+  <!-- hero -->
+  <div class="stage" id="stage">
+    <h1>SKRILLA HQ</h1>
+    <p class="sub">DAGORETTI &bull; NAIROBI &bull; EST. 2021 &bull; OWNED</p>
+    <div class="cta">
+      <a class="btn-primary" href="#music">STREAM EP</a>
+      <a class="btn-ghost" href="#merch">MERCH STORE</a>
     </div>
   </div>
+  <div class="scroll-hint" id="scroll-hint">SCROLL TO DETONATE</div>
 
-  <p class="micro" id="counter">01/04</p>
-  <div id="cue"><p class="micro">SCROLL</p><i></i></div>
+  <!-- scroll runway for the explosion scrub -->
+  <div id="explode-track" aria-hidden="true"></div>
 
   <main>
-    <section id="track" aria-hidden="true"></section>
+    <!-- MUSIC -->
+    <section class="panel" id="music">
+      <div class="kicker">OUT NOW</div>
+      <h2>BLOOD &amp; PRAYER EP</h2>
+      <ul class="rows">
+        <li><a href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener"><span class="idx">01</span><span class="t">BLOOD &amp; PRAYER</span><span class="meta">TITLE TRACK</span></a></li>
+        <li><a href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener"><span class="idx">02</span><span class="t">SIKU HIZI</span><span class="meta">STREAM ↗</span></a></li>
+        <li><a href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener"><span class="idx">03</span><span class="t">KATA KICHWA</span><span class="meta">STREAM ↗</span></a></li>
+        <li><a href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener"><span class="idx">04</span><span class="t">LAWAMA</span><span class="meta">STREAM ↗</span></a></li>
+        <li><a href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener"><span class="idx">05</span><span class="t">SIGNAL</span><span class="meta">STREAM ↗</span></a></li>
+        <li><a href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener"><span class="idx">06</span><span class="t">DAGO</span><span class="meta">STREAM ↗</span></a></li>
+      </ul>
+      <p class="kicker" style="margin-top:2.4rem">
+        ALSO ON&nbsp;&nbsp;<a class="link" href="https://music.apple.com/ke/artist/skrilla/1448490073" target="_blank" rel="noopener" style="color:var(--purple)">APPLE MUSIC ↗</a>&nbsp;&nbsp;•&nbsp;&nbsp;<a class="link" href="https://www.youtube.com/@jeshiyadago7380" target="_blank" rel="noopener" style="color:var(--purple)">YOUTUBE ↗</a>
+      </p>
+    </section>
 
-    <section id="final" aria-labelledby="final-title">
-      <div class="final-inner">
-        <p class="micro reveal">04/04 — THE ROOM IS OPEN</p>
-        <h2 id="final-title" class="reveal">ENTER THE ARCHIVE</h2>
-        <p class="micro final-copy reveal">Sound, objects, dates and film. Everything cut in Dagoretti, worn everywhere else.</p>
-        <nav class="links reveal" aria-label="Archive">
-          <a href="music.html">SOUND <span>↗</span></a>
-          <a href="merch.html">OBJECTS <span>↗</span></a>
-          <a href="tour.html">DATES <span>↗</span></a>
-          <a href="videos.html">FILM <span>↗</span></a>
-        </nav>
-        <p class="micro fine reveal">© <span id="year">2026</span> SKRILLA HQ — BORN OF CULTURE / BORN OF DAGORETTI</p>
+    <!-- TOUR -->
+    <section class="panel" id="tour">
+      <div class="kicker">LIVE</div>
+      <h2>TOUR</h2>
+      <ul class="rows">
+        <li><span class="idx">MAR 14</span><span class="t">ATLANTA, GA</span><span class="meta">STATE FARM ARENA</span><a class="link" href="https://wa.me/254703200940" target="_blank" rel="noopener">TICKETS ↗</a></li>
+        <li><span class="idx">MAR 21</span><span class="t">HOUSTON, TX</span><span class="meta">TOYOTA CENTER</span><a class="link" href="https://wa.me/254703200940" target="_blank" rel="noopener">TICKETS ↗</a></li>
+        <li><span class="idx">APR 02</span><span class="t">LOS ANGELES, CA</span><span class="meta">CRYPTO.COM ARENA</span><a class="link" href="https://wa.me/254703200940" target="_blank" rel="noopener">TICKETS ↗</a></li>
+        <li><span class="idx">APR 18</span><span class="t">NEW YORK, NY</span><span class="meta">BARCLAYS CENTER</span><a class="link" href="https://wa.me/254703200940" target="_blank" rel="noopener">TICKETS ↗</a></li>
+        <li><span class="idx">MAY 09</span><span class="t">LONDON, UK</span><span class="meta">THE O2</span><a class="link" href="https://wa.me/254703200940" target="_blank" rel="noopener">TICKETS ↗</a></li>
+      </ul>
+    </section>
+
+    <!-- MERCH -->
+    <section class="panel" id="merch">
+      <div class="kicker">OWNED &amp; OPERATED</div>
+      <h2>MERCH STORE</h2>
+      <div class="merch-grid">
+        <div class="merch-card">
+          <span class="meta">LIMITED RUN</span>
+          <span class="t">#ITRIEDCALLINGYOU TOUR JACKET</span>
+          <a href="https://wa.me/254703200940" target="_blank" rel="noopener">INQUIRE ↗</a>
+        </div>
+        <div class="merch-card">
+          <span class="meta">HEAVYWEIGHT</span>
+          <span class="t">QUANTUM CORE HOODIE</span>
+          <a href="https://wa.me/254703200940" target="_blank" rel="noopener">INQUIRE ↗</a>
+        </div>
+        <div class="merch-card">
+          <span class="meta">CLASSIC FIT</span>
+          <span class="t">NOIR SIGNAL TEE</span>
+          <a href="https://wa.me/254703200940" target="_blank" rel="noopener">INQUIRE ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="panel" id="about">
+      <div class="kicker">A SIGNAL UNDER THE SKIN</div>
+      <h2>ABOUT</h2>
+      <div class="about-wrap">
+        <img src="./assets/portrait.jpg" alt="SKRILLA — portrait" loading="lazy" />
+        <p>
+          Born of culture, born of Dagoretti, Nairobi. SKRILLA HQ has been OWNED and
+          self-operated since 2021 — every bar prayed over, every release paid for in
+          blood and prayer. The BLOOD &amp; PRAYER EP is the testament: pressure turned
+          into signal, scripture turned into sound. No gatekeepers. No handouts.
+          Just the work, the city, and the vision.
+        </p>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="panel" id="contact">
+      <div class="kicker">REACH THE HQ</div>
+      <h2>CONTACT</h2>
+      <div class="socials">
+        <a href="https://open.spotify.com/artist/0jdv3ikqQ1AH0RWhgq5gPl" target="_blank" rel="noopener">SPOTIFY</a>
+        <a href="https://music.apple.com/ke/artist/skrilla/1448490073" target="_blank" rel="noopener">APPLE MUSIC</a>
+        <a href="https://www.youtube.com/@jeshiyadago7380" target="_blank" rel="noopener">YOUTUBE</a>
+        <a href="https://www.instagram.com/_skrillagram/" target="_blank" rel="noopener">INSTAGRAM</a>
+        <a href="https://www.tiktok.com/@sinclairkahara" target="_blank" rel="noopener">TIKTOK</a>
+        <a href="https://www.facebook.com/prince.j.sinclair" target="_blank" rel="noopener">FACEBOOK</a>
+        <a href="https://wa.me/254703200940" target="_blank" rel="noopener">WHATSAPP</a>
       </div>
     </section>
   </main>
 
-  <div id="loader"><p class="micro">SKRILLA HQ</p></div>
+  <footer>© 2026 SKRILLA HQ &bull; DAGORETTI, NAIROBI &bull; EST. 2021 &bull; OWNED</footer>
 
-  <!-- ══ motion ════════════════════════════════════════════════ -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script>window.gsap || document.write('<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"><\/script>');</script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script>(window.gsap && window.ScrollTrigger) || document.write('<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"><\/script>');</script>
+  <!-- bottom ticker -->
+  <div class="ticker" aria-label="Out now: Blood and Prayer EP">
+    <div class="ticker-track" id="ticker-track">
+      <div class="tg"><span>OUT NOW — BLOOD &amp; PRAYER EP</span><i>✦</i></div>
+    </div>
+  </div>
 
-  <script type="importmap">
-    {"imports": {"three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"}}
-  </script>
+  <!-- GSAP + ScrollTrigger + Lenis (UMD globals) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 
   <script type="module">
-    import * as THREE from "three";
-    import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
-    import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
-    import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
-    import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-
     /* ────────────────────────────────────────────────────────────
-       0 · helpers, dom, constants
+       SKRILLA HQ — smoke engine
+       • purple explosion behind the text, in front of IMG_0548.PNG
+       • scroll scrubs scale 0.8 → 12
+       • 92 BPM pulse (652 ms) scale 1 → 1.06
        ──────────────────────────────────────────────────────────── */
-    const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
-    const IS_SMALL = window.innerWidth < 720;
-    const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const BEAT_MS = 652;               // 92 BPM
+    const SCALE_MIN = 0.8;
+    const SCALE_MAX = 12;
 
-    const canvas   = document.getElementById("c");
-    const loader   = document.getElementById("loader");
-    const counter  = document.getElementById("counter");
-    const cue      = document.getElementById("cue");
-    const ringsSvg = document.getElementById("rings");
-    const ringGroup = document.getElementById("ring-group");
-    const ring1 = document.getElementById("ring-1");
-    const ring2 = document.getElementById("ring-2");
-    const subA = document.getElementById("sub-a");
-    const subB = document.getElementById("sub-b");
-    const subC = document.getElementById("sub-c");
-    const phrases = [0, 1, 2].map((i) => document.getElementById(`phrase-${i}`));
-    document.getElementById("year").textContent = new Date().getFullYear();
+    const reduceMotion = typeof matchMedia === 'function' &&
+      matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const COLOR_CORE = new THREE.Color("#C27AFF").multiplyScalar(1.22);   // purple core
-    const COLOR_GLOW = new THREE.Color("#6B21A8").multiplyScalar(1.15);   // outer glow
-    const COLOR_HOT  = new THREE.Color(1.0, 0.93, 1.0);
+    /* seamless ticker: two identical halves, CSS translates -50% */
+    (function buildTicker(){
+      const track = document.getElementById('ticker-track');
+      if (!track) return;
+      const unit = track.innerHTML;
+      let half = '';
+      for (let i = 0; i < 6; i++) half += unit;
+      track.innerHTML = half + half;
+    })();
 
-    /* ────────────────────────────────────────────────────────────
-       1 · renderer / scene / camera  (single canvas)
-       ──────────────────────────────────────────────────────────── */
-    // quality ladder: the fps governor (section 10) walks down this until the
-    // film holds a stable framerate, and climbs back up when the GPU has room
-    const dprMax = Math.min(window.devicePixelRatio || 1, 2);
-    const TIERS = IS_SMALL ? [
-      { dpr: Math.min(dprMax, 1.5), sim: 0.42, bloom: 1.00 },
-      { dpr: 1.25, sim: 0.36, bloom: 0.70 },
-      { dpr: 1.0,  sim: 0.30, bloom: 0.55 },
-      { dpr: 1.0,  sim: 0.26, bloom: 0.40 },
-    ] : [
-      { dpr: dprMax, sim: 0.45, bloom: 1.00 },
-      { dpr: 1.5,    sim: 0.38, bloom: 0.70 },
-      { dpr: 1.25,   sim: 0.33, bloom: 0.55 },
-      { dpr: 1.0,    sim: 0.28, bloom: 0.40 },
-    ];
-    let tier = 0;
-    const quality = { dpr: TIERS[0].dpr, sim: TIERS[0].sim, bloomScale: TIERS[0].bloom };
-
-    const renderer = new THREE.WebGLRenderer({
-      canvas, antialias: false, alpha: false, powerPreference: "high-performance", stencil: false
-    });
-    renderer.setPixelRatio(quality.dpr);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000, 1);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
-
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);   // pure black. no gradient, ever.
-
-    const CAM_Z = 5.2;
-    const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 120);
-    camera.position.set(0, 0, CAM_Z);
-    scene.add(camera);
-
-    /* ────────────────────────────────────────────────────────────
-       2 · shared GLSL: simplex noise + fbm
-       ──────────────────────────────────────────────────────────── */
-    const NOISE = `
-      vec3 mod289(vec3 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
-      vec4 mod289(vec4 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
-      vec4 permute(vec4 x){ return mod289(((x * 34.0) + 1.0) * x); }
-      vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - 0.85373472095314 * r; }
-
-      float snoise(vec3 v){
-        const vec2 C = vec2(1.0 / 6.0, 1.0 / 3.0);
-        const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
-        vec3 i  = floor(v + dot(v, C.yyy));
-        vec3 x0 = v - i + dot(i, C.xxx);
-        vec3 g = step(x0.yzx, x0.xyz);
-        vec3 l = 1.0 - g;
-        vec3 i1 = min(g.xyz, l.zxy);
-        vec3 i2 = max(g.xyz, l.zxy);
-        vec3 x1 = x0 - i1 + C.xxx;
-        vec3 x2 = x0 - i2 + C.yyy;
-        vec3 x3 = x0 - D.yyy;
-        i = mod289(i);
-        vec4 p = permute(permute(permute(
-                   i.z + vec4(0.0, i1.z, i2.z, 1.0))
-                 + i.y + vec4(0.0, i1.y, i2.y, 1.0))
-                 + i.x + vec4(0.0, i1.x, i2.x, 1.0));
-        float n_ = 0.142857142857;
-        vec3 ns = n_ * D.wyz - D.xzx;
-        vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
-        vec4 x_ = floor(j * ns.z);
-        vec4 y_ = floor(j - 7.0 * x_);
-        vec4 x = x_ * ns.x + ns.yyyy;
-        vec4 y = y_ * ns.x + ns.yyyy;
-        vec4 h = 1.0 - abs(x) - abs(y);
-        vec4 b0 = vec4(x.xy, y.xy);
-        vec4 b1 = vec4(x.zw, y.zw);
-        vec4 s0 = floor(b0) * 2.0 + 1.0;
-        vec4 s1 = floor(b1) * 2.0 + 1.0;
-        vec4 sh = -step(h, vec4(0.0));
-        vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;
-        vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
-        vec3 p0 = vec3(a0.xy, h.x);
-        vec3 p1 = vec3(a0.zw, h.y);
-        vec3 p2 = vec3(a1.xy, h.z);
-        vec3 p3 = vec3(a1.zw, h.w);
-        vec4 norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));
-        p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
-        vec4 m = max(0.6 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);
-        m = m * m;
-        return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
-      }
-
-      float fbm3(vec3 p){
-        float a = 0.5, s = 0.0;
-        for (int i = 0; i < 3; i++){ s += a * snoise(p); p *= 2.03; a *= 0.5; }
-        return s;
-      }
-      float fbm4(vec3 p){
-        float a = 0.5, s = 0.0;
-        for (int i = 0; i < 4; i++){ s += a * snoise(p); p *= 2.03; a *= 0.5; }
-        return s;
+    const VERT = /* glsl */`
+      varying vec2 vUv;
+      void main(){
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `;
 
-    /* ────────────────────────────────────────────────────────────
-       3 · the orb — one organic sac, not a dot field
-       ──────────────────────────────────────────────────────────── */
-    const orb = new THREE.Group();
-    scene.add(orb);
+    const FRAG = /* glsl */`
+      precision highp float;
+      varying vec2 vUv;
+      uniform float uTime;
+      uniform float uEnergy;
 
-    // 3a · membrane: fractal-noise displaced sphere with liquid veins + curl lightning
-    const shellGeo = new THREE.IcosahedronGeometry(1, IS_SMALL ? 16 : 28);
-    const shellMat = new THREE.ShaderMaterial({
-      transparent: true,
-      depthTest: false,
-      depthWrite: false,
-      side: THREE.DoubleSide,
-      blending: THREE.AdditiveBlending,
-      uniforms: {
-        uTime:      { value: 0 },
-        uDisplace:  { value: 0.15 },
-        uFreq:      { value: 1.0 },
-        uStretch:   { value: 0.0 },
-        uVeins:     { value: 0.55 },
-        uCore:      { value: 0.42 },
-        uOpacity:   { value: 1.0 },
-        uDissolve:  { value: 0.0 },
-        uColorCore: { value: COLOR_CORE },
-        uColorGlow: { value: COLOR_GLOW }
-      },
-      vertexShader: NOISE + `
-        uniform float uTime;
-        uniform float uDisplace;
-        uniform float uFreq;
-        uniform float uStretch;
-        varying vec3 vBase;
-        varying vec3 vNrm;
-        varying vec3 vView;
-        varying float vDisp;
-        varying float vTear;
-
-        void main(){
-          vBase = normalize(position);
-
-          // the burst pulls the sac into a falling drop before it lets go
-          vec3 p = position;
-          p.y *= 1.0 + uStretch * 1.15;
-          p.x *= 1.0 - uStretch * 0.22;
-          p.z *= 1.0 - uStretch * 0.22;
-
-          float t = uTime * 0.16;
-          vec3 q = vBase * (1.55 * uFreq) + vec3(0.0, t * 0.62, t * 0.34);
-          float n = fbm4(q);
-          n += 0.45 * fbm4(q * 2.1 - vec3(t * 0.42, 0.0, t * 0.21));
-
-          float d = n * uDisplace;
-          vDisp = d;
-
-          // where the membrane rips open is decided per-vertex, not per-pixel
-          vTear = fbm3(vBase * 2.6 + vec3(0.0, uTime * 0.22, 0.0)) * 0.5 + 0.5;
-
-          vec3 displaced = p + normal * d;
-          vec4 world = modelMatrix * vec4(displaced, 1.0);
-          vNrm = normalize(mat3(modelMatrix) * normal);
-          vView = normalize(cameraPosition - world.xyz);
-          gl_Position = projectionMatrix * viewMatrix * world;
-        }
-      `,
-      fragmentShader: NOISE + `
-        uniform float uTime;
-        uniform float uVeins;
-        uniform float uCore;
-        uniform float uOpacity;
-        uniform float uDissolve;
-        uniform vec3 uColorCore;
-        uniform vec3 uColorGlow;
-        varying vec3 vBase;
-        varying vec3 vNrm;
-        varying vec3 vView;
-        varying float vDisp;
-        varying float vTear;
-
-        void main(){
-          // the burst tears the membrane away in soft organic patches.
-          // edge sweeps from 1.4 (nothing torn) to -0.4 (everything torn).
-          // This is the cheap part — evaluated first, so torn fragments
-          // bail out before spending any noise during the explosion.
-          float edge = 1.4 - uDissolve * 1.8;
-          float tear = 1.0 - smoothstep(edge - 0.30, edge + 0.30, vTear);
-          if (tear * uOpacity < 0.0035) discard;
-
-          vec3 N = normalize(vNrm);
-          vec3 V = normalize(vView);
-          float facing = clamp(dot(N, V), 0.0, 1.0);
-          float fres = pow(1.0 - facing, 2.6);
-          float vAmt = clamp(uVeins, 0.0, 2.2);
-          float t = uTime;
-
-          vec3 q = vBase * 2.15;
-
-          // domain warp = the liquid moving under the membrane
-          float w1 = snoise(q + vec3(0.0, t * 0.13, 3.1));
-          float w2 = snoise(q + vec3(5.2, 1.3, t * 0.11));
-          vec3 warp = vec3(w1, w2, (w1 + w2) * 0.5);
-
-          float f = fbm3(q * 1.55 + warp * 1.75 + vec3(0.0, t * 0.07, 0.0));
-          float vein = (1.0 - smoothstep(0.0, 0.115, abs(f))) * (0.5 + 0.5 * smoothstep(-0.7, 0.9, f));
-
-          // electric crackle riding the same fluid, faster and sharper
-          float l = snoise(q * 3.05 - warp * 2.2 + vec3(t * 0.95, t * 1.7, -t * 0.62));
-          float bolt = 1.0 - smoothstep(0.0, 0.05, abs(l));
-          bolt *= 0.3 + 0.7 * pow(abs(sin(t * 5.1 + f * 6.0)), 6.0);
-
-          vec3 col = uColorGlow * (0.10 + 0.66 * fres);
-          col += uColorCore * (vein * 0.62 * vAmt);
-          col += uColorCore * (pow(facing, 3.0) * uCore * 0.55);
-          col += vec3(1.0, 0.93, 1.0) * (bolt * 0.72 * vAmt);
-          col += uColorCore * (smoothstep(0.1, 1.2, vDisp) * 0.45);
-
-          float a = (0.10 + 0.68 * fres + vein * 0.5 * vAmt + bolt * 0.9) * uOpacity;
-          a *= tear;
-
-          gl_FragColor = vec4(col, clamp(a, 0.0, 1.0));
-        }
-      `
-    });
-    const shell = new THREE.Mesh(shellGeo, shellMat);
-    shell.renderOrder = 3;
-    orb.add(shell);
-
-    // 3b · inner core: the wet light at the centre of the sac
-    const coreMat = new THREE.ShaderMaterial({
-      transparent: true, depthTest: false, depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      uniforms: {
-        uTime: { value: 0 }, uOpacity: { value: 0.42 },
-        uColorCore: { value: COLOR_CORE }, uColorGlow: { value: COLOR_GLOW }
-      },
-      vertexShader: `
-        varying vec3 vNrm; varying vec3 vView; varying vec3 vPos;
-        void main(){
-          vPos = position;
-          vec4 world = modelMatrix * vec4(position, 1.0);
-          vNrm = normalize(mat3(modelMatrix) * normal);
-          vView = normalize(cameraPosition - world.xyz);
-          gl_Position = projectionMatrix * viewMatrix * world;
-        }
-      `,
-      fragmentShader: NOISE + `
-        uniform float uTime; uniform float uOpacity;
-        uniform vec3 uColorCore; uniform vec3 uColorGlow;
-        varying vec3 vNrm; varying vec3 vView; varying vec3 vPos;
-        void main(){
-          float facing = clamp(dot(normalize(vNrm), normalize(vView)), 0.0, 1.0);
-          float body = pow(facing, 1.7);
-          float wobble = 0.72 + 0.28 * fbm3(vPos * 2.4 + vec3(0.0, uTime * 0.26, uTime * 0.11));
-          vec3 col = mix(uColorGlow, uColorCore, body) * (body * 1.35) * wobble;
-          col += vec3(1.0, 0.94, 1.0) * pow(body, 7.0) * 0.5;
-          gl_FragColor = vec4(col, body * uOpacity);
-        }
-      `
-    });
-    const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.52, IS_SMALL ? 4 : 6), coreMat);
-    core.renderOrder = 2;
-    orb.add(core);
-
-    // 3c · outer glow: billboarded falloff in #6B21A8 (kept out of the orb
-    //      group so it can face the camera exactly)
-    const haloMat = new THREE.ShaderMaterial({
-      transparent: true, depthTest: false, depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      uniforms: {
-        uTime: { value: 0 }, uOpacity: { value: 0.3 },
-        uColorCore: { value: COLOR_CORE }, uColorGlow: { value: COLOR_GLOW }
-      },
-      vertexShader: `
-        varying vec2 vUv;
-        void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
-      `,
-      fragmentShader: `
-        uniform float uTime; uniform float uOpacity;
-        uniform vec3 uColorCore; uniform vec3 uColorGlow;
-        varying vec2 vUv;
-        void main(){
-          float d = clamp(length(vUv - 0.5) * 2.0, 0.0, 1.0);
-          float fall = pow(1.0 - d, 3.1);
-          // cheap breathing wobble — no noise budget spent on a full-screen glow
-          fall *= 0.86 + 0.14 * sin(vUv.x * 9.0 + uTime * 0.7) * cos(vUv.y * 7.0 - uTime * 0.5);
-          vec3 col = mix(uColorGlow, uColorCore * 0.55, pow(1.0 - d, 7.0));
-          gl_FragColor = vec4(col * fall * uOpacity, fall * uOpacity);
-        }
-      `
-    });
-    const halo = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), haloMat);
-    halo.renderOrder = 1;
-    halo.frustumCulled = false;
-    scene.add(halo);
-
-    /* ────────────────────────────────────────────────────────────
-       4 · FBO fluid: curl-noise advection of the burst (ping-pong)
-       ──────────────────────────────────────────────────────────── */
-    const rtType = renderer.capabilities.isWebGL2 ? THREE.HalfFloatType : THREE.UnsignedByteType;
-    const rtOpts = {
-      type: rtType, format: THREE.RGBAFormat,
-      minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
-      wrapS: THREE.ClampToEdgeWrapping, wrapT: THREE.ClampToEdgeWrapping,
-      depthBuffer: false, stencilBuffer: false, generateMipmaps: false
-    };
-    let rtA = new THREE.WebGLRenderTarget(256, 256, rtOpts);
-    let rtB = new THREE.WebGLRenderTarget(256, 256, rtOpts);
-
-    const simScene = new THREE.Scene();
-    const simCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    const simMat = new THREE.ShaderMaterial({
-      depthTest: false, depthWrite: false,
-      uniforms: {
-        uPrev: { value: rtA.texture },
-        uTexel: { value: new THREE.Vector2(1 / 256, 1 / 256) },
-        uAspect: { value: 1 },
-        uTime: { value: 0 },
-        uDissip: { value: 0.982 },
-        uEmit: { value: 0 },
-        uEmitRadius: { value: 0.2 },
-        uEmitPos: { value: new THREE.Vector2(0.5, 0.5) },
-        uSwirl: { value: 0.2 },
-        uStep: { value: 0.0016 }
-      },
-      vertexShader: `
-        varying vec2 vUv;
-        void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
-      `,
-      fragmentShader: NOISE + `
-        uniform sampler2D uPrev;
-        uniform vec2 uTexel;
-        uniform float uAspect;
-        uniform float uTime;
-        uniform float uDissip;
-        uniform float uEmit;
-        uniform float uEmitRadius;
-        uniform vec2 uEmitPos;
-        uniform float uSwirl;
-        uniform float uStep;
-        varying vec2 vUv;
-
-        // divergence-free velocity from the curl of a scalar noise field
-        vec2 curl(vec2 p, float t){
-          float e = 0.09;
-          float dy = snoise(vec3(p.x, p.y + e, t)) - snoise(vec3(p.x, p.y - e, t));
-          float dx = snoise(vec3(p.x + e, p.y, t)) - snoise(vec3(p.x - e, p.y, t));
-          return vec2(dy, -dx) / (2.0 * e);
-        }
-
-        void main(){
-          vec2 uv = vUv;
-          vec2 p = vec2(uv.x * uAspect, uv.y);
-
-          vec2 vel = curl(p * 1.35 + vec2(0.0, uTime * 0.035), uTime * 0.06) * uSwirl;
-          vel.y += 0.055 * uSwirl;                       // smoke always rises
-          vec2 dens = texture2D(uPrev, uv - vel * uStep).rg;
-
-          dens *= uDissip;
-          dens = max(dens - 0.0016, 0.0);
-
-          // emission follows the body of the orb, metaball-soft at the edge
-          vec2 d = (uv - uEmitPos) * vec2(uAspect, 1.0);
-          float r = length(d);
-          float rad = max(uEmitRadius, 0.01);
-          float blob = 1.0 - smoothstep(rad * 0.12, rad, r);
-
-          vec3 q = vec3(p * 2.6, uTime * 0.13);
-          float warp = fbm3(q);
-          float fil = snoise(q * 3.1 + warp * 1.6 + vec3(uTime * 0.05, 0.0, 0.0));
-          blob *= 0.55 + 0.65 * (warp * 0.5 + 0.5);
-
-          float heat = 0.3 + 0.7 * smoothstep(0.15, 0.85, fil * 0.5 + 0.5);
-          dens = clamp(dens + vec2(blob * uEmit, blob * heat * uEmit * 1.2), 0.0, 3.0);
-
-          gl_FragColor = vec4(dens, 0.0, 1.0);
-        }
-      `
-    });
-    simScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), simMat));
-
-    /* ────────────────────────────────────────────────────────────
-       5 · composite: blurred fluid + starfield, glued to the camera
-       ──────────────────────────────────────────────────────────── */
-    const compMat = new THREE.ShaderMaterial({
-      depthTest: false, depthWrite: false, transparent: false,
-      uniforms: {
-        uSmoke: { value: rtA.texture },
-        uTexel: { value: new THREE.Vector2(1 / 256, 1 / 256) },
-        uAspect: { value: 1 },
-        uTime: { value: 0 },
-        uBlur: { value: 0.1 },     // up to ~40px of liquid blur
-        uFluid: { value: 0 },
-        uStar: { value: 0 },
-        uColorCore: { value: COLOR_CORE },
-        uColorGlow: { value: COLOR_GLOW }
-      },
-      vertexShader: `
-        varying vec2 vUv;
-        void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
-      `,
-      fragmentShader: `
-        uniform sampler2D uSmoke;
-        uniform vec2 uTexel;
-        uniform float uAspect;
-        uniform float uTime;
-        uniform float uBlur;
-        uniform float uFluid;
-        uniform float uStar;
-        uniform vec3 uColorCore;
-        uniform vec3 uColorGlow;
-        varying vec2 vUv;
-
-        float hash21(vec2 p){
-          p = fract(p * vec2(123.34, 456.21));
-          p += dot(p, p + 45.32);
-          return fract(p.x * p.y);
-        }
-
-        vec3 starLayer(vec2 uv, float scale, float size, float t, float seed){
-          vec2 g = uv * scale;
-          vec2 id = floor(g);
-          vec2 f = fract(g) - 0.5;
-          float h = hash21(id + seed);
-          vec2 pos = (vec2(hash21(id + seed + 1.7), hash21(id + seed + 4.3)) - 0.5) * 0.72;
-          float d = length(f - pos);
-          float dot_ = (1.0 - smoothstep(0.0, size, d)) + (1.0 - smoothstep(0.0, size * 4.5, d)) * 0.14;
-          float tw = 0.55 + 0.45 * sin(t * (0.7 + h * 2.4) + h * 41.0);
-          float vis = step(0.72, h);
-          vec3 tint = mix(vec3(1.0), uColorCore, 0.34 * hash21(id + seed + 9.1));
-          return tint * dot_ * tw * vis * (0.45 + h * 0.85);
-        }
-
-        void main(){
-          // wide poisson blur of the fluid buffer: liquid smoke, not particles
-          float radius = 1.0 + uBlur * 26.0;
-          vec2 sum = texture2D(uSmoke, vUv).rg * 1.15;
-          float wsum = 1.15;
-          for (int i = 0; i < 14; i++){
-            float fi = float(i);
-            float ang = fi * 2.39996323;
-            float rr = sqrt((fi + 0.5) / 14.0);
-            vec2 off = vec2(cos(ang), sin(ang)) * rr * radius;
-            float w = 1.0 - rr * 0.4;
-            sum += texture2D(uSmoke, vUv + off * uTexel).rg * w;
-            wsum += w;
-          }
-          vec2 dens = sum / wsum;
-          float d = dens.r;
-          float heat = dens.g;
-
-          vec3 fluid = mix(uColorGlow, uColorCore, smoothstep(0.02, 0.42, d));
-          fluid = mix(fluid, vec3(1.0, 0.92, 1.0), smoothstep(0.55, 1.3, d) * 0.72);
-          fluid *= d * 1.25;
-          fluid += vec3(1.0, 0.9, 1.0) * pow(clamp(heat, 0.0, 1.6), 3.0) * 0.32;
-          fluid *= uFluid;
-
-          vec2 suv = vec2(vUv.x * uAspect, vUv.y);
-          vec3 stars = starLayer(suv, 22.0, 0.055, uTime, 0.0)
-                     + starLayer(suv + 13.7, 38.0, 0.040, uTime * 0.85, 21.0)
-                     + starLayer(suv * 0.72 + 41.2, 13.0, 0.075, uTime * 1.15, 57.0);
-          stars *= uStar;
-
-          vec3 nebula = uColorGlow * d * 0.4 * uStar;
-
-          gl_FragColor = vec4(max(fluid * (1.0 - uStar * 0.72) + nebula + stars, 0.0), 1.0);
-        }
-      `
-    });
-    const bgQuad = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), compMat);
-    bgQuad.renderOrder = -10;
-    bgQuad.frustumCulled = false;
-    bgQuad.position.z = -1;
-    camera.add(bgQuad);
-
-    /* ────────────────────────────────────────────────────────────
-       6 · postprocessing — bloom 0.8 / 0.6
-       ──────────────────────────────────────────────────────────── */
-    // every mesh in the scene is additive with depthTest off, so the post
-    // pipeline never touches a depth buffer — skip allocating/clearing one
-    const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, {
-      type: THREE.HalfFloatType, depthBuffer: false, stencilBuffer: false
-    }));
-    composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight), 0.8, 0.6, 0.14
-    );
-    composer.addPass(bloom);
-    composer.addPass(new OutputPass());
-    // the bloom blur chain is reallocated at `bloomScale` of screen size.
-    // the glow is soft, so shrinking it costs nothing visually but a lot
-    // on weak GPUs — the governor below retunes it at runtime
-    let bloomScale = quality.bloomScale;
-    const _bloomSetSize = bloom.setSize.bind(bloom);
-    bloom.setSize = (w, h) => _bloomSetSize(Math.max(128, (w * bloomScale) | 0), Math.max(128, (h * bloomScale) | 0));
-
-    /* ────────────────────────────────────────────────────────────
-       7 · scroll state — GSAP ScrollTrigger, scrub 1.5
-       ──────────────────────────────────────────────────────────── */
-    // one keyframe table drives everything, so the GL timeline and the
-    // no-GSAP fallback can never drift apart
-    const KEYS = [
-      { at: 0.00, ease: "sine.inOut",
-        orbScale: 0.60, displace: 0.15, freq: 1.00, stretch: 0.00, veins: 0.55, coreGlow: 0.42,
-        dissolve: 0.00, orbOpacity: 1.00, smoke: 0.00, swirl: 0.18, fluid: 0.00, blur: 0.10,
-        star: 0.00, ring: 1.00, ringOpacity: 0.20 },
-      { at: 0.40, ease: "sine.inOut",
-        orbScale: 0.80, displace: 0.21, freq: 1.05, stretch: 0.00, veins: 0.85, coreGlow: 0.62,
-        dissolve: 0.00, orbOpacity: 1.00, smoke: 0.00, swirl: 0.26, fluid: 0.00, blur: 0.10,
-        star: 0.00, ring: 1.26, ringOpacity: 0.20 },
-      { at: 0.65, ease: "power1.inOut",
-        orbScale: 1.15, displace: 0.44, freq: 1.30, stretch: 0.05, veins: 1.35, coreGlow: 1.00,
-        dissolve: 0.00, orbOpacity: 1.00, smoke: 0.16, swirl: 0.45, fluid: 0.16, blur: 0.18,
-        star: 0.00, ring: 1.58, ringOpacity: 0.07 },
-      { at: 0.85, ease: "power2.in",                 // 65% → EXPLOSION
-        orbScale: 15.0, displace: 3.40, freq: 0.50, stretch: 1.00, veins: 2.20, coreGlow: 1.35,
-        dissolve: 1.00, orbOpacity: 0.00, smoke: 1.00, swirl: 1.15, fluid: 1.00, blur: 1.00,
-        star: 0.00, ring: 2.10, ringOpacity: 0.00 },
-      { at: 1.00, ease: "sine.inOut",                // 85% → starfield
-        orbScale: 18.0, displace: 4.20, freq: 0.42, stretch: 1.00, veins: 1.20, coreGlow: 0.60,
-        dissolve: 1.00, orbOpacity: 0.00, smoke: 0.14, swirl: 0.34, fluid: 0.42, blur: 0.55,
-        star: 1.00, ring: 2.60, ringOpacity: 0.00 }
-    ];
-    const PROP_KEYS = Object.keys(KEYS[0]).filter((k) => k !== "at" && k !== "ease");
-
-    const S = { pulse: 0 };
-    PROP_KEYS.forEach((k) => { S[k] = KEYS[0][k]; });
-
-    let progress = 0;          // eased progress actually rendered
-    let targetProgress = 0;    // raw scroll progress (fallback path)
-    let stage = 1;
-
-    const setStage = (p) => {
-      const next = p < 0.40 ? 1 : p < 0.65 ? 2 : p < 0.85 ? 3 : 4;
-      if (next !== stage) { stage = next; counter.textContent = `0${stage}/04`; }
-    };
-
-    const gsapOK = !!(window.gsap && window.ScrollTrigger);
-    let tl = null;
-
-    if (gsapOK) {
-      gsap.registerPlugin(ScrollTrigger);
-
-      tl = gsap.timeline({
-        defaults: { ease: "none" },
-        scrollTrigger: {
-          trigger: "#track",
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 1.5,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            // follow the scrubbed timeline so the counter moves with the film
-            progress = self.animation ? self.animation.progress() : self.progress;
-            setStage(progress);
-          }
-        }
-      });
-
-      // world keyframes, built straight off the table
-      for (let i = 1; i < KEYS.length; i++) {
-        const a = KEYS[i - 1], b = KEYS[i];
-        const vars = { duration: +(b.at - a.at).toFixed(4), ease: b.ease };
-        PROP_KEYS.forEach((k) => { vars[k] = b[k]; });
-        tl.to(S, vars, a.at);
+      float hash(vec2 p){
+        p = fract(p * vec2(234.34, 435.345));
+        p += dot(p, p + 34.23);
+        return fract(p.x * p.y);
       }
-
-      // the 40% pulse: pressure, then release
-      tl.to(S, { pulse: 1, duration: 0.10, ease: "sine.in" }, 0.40);
-      tl.to(S, { pulse: 0, duration: 0.15, ease: "sine.out" }, 0.50);
-
-      // type
-      const setPhrase = (el, i) => gsap.set(el, { xPercent: -50, yPercent: -50, x: 0, y: 0, opacity: i === 0 ? 1 : 0, filter: "blur(0px)" });
-      phrases.forEach(setPhrase);
-      gsap.set([subA, subB, subC], { xPercent: -50, yPercent: 0, x: 0, y: 0, opacity: 0, filter: "blur(0px)" });
-      gsap.set(subA, { opacity: 1 });
-
-      tl.to(cue, { opacity: 0, duration: 0.04, ease: "power1.in" }, 0.015);
-
-      tl.to(subA, { opacity: 0, y: -9, filter: "blur(5px)", duration: 0.05, ease: "power1.in" }, 0.33);
-      tl.fromTo(subB, { opacity: 0, y: 9, filter: "blur(5px)" },
-                        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.05, ease: "power1.out" }, 0.40);
-      tl.to(subB, { opacity: 0, y: -9, filter: "blur(5px)", duration: 0.05, ease: "power1.in" }, 0.58);
-      tl.fromTo(subC, { opacity: 0, y: 10, filter: "blur(5px)" },
-                        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.06, ease: "power1.out" }, 0.87);
-
-      tl.to(phrases[0], { opacity: 0, y: -16, filter: "blur(9px)", duration: 0.06, ease: "power1.in" }, 0.32);
-      tl.fromTo(phrases[1], { opacity: 0, y: 18, filter: "blur(9px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.06, ease: "power2.out" }, 0.40);
-      tl.to(phrases[1], { opacity: 0, y: -16, filter: "blur(9px)", duration: 0.06, ease: "power1.in" }, 0.60);
-      tl.fromTo(phrases[2], { opacity: 0, y: 22, filter: "blur(12px)", letterSpacing: "0.05em" },
-                          { opacity: 1, y: 0, filter: "blur(0px)", letterSpacing: "-0.02em", duration: 0.09, ease: "power2.out" }, 0.85);
-
-      // the film hands over to the last section
-      gsap.to("#title, #hud, #counter", {
-        opacity: 0, ease: "none",
-        scrollTrigger: { trigger: "#final", start: "top 94%", end: "top 46%", scrub: true }
-      });
-      gsap.from("#final .reveal", {
-        opacity: 0, y: 26, stagger: 0.07, ease: "power2.out",
-        scrollTrigger: { trigger: "#final", start: "top 74%", end: "top 22%", scrub: 0.6 }
-      });
-    } else {
-      // CDN failure path: same keyframe table, hand-eased
-      window.addEventListener("scroll", () => {
-        const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-        targetProgress = clamp(window.scrollY / max);
-      }, { passive: true });
-    }
-
-    function sampleKeys(p) {
-      p = clamp(p);
-      let i = 1;
-      while (i < KEYS.length - 1 && p > KEYS[i].at) i++;
-      const a = KEYS[i - 1], b = KEYS[i];
-      const t = clamp((p - a.at) / (b.at - a.at));
-      const e = t * t * (3 - 2 * t);
-      PROP_KEYS.forEach((k) => { S[k] = a[k] + (b[k] - a[k]) * e; });
-      S.pulse = (p > 0.40 && p < 0.65) ? Math.sin(clamp((p - 0.40) / 0.25) * Math.PI) : 0;
-
-      const show = (el, on) => { el.style.opacity = on ? "1" : "0"; };
-      show(subA, p < 0.37); show(subB, p >= 0.40 && p < 0.62); show(subC, p >= 0.87);
-      show(phrases[0], p < 0.36); show(phrases[1], p >= 0.40 && p < 0.64); show(phrases[2], p >= 0.85);
-      cue.style.opacity = `${clamp(1 - p * 14)}`;
-      setStage(p);
-    }
-
-    /* ────────────────────────────────────────────────────────────
-       8 · layout / resize
-       ──────────────────────────────────────────────────────────── */
-    let ringCx = 0, ringCy = 0;
-
-    function layoutRings(w, h) {
-      ringsSvg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-      ringsSvg.setAttribute("width", w);
-      ringsSvg.setAttribute("height", h);
-      ringCx = w / 2; ringCy = h / 2;
-      const base = Math.min(w, h);
-      ring1.setAttribute("cx", ringCx); ring1.setAttribute("cy", ringCy); ring1.setAttribute("r", base * 0.205);
-      ring2.setAttribute("cx", ringCx); ring2.setAttribute("cy", ringCy); ring2.setAttribute("r", base * 0.278);
-    }
-
-    function resize() {
-      const w = window.innerWidth, h = window.innerHeight;
-      const dpr = quality.dpr;
-
-      renderer.setPixelRatio(dpr);
-      renderer.setSize(w, h);
-      // the composer captures the pixel ratio at construction — resync it,
-      // otherwise the post pipeline keeps rendering at the old resolution
-      // whenever the governor (or a window resize) changes dpr
-      composer.setPixelRatio(dpr);
-      composer.setSize(w, h);
-
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-
-      // keep the composite quad exactly filling the frustum at z = -1
-      const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
-      bgQuad.scale.set(viewH * camera.aspect, viewH, 1);
-
-      const sw = clamp(Math.round(w * dpr * quality.sim), 192, 800);
-      const sh = Math.max(96, Math.round(sw * h / w));
-      rtA.setSize(sw, sh);
-      rtB.setSize(sw, sh);
-      simMat.uniforms.uTexel.value.set(1 / sw, 1 / sh);
-      simMat.uniforms.uAspect.value = sw / sh;
-      compMat.uniforms.uTexel.value.set(1 / sw, 1 / sh);
-      compMat.uniforms.uAspect.value = w / h;
-
-      layoutRings(w, h);
-    }
-
-    let resizeTimer = 0;
-    window.addEventListener("resize", () => {
-      resize();
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => { if (gsapOK) ScrollTrigger.refresh(); }, 220);
-    });
-    window.addEventListener("orientationchange", () => setTimeout(resize, 260));
-
-    /* ────────────────────────────────────────────────────────────
-       9 · pointer
-       ──────────────────────────────────────────────────────────── */
-    let px = 0, py = 0, spx = 0, spy = 0;
-    window.addEventListener("pointermove", (e) => {
-      px = (e.clientX / window.innerWidth - 0.5) * 2;
-      py = (e.clientY / window.innerHeight - 0.5) * 2;
-    }, { passive: true });
-
-    /* ────────────────────────────────────────────────────────────
-       10 · frame loop
-       ──────────────────────────────────────────────────────────── */
-    let time = 0, last = performance.now();
-    const timeScale = REDUCED ? 0.22 : 1;
-    const frameK = (lambda, dt) => 1 - Math.exp(-lambda * dt);   // framerate-independent smoothing (120Hz ≠ 2x responsiveness)
-
-    // fps governor: walks the quality ladder until the film holds a stable
-    // framerate (replaces the old one-shot "dpr → 1 after 3.2s" guard)
-    let govWarm = 0, govFrames = 0, govTime = 0, govBad = 0, govGood = 0;
-    const DROP_AT = [45, 42, 38];   // sustained fps below this drops one tier
-    const applyTier = () => {
-      const t = TIERS[tier];
-      quality.dpr = t.dpr;
-      quality.sim = t.sim;
-      bloomScale = t.bloom;
-      resize();
-    };
-    let fluidLive = false;
-
-    function frame(now) {
-      requestAnimationFrame(frame);
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
-      time += dt * timeScale;
-
-      if (!gsapOK) {
-        progress += (targetProgress - progress) * (1 - Math.pow(0.0009, dt));
-        sampleKeys(progress);
-      }
-
-      spx += (px - spx) * frameK(2.8, dt);
-      spy += (py - spy) * frameK(2.8, dt);
-
-      // heartbeat: alive at rest, hard pulse at 40%
-      const idleBeat = 0.5 + 0.5 * Math.sin(time * 1.85);
-      const beat = idleBeat * 0.16 + S.pulse * (0.5 + 0.5 * Math.sin(time * 8.0));
-      const scale = S.orbScale * (1 + beat * 0.05);
-
-      orb.scale.setScalar(scale);
-      orb.position.x += (spx * 0.17 - orb.position.x) * frameK(3.0, dt);
-      orb.position.y += (-spy * 0.12 - orb.position.y) * frameK(3.0, dt);
-      orb.rotation.y = time * 0.055 + spx * 0.14;
-      orb.rotation.x = Math.sin(time * 0.21) * 0.07 - spy * 0.09;
-
-
-      // the sac is fully gone by the starfield — stop drawing it
-      const orbOn = S.orbOpacity > 0.004;
-      shell.visible = orbOn; core.visible = orbOn; halo.visible = orbOn;
-
-      // shell
-      shellMat.uniforms.uTime.value = time;
-      shellMat.uniforms.uDisplace.value = S.displace * (1 + beat * 0.2);
-      shellMat.uniforms.uFreq.value = S.freq;
-      shellMat.uniforms.uStretch.value = S.stretch;
-      shellMat.uniforms.uVeins.value = S.veins * (1 + beat * 0.55);
-      shellMat.uniforms.uCore.value = S.coreGlow * (0.85 + beat * 0.3);
-      shellMat.uniforms.uOpacity.value = S.orbOpacity;
-      shellMat.uniforms.uDissolve.value = S.dissolve;
-
-      // core + halo
-      coreMat.uniforms.uTime.value = time;
-      coreMat.uniforms.uOpacity.value = clamp(S.coreGlow * S.orbOpacity, 0, 1);
-      haloMat.uniforms.uTime.value = time;
-      haloMat.uniforms.uOpacity.value = clamp((0.13 + S.coreGlow * 0.24) * S.orbOpacity * (1 - S.fluid * 0.65), 0, 1);
-
-      // camera drifts into the burst
-      camera.position.x += (spx * 0.09 - camera.position.x) * frameK(2.4, dt);
-      camera.position.y += (-spy * 0.07 - camera.position.y) * frameK(2.4, dt);
-      camera.position.z = CAM_Z - S.stretch * 1.15;
-      camera.lookAt(orb.position.x * 0.4, orb.position.y * 0.4, 0);
-
-      // halo lives in the scene so it can billboard to the camera exactly
-      halo.position.copy(orb.position);
-      halo.scale.setScalar(scale * 5.4);
-      halo.quaternion.copy(camera.quaternion);
-
-      // ── fluid step ──
-      // pre-burst the background is pure black, so the advection sim and the
-      // full-screen blur cost two passes for nothing — skip them both
-      const fluidOn = S.fluid > 0.004 || S.star > 0.004;
-      if (fluidOn) {
-        if (!fluidLive) {   // re-entering the fluid world: start from clean buffers
-          renderer.setRenderTarget(rtA); renderer.clear(true, false, false);
-          renderer.setRenderTarget(rtB); renderer.clear(true, false, false);
-          renderer.setRenderTarget(null);
-        }
-        fluidLive = true;
-
-        const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * camera.position.z;
-        const fpsScale = Math.min(2, dt * 60);
-        simMat.uniforms.uPrev.value = rtA.texture;
-        simMat.uniforms.uTime.value = time;
-        simMat.uniforms.uDissip.value = Math.pow(0.975, dt * 60);
-        simMat.uniforms.uEmit.value = S.smoke * 0.038 * fpsScale;
-        simMat.uniforms.uSwirl.value = S.swirl;
-        simMat.uniforms.uEmitPos.value.set(
-          clamp(0.5 + orb.position.x / (viewH * camera.aspect), -0.5, 1.5),
-          clamp(0.5 - orb.position.y / viewH, -0.5, 1.5)
+      float vnoise(vec2 p){
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        f = f * f * (3.0 - 2.0 * f);
+        return mix(
+          mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+          mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x),
+          f.y
         );
-        simMat.uniforms.uEmitRadius.value = clamp((scale / viewH) * 1.45 + 0.03, 0.02, 4);
-
-        renderer.setRenderTarget(rtB);
-        renderer.render(simScene, simCam);
-        renderer.setRenderTarget(null);
-        const swap = rtA; rtA = rtB; rtB = swap;
-
-        // ── composite ──
-        compMat.uniforms.uSmoke.value = rtA.texture;
-        compMat.uniforms.uTime.value = time;
-        compMat.uniforms.uBlur.value = S.blur;
-        compMat.uniforms.uFluid.value = S.fluid;
-        compMat.uniforms.uStar.value = S.star;
-      } else {
-        fluidLive = false;
       }
-      bgQuad.visible = fluidOn;
-
-      // ── hairline circles, slowly scaling up (composited CSS transform) ──
-      const s1 = S.ring, s2 = 1 + (S.ring - 1) * 0.68;
-      ring1.style.transform = `scale(${s1.toFixed(4)})`;
-      ring2.style.transform = `scale(${s2.toFixed(4)})`;
-      ringGroup.style.opacity = S.ringOpacity.toFixed(3);
-
-      composer.render();
-
-      // ── fps governor ──
-      govWarm += dt;
-      if (govWarm > 2.0) {
-        govFrames++; govTime += dt;
-        if (govTime >= 1.0) {
-          const fps = govFrames / govTime;
-          govFrames = 0; govTime = 0;
-          if (fps < 24 && tier < TIERS.length - 1) {           // catastrophic: jump to the floor
-            tier = TIERS.length - 1; govBad = 0; govGood = 0; applyTier();
-          } else if (fps < DROP_AT[tier] && tier < TIERS.length - 1) {
-            if (++govBad >= 2) { tier++; govBad = 0; govGood = 0; applyTier(); }   // two bad seconds in a row
-          } else {
-            govBad = 0;
-          }
-          if (tier > 0 && fps > 57) {                          // steady again: earn the quality back
-            if (++govGood >= 5) { tier--; govGood = 0; govBad = 0; applyTier(); }
-          } else {
-            govGood = 0;
-          }
+      float fbm(vec2 p){
+        float v = 0.0;
+        float a = 0.5;
+        for (int i = 0; i < 5; i++){
+          v += a * vnoise(p);
+          p = p * 2.03 + 11.17;
+          a *= 0.55;
         }
+        return v;
       }
-    }
 
-    /* ────────────────────────────────────────────────────────────
-       11 · boot
-       ──────────────────────────────────────────────────────────── */
-    resize();
-    renderer.setRenderTarget(rtA); renderer.clear(true, false, false);
-    renderer.setRenderTarget(rtB); renderer.clear(true, false, false);
-    renderer.setRenderTarget(null);
+      void main(){
+        vec2 p = vUv - 0.5;
+        float r = length(p) * 2.0;
+        float t = uTime * 0.22;
 
-    if (!gsapOK) {
-      // no GSAP: put the opening type on screen by hand
-      phrases.forEach((el, i) => {
-        el.style.transform = "translate(-50%, -50%)";
-        el.style.opacity = i === 0 ? "1" : "0";
+        /* domain-warped fbm smoke */
+        vec2 q = vec2(fbm(p * 3.0 + t), fbm(p * 3.0 - t + 7.31));
+        float n = fbm(p * 4.0 + q * 2.2 + vec2(t * 0.6, -t * 0.4));
+
+        /* expanding shell pushed outward by scroll energy */
+        float shell = r - (0.16 + uEnergy * 0.95);
+        float body  = smoothstep(0.55, 0.0, shell);
+        float wisps = smoothstep(0.95, 0.1, r + n * 0.55 - uEnergy * 0.75);
+        float smoke = clamp(body * (0.55 + 0.9 * n) + wisps * (0.30 + 0.65 * n), 0.0, 1.5);
+
+        /* hot core */
+        float core = smoothstep(0.5, 0.0, r) * (0.6 + 0.8 * n);
+
+        vec3 edgeC = vec3(0.4196, 0.1294, 0.6588);  /* #6B21A8 */
+        vec3 coreC = vec3(0.7608, 0.4784, 1.0000);  /* #C27AFF */
+        vec3 col = mix(edgeC, coreC, clamp(core + n * 0.35, 0.0, 1.0));
+
+        float alpha = smoke * (0.32 + uEnergy * 0.95);
+        gl_FragColor = vec4(col * (0.65 + 0.7 * core), alpha);
+      }
+    `;
+
+    async function initScene(){
+      let THREE;
+      try {
+        THREE = await import('three');
+      } catch (err) {
+        console.warn('[SKRILLA HQ] three.js CDN unreachable — static photo mode.', err);
+        return null;
+      }
+
+      const canvas = document.getElementById('bg');
+      let renderer;
+      try {
+        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      } catch (err) {
+        console.warn('[SKRILLA HQ] WebGL unavailable — static photo mode.', err);
+        return null;
+      }
+      renderer.setClearColor(0x000000, 0);
+      renderer.setPixelRatio(Math.min(typeof devicePixelRatio === 'number' ? devicePixelRatio : 1, 2));
+
+      const scene  = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+      camera.position.z = 2;
+
+      const uniforms = {
+        uTime:   { value: 0 },
+        uEnergy: { value: 0.25 }
+      };
+      const material = new THREE.ShaderMaterial({
+        uniforms,
+        vertexShader: VERT,
+        fragmentShader: FRAG,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        depthTest: false
       });
-      [subA, subB, subC].forEach((el) => { el.style.transform = "translateX(-50%)"; });
-      subA.style.opacity = "1";
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
+      scene.add(mesh);
+
+      const state = { progress: 0, target: 0 };
+
+      function resize(){
+        const w = typeof innerWidth === 'number' ? innerWidth : 1280;
+        const h = typeof innerHeight === 'number' ? innerHeight : 800;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      if (typeof addEventListener === 'function') addEventListener('resize', resize);
+
+      /* scrub the explosion with ScrollTrigger if available */
+      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+        ScrollTrigger.create({
+          trigger: '#explode-track',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 0.6,
+          onUpdate(self){ state.target = self.progress; }
+        });
+        gsap.from('.stage h1', { y: 70, opacity: 0, duration: 1.2, ease: 'power4.out', delay: 0.15 });
+        gsap.from('.stage .sub, .stage .cta', { y: 40, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.45, stagger: 0.12 });
+      }
+
+      const stage = document.getElementById('stage');
+      const hint  = document.getElementById('scroll-hint');
+      const worldH = () => 2 * Math.tan((50 * Math.PI) / 360) * camera.position.z;
+
+      function frame(now){
+        const t = now / 1000;
+        uniforms.uTime.value = t;
+
+        state.progress += (state.target - state.progress) * 0.08;
+        const pr = state.progress;
+
+        /* 92 BPM pulse: scale 1 → 1.06 over each 652 ms beat */
+        const phase = reduceMotion ? 0 : (now % BEAT_MS) / BEAT_MS;
+        const pulse = 1 + 0.06 * Math.sin(Math.PI * phase);
+
+        const base = worldH() * 0.8;
+        const s = base * (SCALE_MIN + (SCALE_MAX - SCALE_MIN) * pr) * pulse;
+        mesh.scale.set(s, s, 1);
+        mesh.rotation.z = t * 0.02;
+
+        uniforms.uEnergy.value = 0.25 + pr * 1.15 + (reduceMotion ? 0 : 0.04 * Math.sin(t * 2.2));
+
+        if (stage) {
+          const fade = Math.min(Math.max(1 - (pr - 0.45) / 0.45, 0), 1);
+          stage.style.opacity = fade.toFixed(3);
+          stage.style.transform = 'scale(' + (1 + pr * 0.35).toFixed(3) + ')';
+          stage.style.pointerEvents = fade < 0.05 ? 'none' : '';
+        }
+        if (hint) hint.style.opacity = String(Math.max(1 - pr * 4, 0));
+
+        renderer.render(scene, camera);
+      }
+
+      return { frame, state };
     }
 
-    renderer.compile(scene, camera);
-    if (gsapOK) { setStage(0); tl.progress(0); } else { sampleKeys(0); }
-    requestAnimationFrame(frame);
-
-    const openRoom = () => loader.classList.add("done");
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => setTimeout(openRoom, 260));
-    } else {
-      setTimeout(openRoom, 600);
+    /* smooth scrolling: Lenis drives ScrollTrigger */
+    function initLenis(){
+      if (typeof Lenis === 'undefined' || typeof gsap === 'undefined') return null;
+      const lenis = new Lenis({ smoothWheel: true });
+      if (typeof ScrollTrigger !== 'undefined') {
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+      }
+      return lenis;
     }
-    if (gsapOK) setTimeout(() => ScrollTrigger.refresh(), 700);
 
-    window.__skrillaReady = true;
+    (async function boot(){
+      initLenis();
+      const engine = await initScene();
+
+      if (engine && typeof requestAnimationFrame === 'function') {
+        const loop = (now) => {
+          engine.frame(typeof now === 'number' ? now : performance.now());
+          requestAnimationFrame(loop);
+        };
+        requestAnimationFrame(loop);
+      }
+    })();
   </script>
 </body>
 </html>
