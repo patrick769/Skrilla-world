@@ -300,7 +300,7 @@
         <div class="dots" id="dots" aria-hidden="true"></div>
 
         <div class="hud">
-          <div class="hud-index" id="hud-index">01 / 10</div>
+          <div class="hud-index" id="hud-index">01 / 04</div>
           <a class="hud-cta" id="hud-cta" href="./music.html">Enter <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"/></svg></a>
           <div class="scroll-hint"><span class="mouse" aria-hidden="true"></span> SCROLL</div>
         </div>
@@ -338,27 +338,23 @@
 
   <script>
     (function(){
+      /* Site art only. YouTube thumbs are the official video templates.
+         Drop more files in ./assets and copy an entry below to add cards. */
       var ITEMS = [
         { common:'SKRILLA', binomial:'Est. 2099 · Street Quantum Sound', href:'./music.html', cta:'Stream SKRILLA',
-          photo:{ url:'./assets/portrait.jpg', text:'SKRILLA in prayer under gold light', pos:'50% 18%', by:'SKRILLA HQ' } },
-        { common:'#itriedcallingyou', binomial:'Studio album · 14 tracks', href:'./music.html', cta:'Play the album',
-          photo:{ url:'./assets/album.jpg', text:'velvet room, cigar smoke, mixing desk', pos:'48% 40%', by:'SKRILLA HQ' } },
+          photo:{ url:'./IMG_0548.PNG', text:'SKRILLA', pos:'78% 18%', by:'SKRILLA HQ' } },
         { common:'Kata Kichwa', binomial:'Official video · ft. Nuclear KE', href:'./videos.html', cta:'Watch the video',
-          photo:{ url:'./assets/kata-kichwa.jpg', text:'rain-slick Nairobi night street', pos:'50% 40%', by:'Jeshi ya Dago' } },
+          photo:{ url:'https://i.ytimg.com/vi/Yi8hiVukJ8w/maxresdefault.jpg', text:'Kata Kichwa — SKRILLA ft. Nuclear KE', pos:'50% 50%', by:'Jeshi ya Dago' } },
         { common:'Siku Hizi', binomial:'Official music video', href:'./videos.html', cta:'Watch the video',
-          photo:{ url:'./assets/siku-hizi.jpg', text:'golden hour over the city', pos:'50% 45%', by:'Jeshi ya Dago' } },
+          photo:{ url:'https://i.ytimg.com/vi/H4ukHUZkJ_4/maxresdefault.jpg', text:'Siku Hizi — SKRILLA', pos:'50% 50%', by:'Jeshi ya Dago' } },
         { common:'Lawama', binomial:'Official music video', href:'./videos.html', cta:'Watch the video',
-          photo:{ url:'./assets/lawama.jpg', text:'crimson light through a dark room', pos:'50% 40%', by:'Jeshi ya Dago' } },
-        { common:'World Tour 2026', binomial:'Five cities · one signal', href:'./tour.html', cta:'Get tickets',
-          photo:{ url:'./assets/tour.jpg', text:'arena crowd under gold and crimson rigs', pos:'50% 35%', by:'SKRILLA HQ' } },
-        { common:'London', binomial:'May 09 · The O2', href:'./tour.html', cta:'View dates',
-          photo:{ url:'./assets/london.jpg', text:'arena glowing against a night sky', pos:'50% 40%', by:'SKRILLA HQ' } },
-        { common:'Official Merch', binomial:'Tour jacket · hoodie · tee', href:'./merch.html', cta:'Shop the drop',
-          photo:{ url:'./assets/merch.jpg', text:'black jacket with crimson lining', pos:'50% 35%', by:'SKRILLA HQ' } },
-        { common:'The Booth', binomial:'Spotify & Apple Music', href:'./music.html', cta:'Open players',
-          photo:{ url:'./assets/studio.jpg', text:'vintage microphone in a dark booth', pos:'50% 40%', by:'SKRILLA HQ' } },
-        { common:'Jeshi ya Dago', binomial:'The visual archive', href:'https://www.youtube.com/@jeshiyadago7380', cta:'YouTube channel',
-          photo:{ url:'./assets/dago.jpg', text:'night corner under a streetlamp', pos:'50% 40%', by:'Jeshi ya Dago' } }
+          photo:{ url:'https://i.ytimg.com/vi/zzKs1ozkZag/maxresdefault.jpg', text:'Lawama — SKRILLA', pos:'50% 50%', by:'Jeshi ya Dago' } }
+        // { common:'#itriedcallingyou', binomial:'Studio album · 14 tracks', href:'./music.html', cta:'Play the album',
+        //   photo:{ url:'./assets/album.jpg', text:'#itriedcallingyou', pos:'50% 40%', by:'SKRILLA HQ' } },
+        // { common:'World Tour 2026', binomial:'Five cities · one signal', href:'./tour.html', cta:'Get tickets',
+        //   photo:{ url:'./assets/tour.jpg', text:'World Tour 2026', pos:'50% 40%', by:'SKRILLA HQ' } },
+        // { common:'Official Merch', binomial:'Tour jacket · hoodie · tee', href:'./merch.html', cta:'Shop the drop',
+        //   photo:{ url:'./assets/merch.jpg', text:'Official merch', pos:'50% 40%', by:'SKRILLA HQ' } }
       ];
 
       var n = ITEMS.length;
