@@ -245,24 +245,35 @@ body.locked{overflow:hidden}
   min-height:100vh;min-height:100svh;
   padding-top:calc(var(--nav-h) + 40px);
   isolation:isolate;
+  /* Every hero frame is re-graded to one exposure. The photography is low-key,
+     so each image carries its own lift; brightness only (a contrast() above 1
+     pivots at mid-grey in linear light and crushes these frames). The middle of
+     the scrim stays light so the frame still reads. */
+  --hero-sat:.6;--hero-bri:1.32;
 }
 .hero--compact{min-height:min(78vh,680px)}
+.hero--portrait{--hero-bri:1.62;--hero-sat:.55}
+.hero--album{--hero-bri:1.4;--hero-sat:.7}
+.hero--cloth{--hero-bri:1.35;--hero-sat:.62}
+.hero--signal{--hero-bri:1.4;--hero-sat:.7}
+.hero--crowd{--hero-bri:1.05;--hero-sat:.62}
+.hero--city{--hero-bri:.88;--hero-sat:.65}
 .hero-media{position:absolute;inset:0;z-index:0;overflow:hidden}
 .hero-media img{
-  width:100%;height:100%;object-fit:cover;object-position:center 24%;
-  filter:saturate(.55) contrast(1.14) brightness(.52);
+  width:100%;height:100%;object-fit:cover;object-position:center 26%;
+  filter:saturate(var(--hero-sat)) brightness(var(--hero-bri));
   transform:scale(1.06);will-change:transform;
 }
 .hero-media::before{
   content:'';position:absolute;inset:0;z-index:1;
-  background:linear-gradient(205deg,rgba(107,33,168,.42),rgba(139,92,246,.14) 42%,transparent 72%);
+  background:linear-gradient(205deg,rgba(107,33,168,.3),rgba(139,92,246,.1) 42%,transparent 70%);
   mix-blend-mode:screen;
 }
 .hero-media::after{
   content:'';position:absolute;inset:0;z-index:2;
   background:
-    radial-gradient(64% 46% at 50% 86%,rgba(107,33,168,.48),transparent 72%),
-    linear-gradient(180deg,rgba(4,3,10,.88) 0%,rgba(4,3,10,.34) 40%,rgba(4,3,10,.74) 76%,var(--void) 100%);
+    linear-gradient(180deg,rgba(4,3,10,.82) 0%,rgba(4,3,10,.14) 30%,rgba(4,3,10,.30) 52%,rgba(4,3,10,.82) 82%,var(--void) 100%),
+    radial-gradient(120% 62% at 50% 104%,rgba(107,33,168,.42),transparent 72%);
 }
 .hero-inner{
   position:relative;z-index:2;width:var(--shell);margin-inline:auto;
@@ -338,7 +349,7 @@ body.locked{overflow:hidden}
   position:relative;margin:0;border:1px solid var(--line);background:#000;overflow:hidden;
   box-shadow:0 40px 90px -50px rgba(194,122,255,.75);
 }
-.cover img{width:100%;aspect-ratio:1/1;object-fit:cover;filter:saturate(.72) contrast(1.1) brightness(.92);transition:transform 1.2s var(--ease-out)}
+.cover img{width:100%;aspect-ratio:1/1;object-fit:cover;filter:saturate(.85) brightness(1.3);transition:transform 1.2s var(--ease-out)}
 .cover:hover img{transform:scale(1.04)}
 .cover::after{
   content:'';position:absolute;inset:0;pointer-events:none;
@@ -448,8 +459,8 @@ body.locked{overflow:hidden}
 
 /* video poster (homepage) */
 .poster{position:relative;aspect-ratio:16/9;overflow:hidden;background:linear-gradient(140deg,#170b2a,#04030a);border-bottom:1px solid var(--line-2)}
-.poster img{width:100%;height:100%;object-fit:cover;filter:saturate(.6) contrast(1.1) brightness(.72);transition:transform 1.2s var(--ease-out),filter .5s}
-.card:hover .poster img{transform:scale(1.05);filter:saturate(.9) contrast(1.08) brightness(.82)}
+.poster img{width:100%;height:100%;object-fit:cover;filter:saturate(.62) brightness(.9);transition:transform 1.2s var(--ease-out),filter .5s}
+.card:hover .poster img{transform:scale(1.05);filter:saturate(.95) brightness(1.05)}
 .poster::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,3,10,.25),rgba(4,3,10,.72)),linear-gradient(205deg,rgba(107,33,168,.4),transparent 60%);mix-blend-mode:screen}
 .poster .play-dot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:52px;height:52px;background:rgba(4,3,10,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .card:hover .poster .play-dot{transform:translate(-50%,-50%) scale(1.08)}
@@ -507,9 +518,9 @@ body.locked{overflow:hidden}
 /* about */
 .about{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(30px,5vw,72px);align-items:center}
 .about-media{position:relative;padding-bottom:14%}
-.about-media img{width:78%;border:1px solid var(--line-2);filter:saturate(.6) contrast(1.1) brightness(.8)}
+.about-media img{width:78%;border:1px solid var(--line-2);filter:saturate(.65) brightness(1.25)}
 .about-media .a2{
-  position:absolute;right:0;bottom:0;width:58%;border-color:var(--line);
+  position:absolute;right:0;bottom:0;width:58%;border-color:var(--line);filter:saturate(.65) brightness(.88);
   box-shadow:0 30px 70px -40px rgba(0,0,0,.9);
 }
 .about-body p{color:var(--ink-2);line-height:1.8;max-width:58ch}
@@ -532,8 +543,8 @@ body.locked{overflow:hidden}
 
 /* lookbook band */
 .band{position:relative;overflow:hidden;border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)}
-.band img{width:100%;height:clamp(260px,46vh,460px);object-fit:cover;filter:saturate(.6) contrast(1.12) brightness(.6)}
-.band::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,3,10,.5),rgba(4,3,10,.85)),linear-gradient(205deg,rgba(107,33,168,.4),transparent 62%);mix-blend-mode:screen}
+.band img{width:100%;height:clamp(260px,46vh,460px);object-fit:cover;filter:saturate(.65) brightness(.9)}
+.band::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,3,10,.35),rgba(4,3,10,.8)),linear-gradient(205deg,rgba(107,33,168,.38),transparent 62%);mix-blend-mode:screen}
 .band .band-copy{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:0 0 clamp(22px,4vw,40px)}
 .band .band-copy .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:1.6rem;flex-wrap:wrap}
 .band .band-copy h3{font-size:clamp(1.4rem,3.6vw,2.6rem);max-width:22ch}
@@ -675,6 +686,11 @@ section[id],main[id]{scroll-margin-top:calc(var(--nav-h) + 16px)}
   .foot-mark{color:transparent;-webkit-text-stroke:1px rgba(194,122,255,.3)}
 }
 
+/* inline section head — keeps the numbered markers running on the home page */
+.head-inline{margin-bottom:1.3rem}
+.head-inline .kicker{margin-bottom:0}
+.head-inline .row{align-items:baseline}
+
   </style>
 </head>
 <body id="top">
@@ -727,7 +743,7 @@ section[id],main[id]{scroll-margin-top:calc(var(--nav-h) + 16px)}
 <main id="main">
 
   <!-- ══ hero ══════════════════════════════════════════════════ -->
-  <section class="hero hero--compact" aria-labelledby="page-title">
+  <section class="hero hero--compact hero--city" aria-labelledby="page-title">
     <div class="hero-media" aria-hidden="true">
       <img src="./assets/london.jpg" alt="" fetchpriority="high" decoding="async" />
     </div>
