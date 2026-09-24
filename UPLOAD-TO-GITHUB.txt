@@ -1,5 +1,13 @@
-UPLOAD THESE FIVE HTML FILES DIRECTLY TO THE ROOT OF THE GITHUB REPOSITORY:
-index.html, music.html, videos.html, tour.html, merch.html
+UPLOAD THESE FILES DIRECTLY TO THE ROOT OF THE GITHUB REPOSITORY:
+
+  index.html, music.html, videos.html, tour.html, merch.html, 404.html
+  + the whole assets/ folder (unchanged name, unchanged place)
+  + IMG_0548.PNG (optional — original full-resolution portrait)
 
 Replace the older files with these versions. Do not upload only this ZIP.
+
+The pages are self-contained (CSS + JavaScript live inside each HTML file),
+but the artwork is loaded from ./assets/ — so the folder must be uploaded too,
+next to the HTML files, or the images and hero backgrounds will not show.
+
 Then enable GitHub Pages: Settings > Pages > Deploy from a branch > main > / (root).

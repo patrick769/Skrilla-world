@@ -1,9 +1,13 @@
 BIG SKRILLA OFFLINE WEBSITE — ANDROID
 
 1. Extract this ZIP completely. Do not open index.html while it is still inside the ZIP.
-2. Keep all five HTML files together in the same folder.
+2. Keep the six HTML files AND the assets folder together in the same folder.
+   The artwork and hero backgrounds are loaded from ./assets/ — if that folder is
+   missing, the pages will show text on black instead of the photographs.
 3. Open the extracted index.html using Chrome, Firefox, or another browser.
-4. The navigation buttons open the other local HTML pages.
+4. The navigation buttons open the other local pages, and 404.html is the "off air" page.
 
-Everything is embedded for offline use, including racing fonts, loading sequence,
-animated portrait smoke, images, CSS, JavaScript and rotating sphere.
+Everything needed for the design is embedded in the HTML files: loading sequence,
+layout, CSS, JavaScript, scroll animations and the marquee ticker.
+Only the fonts and the streaming players (Spotify / Apple Music / YouTube) need
+an internet connection — offline, the pages fall back to system fonts.
